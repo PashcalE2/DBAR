@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import java.util.Objects;
 
+// TODO исправить
+
 @Entity
 @Table(name = "Завод", schema = "s311817", catalog = "studs")
 public class Factory {
