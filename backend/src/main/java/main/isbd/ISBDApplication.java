@@ -11,11 +11,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
 @Slf4j
-public class IsbdApplication {
-	public static final Logger logger = LoggerFactory.getLogger(IsbdApplication.class);
-
+public class ISBDApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(IsbdApplication.class, args);
+		SpringApplication.run(ISBDApplication.class, args);
 	}
 
 	@Bean

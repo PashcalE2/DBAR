@@ -1,9 +1,9 @@
-package main.isbd.controllers;
+package main.isbd.controllers.legacy;
 
 import main.isbd.data.model.Client;
 import main.isbd.data.dto.users.ClientLogin;
 import main.isbd.data.dto.users.ClientRegister;
-import main.isbd.services.ClientRepositoryService;
+import main.isbd.services.legacy.ClientService;
 import main.isbd.utils.CheckRightsWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,14 +21,14 @@ import java.text.SimpleDateFormat;
 @ApplicationScope
 public class ClientController {
     @Autowired
-    private ClientRepositoryService clientRepositoryService;
+    private ClientService clientService;
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     @GetMapping("/client/profile/get_all_registered_organizations")
     public @ResponseBody ResponseEntity<?> getAllRegisteredOrganizations() {
         System.out.println("Запрос опций названий зарегистрированных организаций");
         try {
-            return new ResponseEntity<>(clientRepositoryService.getAllRegisteredOrganizations(), HttpStatus.OK);
+            return new ResponseEntity<>(clientService.getAllRegisteredOrganizations(), HttpStatus.OK);
         }
         catch (RuntimeException e) {
             System.out.println(e.getMessage());
@@ -40,7 +40,7 @@ public class ClientController {
     public @ResponseBody ResponseEntity<?> getAllNotRegisteredOrganizations() {
         System.out.println("Запрос опций названий незарегистрированных организаций");
         try {
-            return new ResponseEntity<>(clientRepositoryService.getAllNotRegisteredOrganizations(), HttpStatus.OK);
+            return new ResponseEntity<>(clientService.getAllNotRegisteredOrganizations(), HttpStatus.OK);
         }
         catch (RuntimeException e) {
             System.out.println(e.getMessage());
@@ -54,7 +54,7 @@ public class ClientController {
             @RequestParam String password
     ) {
         System.out.printf("Запрос проверки прав доступа для клиента (%d)\n", client_id);
-        return new CheckRightsWrapper(clientRepositoryService) {
+        return new CheckRightsWrapper(clientService) {
             @Override
             public ResponseEntity<?> outer() {
                 return new ResponseEntity<>("Успех!", HttpStatus.OK);
@@ -72,7 +72,7 @@ public class ClientController {
         Client db_client;
 
         try {
-            db_client = clientRepositoryService.getClientByNameAndPassword(client.getName(), client.getPassword());
+            db_client = clientService.getClientByNameAndPassword(client.getName(), client.getPassword());
             if (db_client == null) {
                 throw new RuntimeException("Неверный логин или пароль\n");
             }
@@ -93,7 +93,7 @@ public class ClientController {
         Client db_client;
 
         try {
-            db_client = clientRepositoryService.registerClient(client.getPhoneNumber(), client.getEmail(), client.getPassword(), client.getName());
+            db_client = clientService.registerClient(client.getPhoneNumber(), client.getEmail(), client.getPassword(), client.getName());
         } catch (RuntimeException e) {
             System.out.println(e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
@@ -109,10 +109,10 @@ public class ClientController {
     ) {
         System.out.printf("Запрос на получение данных профиля клиента (%d)\n", client_id);
 
-        return new CheckRightsWrapper(clientRepositoryService) {
+        return new CheckRightsWrapper(clientService) {
             @Override
             public ResponseEntity<?> outer() {
-                return new ResponseEntity<>(clientRepositoryService.getClientProfileById(client_id), HttpStatus.OK);
+                return new ResponseEntity<>(clientService.getClientProfileById(client_id), HttpStatus.OK);
             }
         }.execute(client_id, password);
     }
@@ -125,11 +125,11 @@ public class ClientController {
             @RequestParam String email
     ) {
         System.out.printf("Запрос на изменение данных профиля клиента (%d)\n", client_id);
-        return new CheckRightsWrapper(clientRepositoryService) {
+        return new CheckRightsWrapper(clientService) {
             @Override
             public ResponseEntity<?> outer() {
-                clientRepositoryService.setClientProfileById(client_id, phone_number, email);
-                return new ResponseEntity<>(clientRepositoryService.getClientProfileById(client_id), HttpStatus.OK);
+                clientService.setClientProfileById(client_id, phone_number, email);
+                return new ResponseEntity<>(clientService.getClientProfileById(client_id), HttpStatus.OK);
             }
         }.execute(client_id, password);
     }
@@ -141,10 +141,10 @@ public class ClientController {
     ) {
         System.out.println("Запрос на получение данных о всей продукции\n");
 
-        return new CheckRightsWrapper(clientRepositoryService) {
+        return new CheckRightsWrapper(clientService) {
             @Override
             public ResponseEntity<?> outer() {
-                return new ResponseEntity<>(clientRepositoryService.getAllProductsShortInfo(), HttpStatus.OK);
+                return new ResponseEntity<>(clientService.getAllProductsShortInfo(), HttpStatus.OK);
             }
         }.execute(client_id, password);
     }
@@ -156,10 +156,10 @@ public class ClientController {
             @RequestParam Integer product_id
     ) {
         System.out.printf("Запрос на получение данных о продукции (%d)\n", product_id);
-        return new CheckRightsWrapper(clientRepositoryService) {
+        return new CheckRightsWrapper(clientService) {
             @Override
             public ResponseEntity<?> outer() {
-                return new ResponseEntity<>(clientRepositoryService.getProductInfoById(product_id), HttpStatus.OK);
+                return new ResponseEntity<>(clientService.getProductInfoById(product_id), HttpStatus.OK);
             }
         }.execute(client_id, password);
     }
@@ -172,10 +172,10 @@ public class ClientController {
             @RequestParam(defaultValue = "0") Integer product_id
     ) {
         System.out.printf("Запрос на добавление продукции (%d) в заказ (%d)\n", product_id, order_id);
-        return new CheckRightsWrapper(clientRepositoryService) {
+        return new CheckRightsWrapper(clientService) {
             @Override
             public ResponseEntity<?> outer() {
-                clientRepositoryService.addProductToOrder(order_id, product_id);
+                clientService.addProductToOrder(order_id, product_id);
                 return new ResponseEntity<>("Успех!", HttpStatus.OK);
             }
         }.execute(client_id, password);
@@ -189,10 +189,10 @@ public class ClientController {
             @RequestParam(defaultValue = "0") Integer product_id
     ) {
         System.out.printf("Запрос на удаление продукции (%d) из заказа (%d)\n", product_id, order_id);
-        return new CheckRightsWrapper(clientRepositoryService) {
+        return new CheckRightsWrapper(clientService) {
             @Override
             public ResponseEntity<?> outer() {
-                clientRepositoryService.removeProductFromOrder(order_id, product_id);
+                clientService.removeProductFromOrder(order_id, product_id);
                 return new ResponseEntity<>("Успех!", HttpStatus.OK);
             }
         }.execute(client_id, password);
@@ -204,10 +204,10 @@ public class ClientController {
             @RequestParam String password
     ) {
         System.out.printf("Запрос на получение информации о заказах клиента (%d)\n", client_id);
-        return new CheckRightsWrapper(clientRepositoryService) {
+        return new CheckRightsWrapper(clientService) {
             @Override
             public ResponseEntity<?> outer() {
-                return new ResponseEntity<>(clientRepositoryService.getAllOrdersInfoByClientId(client_id), HttpStatus.OK);
+                return new ResponseEntity<>(clientService.getAllOrdersInfoByClientId(client_id), HttpStatus.OK);
             }
         }.execute(client_id, password);
     }
@@ -219,10 +219,10 @@ public class ClientController {
             @RequestParam Integer order_id
     ) {
         System.out.printf("Запрос на получение информации о заказе (%d)\n", order_id);
-        return new CheckRightsWrapper(clientRepositoryService) {
+        return new CheckRightsWrapper(clientService) {
             @Override
             public ResponseEntity<?> outer() {
-                return new ResponseEntity<>(clientRepositoryService.getOrderInfoByOrderId(order_id), HttpStatus.OK);
+                return new ResponseEntity<>(clientService.getOrderInfoByOrderId(order_id), HttpStatus.OK);
             }
         }.execute(client_id, password);
     }
@@ -233,10 +233,10 @@ public class ClientController {
             @RequestParam String password
     ) {
         System.out.printf("Запрос на получение информации о формирующемся заказе клиента (%d)\n", client_id);
-        return new CheckRightsWrapper(clientRepositoryService) {
+        return new CheckRightsWrapper(clientService) {
             @Override
             public ResponseEntity<?> outer() {
-                return new ResponseEntity<>(clientRepositoryService.getCurrentOrderInfoByClientId(client_id), HttpStatus.OK);
+                return new ResponseEntity<>(clientService.getCurrentOrderInfoByClientId(client_id), HttpStatus.OK);
             }
         }.execute(client_id, password);
     }
@@ -248,10 +248,10 @@ public class ClientController {
             @RequestParam(defaultValue = "0") Integer order_id
     ) {
         System.out.printf("Запрос на получение информации о заказе (%d) клиента (%d)\n", order_id, client_id);
-        return new CheckRightsWrapper(clientRepositoryService) {
+        return new CheckRightsWrapper(clientService) {
             @Override
             public ResponseEntity<?> outer() {
-                return new ResponseEntity<>(clientRepositoryService.getAllProductsInOrder(order_id), HttpStatus.OK);
+                return new ResponseEntity<>(clientService.getAllProductsInOrder(order_id), HttpStatus.OK);
             }
         }.execute(client_id, password);
     }
@@ -265,10 +265,10 @@ public class ClientController {
             @RequestParam(defaultValue = "0") Integer count
     ) {
         System.out.printf("Запрос на изменение количества продукции (%d) в заказе (%d) клиента (%d)\n", count, order_id, client_id);
-        return new CheckRightsWrapper(clientRepositoryService) {
+        return new CheckRightsWrapper(clientService) {
             @Override
             public ResponseEntity<?> outer() {
-                clientRepositoryService.setProductCountInOrder(order_id, product_id, count);
+                clientService.setProductCountInOrder(order_id, product_id, count);
                 return new ResponseEntity<>("Успех!", HttpStatus.OK);
             }
         }.execute(client_id, password);
@@ -281,10 +281,10 @@ public class ClientController {
             @RequestParam(defaultValue = "0") Integer order_id
     ) {
         System.out.printf("Запрос на принятие заказа (%d) в обработку\n", order_id);
-        return new CheckRightsWrapper(clientRepositoryService) {
+        return new CheckRightsWrapper(clientService) {
             @Override
             public ResponseEntity<?> outer() {
-                clientRepositoryService.acceptOrder(order_id);
+                clientService.acceptOrder(order_id);
                 return new ResponseEntity<>("Успех!", HttpStatus.OK);
             }
         }.execute(client_id, password);
@@ -297,10 +297,10 @@ public class ClientController {
             @RequestParam(defaultValue = "0") Integer order_id
     ) {
         System.out.printf("Запрос на оплату заказа (%d)\n", order_id);
-        return new CheckRightsWrapper(clientRepositoryService) {
+        return new CheckRightsWrapper(clientService) {
             @Override
             public ResponseEntity<?> outer() {
-                clientRepositoryService.payForOrder(order_id);
+                clientService.payForOrder(order_id);
                 return new ResponseEntity<>("Успех!", HttpStatus.OK);
             }
         }.execute(client_id, password);
@@ -313,10 +313,10 @@ public class ClientController {
             @RequestParam(defaultValue = "0") Integer order_id
     ) {
         System.out.printf("Запрос на отмену заказа (%d)\n", order_id);
-        return new CheckRightsWrapper(clientRepositoryService) {
+        return new CheckRightsWrapper(clientService) {
             @Override
             public ResponseEntity<?> outer() {
-                clientRepositoryService.cancelOrder(order_id, new Timestamp(System.currentTimeMillis()));
+                clientService.cancelOrder(order_id, new Timestamp(System.currentTimeMillis()));
                 return new ResponseEntity<>("Успех!", HttpStatus.OK);
             }
         }.execute(client_id, password);
@@ -329,10 +329,10 @@ public class ClientController {
             @RequestParam(defaultValue = "0") Integer order_id
     ) {
         System.out.printf("Запрос на получение информации о консультанте заказа (%d)\n", order_id);
-        return new CheckRightsWrapper(clientRepositoryService) {
+        return new CheckRightsWrapper(clientService) {
             @Override
             public ResponseEntity<?> outer() {
-                return new ResponseEntity<>(clientRepositoryService.getAdminContactsInChat(order_id), HttpStatus.OK);
+                return new ResponseEntity<>(clientService.getAdminContactsInChat(order_id), HttpStatus.OK);
             }
         }.execute(client_id, password);
     }
@@ -344,10 +344,10 @@ public class ClientController {
             @RequestParam(defaultValue = "0") Integer order_id
     ) {
         System.out.printf("Запрос на получение сообщений заказа (%d)\n", order_id);
-        return new CheckRightsWrapper(clientRepositoryService) {
+        return new CheckRightsWrapper(clientService) {
             @Override
             public ResponseEntity<?> outer() {
-                return new ResponseEntity<>(clientRepositoryService.getMessagesInChat(order_id), HttpStatus.OK);
+                return new ResponseEntity<>(clientService.getMessagesInChat(order_id), HttpStatus.OK);
             }
         }.execute(client_id, password);
     }
@@ -360,10 +360,10 @@ public class ClientController {
             @RequestParam String content
     ) {
         System.out.printf("Запрос на отправку сообщения в заказе (%d)\n", order_id);
-        return new CheckRightsWrapper(clientRepositoryService) {
+        return new CheckRightsWrapper(clientService) {
             @Override
             public ResponseEntity<?> outer() {
-                clientRepositoryService.postMessageInChat(order_id, content, new Timestamp(System.currentTimeMillis()));
+                clientService.postMessageInChat(order_id, content, new Timestamp(System.currentTimeMillis()));
                 return new ResponseEntity<>("Успех!", HttpStatus.OK);
             }
         }.execute(client_id, password);

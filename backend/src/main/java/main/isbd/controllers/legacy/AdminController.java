@@ -1,8 +1,8 @@
-package main.isbd.controllers;
+package main.isbd.controllers.legacy;
 
 import main.isbd.data.model.Admin;
 import main.isbd.data.dto.users.AdminLogin;
-import main.isbd.services.AdminRepositoryService;
+import main.isbd.services.legacy.AdminService;
 import main.isbd.utils.CheckRightsWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ import java.sql.Timestamp;
 @ApplicationScope
 public class AdminController {
     @Autowired
-    private AdminRepositoryService adminRepositoryService;
+    private AdminService adminService;
 
     @PostMapping("/admin/profile/check_rights")
     public @ResponseBody ResponseEntity<?> checkAdminRights(
@@ -26,7 +26,7 @@ public class AdminController {
             @RequestParam String password
     ) {
         System.out.printf("Запрос проверки прав доступа для консультанта (%d)\n", admin_id);
-        return new CheckRightsWrapper(adminRepositoryService) {
+        return new CheckRightsWrapper(adminService) {
             @Override
             public ResponseEntity<?> outer() {
                 return new ResponseEntity<>("Успех!", HttpStatus.OK);
@@ -44,7 +44,7 @@ public class AdminController {
         Admin db_admin;
 
         try {
-            db_admin = adminRepositoryService.getAdminByIdAndPassword(admin.getId(), admin.getPassword());
+            db_admin = adminService.getAdminByIdAndPassword(admin.getId(), admin.getPassword());
             if (db_admin == null) {
                 throw new RuntimeException("Неверный логин или пароль\n");
             }
@@ -63,10 +63,10 @@ public class AdminController {
             @RequestParam Integer product_id
     ) {
         System.out.printf("Запрос на получение данных о продукции (%d)\n", product_id);
-        return new CheckRightsWrapper(adminRepositoryService) {
+        return new CheckRightsWrapper(adminService) {
             @Override
             public ResponseEntity<?> outer() {
-                return new ResponseEntity<>(adminRepositoryService.getProductInfoById(product_id), HttpStatus.OK);
+                return new ResponseEntity<>(adminService.getProductInfoById(product_id), HttpStatus.OK);
             }
         }.execute(admin_id, password);
     }
@@ -77,10 +77,10 @@ public class AdminController {
             @RequestParam String password
     ) {
         System.out.printf("Запрос на получение информации о заказах консультанта (%d)\n", admin_id);
-        return new CheckRightsWrapper(adminRepositoryService) {
+        return new CheckRightsWrapper(adminService) {
             @Override
             public ResponseEntity<?> outer() {
-                return new ResponseEntity<>(adminRepositoryService.getAllOrdersInfoByAdminId(admin_id), HttpStatus.OK);
+                return new ResponseEntity<>(adminService.getAllOrdersInfoByAdminId(admin_id), HttpStatus.OK);
             }
         }.execute(admin_id, password);
     }
@@ -92,10 +92,10 @@ public class AdminController {
             @RequestParam Integer order_id
     ) {
         System.out.printf("Запрос на получение информации о заказе (%d)\n", order_id);
-        return new CheckRightsWrapper(adminRepositoryService) {
+        return new CheckRightsWrapper(adminService) {
             @Override
             public ResponseEntity<?> outer() {
-                return new ResponseEntity<>(adminRepositoryService.getOrderInfoByOrderId(order_id), HttpStatus.OK);
+                return new ResponseEntity<>(adminService.getOrderInfoByOrderId(order_id), HttpStatus.OK);
             }
         }.execute(admin_id, password);
     }
@@ -107,10 +107,10 @@ public class AdminController {
             @RequestParam(defaultValue = "0") Integer order_id
     ) {
         System.out.printf("Запрос на получение информации о заказе (%d) консультанта (%d)\n", order_id, admin_id);
-        return new CheckRightsWrapper(adminRepositoryService) {
+        return new CheckRightsWrapper(adminService) {
             @Override
             public ResponseEntity<?> outer() {
-                return new ResponseEntity<>(adminRepositoryService.getAllProductsInOrder(order_id), HttpStatus.OK);
+                return new ResponseEntity<>(adminService.getAllProductsInOrder(order_id), HttpStatus.OK);
             }
         }.execute(admin_id, password);
     }
@@ -122,10 +122,10 @@ public class AdminController {
             @RequestParam(defaultValue = "0") Integer order_id
     ) {
         System.out.printf("Запрос на сборку заказа (%d)\n", order_id);
-        return new CheckRightsWrapper(adminRepositoryService) {
+        return new CheckRightsWrapper(adminService) {
             @Override
             public ResponseEntity<?> outer() {
-                adminRepositoryService.askForOrderAssembling(order_id);
+                adminService.askForOrderAssembling(order_id);
                 return new ResponseEntity<>("Что-то возможно получилось", HttpStatus.OK);
             }
         }.execute(admin_id, password);
@@ -138,10 +138,10 @@ public class AdminController {
             @RequestParam(defaultValue = "0") Integer order_id
     ) {
         System.out.printf("Запрос на получение информации о клиенте заказа (%d)\n", order_id);
-        return new CheckRightsWrapper(adminRepositoryService) {
+        return new CheckRightsWrapper(adminService) {
             @Override
             public ResponseEntity<?> outer() {
-                return new ResponseEntity<>(adminRepositoryService.getClientContactsInChat(order_id), HttpStatus.OK);
+                return new ResponseEntity<>(adminService.getClientContactsInChat(order_id), HttpStatus.OK);
             }
         }.execute(admin_id, password);
     }
@@ -153,10 +153,10 @@ public class AdminController {
             @RequestParam(defaultValue = "0") Integer order_id
     ) {
         System.out.printf("Запрос на получение сообщений заказа (%d)\n", order_id);
-        return new CheckRightsWrapper(adminRepositoryService) {
+        return new CheckRightsWrapper(adminService) {
             @Override
             public ResponseEntity<?> outer() {
-                return new ResponseEntity<>(adminRepositoryService.getMessagesInChat(order_id), HttpStatus.OK);
+                return new ResponseEntity<>(adminService.getMessagesInChat(order_id), HttpStatus.OK);
             }
         }.execute(admin_id, password);
     }
@@ -169,10 +169,10 @@ public class AdminController {
             @RequestParam String content
     ) {
         System.out.printf("Запрос на отправку сообщения в заказе (%d)\n", order_id);
-        return new CheckRightsWrapper(adminRepositoryService) {
+        return new CheckRightsWrapper(adminService) {
             @Override
             public ResponseEntity<?> outer() {
-                adminRepositoryService.postMessageInChat(order_id, content, new Timestamp(System.currentTimeMillis()));
+                adminService.postMessageInChat(order_id, content, new Timestamp(System.currentTimeMillis()));
                 return new ResponseEntity<>("Успех!", HttpStatus.OK);
             }
         }.execute(admin_id, password);

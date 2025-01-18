@@ -1,11 +1,11 @@
-package main.isbd.services;
+package main.isbd.services.legacy;
 
 import main.isbd.data.dto.material.MaterialInfoInterface;
 import main.isbd.data.dto.material.MaterialShortInfoInterface;
 import main.isbd.data.dto.product.ProductInfoInterface;
 import main.isbd.data.dto.product.ProductShortInfoInterface;
 import main.isbd.data.model.Factory;
-import main.isbd.repositories.FactoryRepository;
+import main.isbd.repositories.legacy.LegacyFactoryRepository;
 import main.isbd.utils.CheckRightsInterface;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,42 +16,42 @@ import java.util.List;
 @Service
 @Transactional
 @ApplicationScope
-public class FactoryRepositoryService implements CheckRightsInterface {
-    public final FactoryRepository factoryRepository;
+public class FactoryService implements CheckRightsInterface {
+    public final LegacyFactoryRepository legacyFactoryRepository;
 
-    public FactoryRepositoryService(FactoryRepository factoryRepository) {
-        this.factoryRepository = factoryRepository;
+    public FactoryService(LegacyFactoryRepository legacyFactoryRepository) {
+        this.legacyFactoryRepository = legacyFactoryRepository;
     }
 
     public Boolean checkIfUserIsAuthorized(Integer factory_id, String password) {
-        return factoryRepository.checkIfFactoryIsAuthorized(factory_id, password);
+        return legacyFactoryRepository.checkIfFactoryIsAuthorized(factory_id, password);
     }
 
     public Factory getFactoryByIdAndPassword(Integer factory_id, String password) {
-        return factoryRepository.getFactoryByIdAndPassword(factory_id, password);
+        return legacyFactoryRepository.getFactoryByIdAndPassword(factory_id, password);
     }
 
     public List<ProductShortInfoInterface> getAllProductsShortInfo() {
-        return factoryRepository.getAllProductsShortInfo();
+        return legacyFactoryRepository.getAllProductsShortInfo();
     }
 
     public ProductInfoInterface getProductInfoById(Integer product_id) {
-        return factoryRepository.getProductInfoById(product_id);
+        return legacyFactoryRepository.getProductInfoById(product_id);
     }
 
     public void setProductInfoById(Integer product_id, String name, String description, Float price) {
-        factoryRepository.setProductInfoById(product_id, name, description, price);
+        legacyFactoryRepository.setProductInfoById(product_id, name, description, price);
     }
 
     public List<MaterialShortInfoInterface> getAllMaterialsShortInfo() {
-        return factoryRepository.getAllMaterialsShortInfo();
+        return legacyFactoryRepository.getAllMaterialsShortInfo();
     }
 
     public MaterialInfoInterface getMaterialInfoById(Integer product_id) {
-        return factoryRepository.getMaterialInfoById(product_id);
+        return legacyFactoryRepository.getMaterialInfoById(product_id);
     }
 
     public void setMaterialInfoById(Integer product_id, String name, String description, Float price) {
-        factoryRepository.setMaterialInfoById(product_id, name, description, price);
+        legacyFactoryRepository.setMaterialInfoById(product_id, name, description, price);
     }
 }

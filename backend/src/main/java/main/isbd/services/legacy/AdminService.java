@@ -1,4 +1,4 @@
-package main.isbd.services;
+package main.isbd.services.legacy;
 
 import main.isbd.data.dto.order.MessageInterface;
 import main.isbd.data.dto.order.OrderInterface;
@@ -6,7 +6,7 @@ import main.isbd.data.dto.product.ProductInOrderInfoInterface;
 import main.isbd.data.dto.product.ProductInfoInterface;
 import main.isbd.data.model.Admin;
 import main.isbd.data.dto.users.ClientContactsInterface;
-import main.isbd.repositories.AdminRepository;
+import main.isbd.repositories.legacy.LegacyAdminRepository;
 import main.isbd.utils.CheckRightsInterface;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,50 +18,50 @@ import java.util.List;
 @Service
 @Transactional
 @ApplicationScope
-public class AdminRepositoryService implements CheckRightsInterface {
-    private final AdminRepository adminRepository;
+public class AdminService implements CheckRightsInterface {
+    private final LegacyAdminRepository legacyAdminRepository;
 
-    public AdminRepositoryService(AdminRepository adminRepository) {
-        this.adminRepository = adminRepository;
+    public AdminService(LegacyAdminRepository legacyAdminRepository) {
+        this.legacyAdminRepository = legacyAdminRepository;
     }
 
     public Boolean checkIfUserIsAuthorized(Integer admin_id, String password) {
-        return adminRepository.checkIfAdminIsAuthorized(admin_id, password);
+        return legacyAdminRepository.checkIfAdminIsAuthorized(admin_id, password);
     }
 
     public Admin getAdminByIdAndPassword(Integer admin_id, String password) {
-        return adminRepository.getAdminByIdAndPassword(admin_id, password);
+        return legacyAdminRepository.getAdminByIdAndPassword(admin_id, password);
     }
 
     public ProductInfoInterface getProductInfoById(Integer product_id) {
-        return adminRepository.getProductInfoById(product_id);
+        return legacyAdminRepository.getProductInfoById(product_id);
     }
 
     public List<OrderInterface> getAllOrdersInfoByAdminId(Integer admin_id) {
-        return adminRepository.getAllOrdersInfoByAdminId(admin_id);
+        return legacyAdminRepository.getAllOrdersInfoByAdminId(admin_id);
     }
 
     public OrderInterface getOrderInfoByOrderId(Integer order_id) {
-        return adminRepository.getOrderInfoByOrderId(order_id);
+        return legacyAdminRepository.getOrderInfoByOrderId(order_id);
     }
 
     public List<ProductInOrderInfoInterface> getAllProductsInOrder(Integer order_id) {
-        return adminRepository.getAllProductsInOrder(order_id);
+        return legacyAdminRepository.getAllProductsInOrder(order_id);
     }
 
     public void askForOrderAssembling(Integer order_id) {
-        adminRepository.askForOrderAssembling(order_id);
+        legacyAdminRepository.askForOrderAssembling(order_id);
     }
 
     public ClientContactsInterface getClientContactsInChat(Integer order_id) {
-        return adminRepository.getClientContactsInChat(order_id);
+        return legacyAdminRepository.getClientContactsInChat(order_id);
     }
 
     public List<MessageInterface> getMessagesInChat(Integer order_id) {
-        return adminRepository.getMessagesInChat(order_id);
+        return legacyAdminRepository.getMessagesInChat(order_id);
     }
 
     public void postMessageInChat(Integer order_id, String content, Timestamp datetime) {
-        adminRepository.postMessageInChat(order_id, content, datetime);
+        legacyAdminRepository.postMessageInChat(order_id, content, datetime);
     }
 }
