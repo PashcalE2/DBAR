@@ -1,13 +1,13 @@
 package main.isbd.services;
 
-import main.isbd.data.order.MessageInterface;
-import main.isbd.data.order.OrderInterface;
-import main.isbd.data.product.ProductInOrderInfoInterface;
-import main.isbd.data.product.ProductInfoInterface;
-import main.isbd.data.product.ProductShortInfoInterface;
-import main.isbd.data.users.AdminContactsInterface;
-import main.isbd.data.users.Client;
-import main.isbd.data.users.ClientProfileInterface;
+import main.isbd.data.dto.order.MessageInterface;
+import main.isbd.data.dto.order.OrderInterface;
+import main.isbd.data.dto.product.ProductInOrderInfoInterface;
+import main.isbd.data.dto.product.ProductInfoInterface;
+import main.isbd.data.dto.product.ProductShortInfoInterface;
+import main.isbd.data.dto.users.AdminContactsInterface;
+import main.isbd.data.model.Client;
+import main.isbd.data.dto.users.ClientProfileInterface;
 import main.isbd.repositories.ClientRepository;
 import main.isbd.utils.CheckRightsInterface;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,6 @@ import org.springframework.web.context.annotation.ApplicationScope;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service

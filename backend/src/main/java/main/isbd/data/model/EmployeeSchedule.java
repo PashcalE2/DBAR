@@ -21,5 +21,4 @@ public class EmployeeSchedule {
 
     @Column(name = "\"описание\"", length = Integer.MAX_VALUE)
     private String description;
-
 }

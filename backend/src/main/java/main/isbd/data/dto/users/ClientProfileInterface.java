@@ -1,4 +1,4 @@
-package main.isbd.data.users;
+package main.isbd.data.dto.users;
 
 public interface ClientProfileInterface {
     public String getPhoneNumber();

@@ -1,11 +1,9 @@
 package main.isbd.controllers;
 
-import main.isbd.data.material.MaterialInfo;
-import main.isbd.data.material.MaterialInfoInterface;
-import main.isbd.data.product.ProductInfo;
-import main.isbd.data.product.ProductInfoInterface;
-import main.isbd.data.users.Factory;
-import main.isbd.data.users.FactoryLogin;
+import main.isbd.data.dto.material.MaterialInfo;
+import main.isbd.data.dto.product.ProductInfo;
+import main.isbd.data.model.Factory;
+import main.isbd.data.dto.users.FactoryLogin;
 import main.isbd.services.FactoryRepositoryService;
 import main.isbd.utils.CheckRightsWrapper;
 import org.springframework.beans.factory.annotation.Autowired;

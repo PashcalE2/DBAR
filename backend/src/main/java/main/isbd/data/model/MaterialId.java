@@ -6,13 +6,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Hibernate;
 
+import java.io.Serial;
 import java.util.Objects;
 
 @Getter
 @Setter
 @Embeddable
 public class MaterialId implements java.io.Serializable {
-    private static final long serialVersionUID = 5355918183839272471L;
+    @Serial
+    private static final long serialVersionUID = -8578646759939182285L;
+
     @Column(name = "\"ид_склада\"", nullable = false)
     private Integer warehouseId;
 

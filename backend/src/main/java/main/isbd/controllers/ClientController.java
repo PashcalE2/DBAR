@@ -1,8 +1,8 @@
 package main.isbd.controllers;
 
-import main.isbd.data.users.Client;
-import main.isbd.data.users.ClientLogin;
-import main.isbd.data.users.ClientRegister;
+import main.isbd.data.model.Client;
+import main.isbd.data.dto.users.ClientLogin;
+import main.isbd.data.dto.users.ClientRegister;
 import main.isbd.services.ClientRepositoryService;
 import main.isbd.utils.CheckRightsWrapper;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,70 +1,39 @@
-package main.isbd.data.users;
+package main.isbd.data.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Objects;
 
-// TODO исправить
-
+@Getter
+@Setter
 @Entity
-@Table(name = "Завод", schema = "s311817", catalog = "studs")
+@Table(name = "Завод")
 public class Factory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "ид", nullable = false)
     private Integer id;
+
     @Basic
     @Column(name = "название", nullable = false, length = -1)
     private String name;
+
     @Basic
     @Column(name = "номер_телефона", nullable = false, length = 20)
-    private String phone_number;
+    private String phoneNumber;
+
     @Basic
     @Column(name = "email", nullable = false, length = 64)
     private String email;
+
     @Basic
     @Column(name = "пароль", nullable = false, length = 64)
     private String password;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer ид) {
-        this.id = ид;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPhoneNumber() {
-        return phone_number;
-    }
-
-    public void setPhoneNumber(String phone_number) {
-        this.phone_number = phone_number;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    @Column(name = "\"адрес\"", nullable = false, length = Integer.MAX_VALUE)
+    private String address;
 
     @Override
     public boolean equals(Object o) {
@@ -75,10 +44,11 @@ public class Factory {
 
         if (!Objects.equals(id, factory.id)) return false;
         if (!Objects.equals(name, factory.name)) return false;
-        if (!Objects.equals(phone_number, factory.phone_number))
+        if (!Objects.equals(phoneNumber, factory.phoneNumber))
             return false;
         if (!Objects.equals(email, factory.email)) return false;
         if (!Objects.equals(password, factory.password)) return false;
+        if (!Objects.equals(address, factory.address)) return false;
 
         return true;
     }
@@ -87,9 +57,10 @@ public class Factory {
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (phone_number != null ? phone_number.hashCode() : 0);
+        result = 31 * result + (phoneNumber != null ? phoneNumber.hashCode() : 0);
         result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (password != null ? password.hashCode() : 0);
+        result = 31 * result + (address != null ? address.hashCode() : 0);
         return result;
     }
 }

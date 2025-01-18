@@ -22,6 +22,10 @@ public class Equipment {
     @JoinColumn(name = "\"ид_цеха\"", nullable = false)
     private Workshop workshopId;
 
+    // TODO enum?
+    @Column(name = "\"состояние\"", columnDefinition = "\"Состояние_оборудования_enum\" not null")
+    private String status;
+
     @Column(name = "\"название\"", nullable = false, length = Integer.MAX_VALUE)
     private String name;
 
@@ -30,8 +34,4 @@ public class Equipment {
 
     @Column(name = "\"дата_выпуска\"", nullable = false)
     private LocalDate releasedAt;
-
-    // TODO enum?
-    @Column(name = "\"состояние\"", columnDefinition = "\"Состояние_оборудования_enum\" not null")
-    private String status;
 }

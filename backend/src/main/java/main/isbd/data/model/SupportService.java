@@ -25,4 +25,6 @@ public class SupportService {
     @Column(name = "email", nullable = false, length = 64)
     private String email;
 
+    @Column(name = "\"адрес\"", nullable = false, length = Integer.MAX_VALUE)
+    private String address;
 }

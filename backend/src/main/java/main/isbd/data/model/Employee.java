@@ -27,6 +27,10 @@ public class Employee {
     @Column(name = "\"ФИО\"", nullable = false, length = 64)
     private String fullName;
 
+    // TODO enum?
+    @Column(name = "\"должность\"", columnDefinition = "\"Должность_enum\" not null")
+    private String position;
+
     @Column(name = "\"номер_телефона\"", nullable = false, length = 20)
     private String phoneNumber;
 
@@ -35,8 +39,4 @@ public class Employee {
 
     @Column(name = "\"пароль\"", nullable = false, length = 64)
     private String password;
-
-    // TODO enum?
-    @Column(name = "\"должность\"", columnDefinition = "\"Должность_enum\" not null")
-    private String position;
 }

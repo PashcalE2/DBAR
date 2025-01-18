@@ -19,4 +19,9 @@ public class ProductType {
     @Column(name = "\"цена\"", nullable = false)
     private Float price;
 
+    @Column(name = "\"название\"", length = Integer.MAX_VALUE)
+    private String name;
+
+    @Column(name = "\"описание\"", length = Integer.MAX_VALUE)
+    private String description;
 }

@@ -22,12 +22,13 @@ public class Message {
     @JoinColumn(name = "\"ид_заказа\"", nullable = false)
     private Order orderId;
 
-    @Column(name = "\"текст\"", nullable = false, length = Integer.MAX_VALUE)
-    private String text;
-    @Column(name = "\"дата_время\"", nullable = false)
-    private Instant sentAt;
-
     // TODO enum?
     @Column(name = "\"отправитель\"", columnDefinition = "\"Отправитель_enum\" not null")
     private String sender;
+
+    @Column(name = "\"текст\"", nullable = false, length = Integer.MAX_VALUE)
+    private String text;
+
+    @Column(name = "\"дата_время\"", nullable = false)
+    private Instant sentAt;
 }

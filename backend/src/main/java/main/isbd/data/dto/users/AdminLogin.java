@@ -1,6 +1,6 @@
-package main.isbd.data.users;
+package main.isbd.data.dto.users;
 
-public class FactoryLogin {
+public class AdminLogin {
     private Integer id;
     private String password;
 

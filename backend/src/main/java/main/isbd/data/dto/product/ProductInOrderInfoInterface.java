@@ -1,4 +1,4 @@
-package main.isbd.data.product;
+package main.isbd.data.dto.product;
 
 public interface ProductInOrderInfoInterface {
     public Integer getId();

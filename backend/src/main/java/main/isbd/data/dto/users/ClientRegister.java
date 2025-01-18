@@ -1,4 +1,4 @@
-package main.isbd.data.users;
+package main.isbd.data.dto.users;
 
 public class ClientRegister {
     private String name;

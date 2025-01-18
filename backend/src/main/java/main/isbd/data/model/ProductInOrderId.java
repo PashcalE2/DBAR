@@ -6,12 +6,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Hibernate;
 
+import java.io.Serial;
 import java.util.Objects;
 
 @Getter
 @Setter
 @Embeddable
 public class ProductInOrderId implements java.io.Serializable {
+    @Serial
     private static final long serialVersionUID = -6959250931304743409L;
 
     @Column(name = "\"ид_заказа\"", nullable = false)

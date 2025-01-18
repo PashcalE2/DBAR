@@ -3,7 +3,6 @@ package main.isbd.data.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import main.isbd.data.users.Factory;
 import org.hibernate.annotations.ColumnDefault;
 
 @Getter
@@ -23,5 +22,4 @@ public class Workshop {
 
     @Column(name = "\"название\"", nullable = false, length = Integer.MAX_VALUE)
     private String name;
-
 }

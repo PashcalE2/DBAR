@@ -1,6 +1,6 @@
-package main.isbd.data.product;
+package main.isbd.data.dto.material;
 
-public interface ProductInfoInterface {
+public interface MaterialInfoInterface {
     Integer getId();
     String getName();
     Float getPrice();

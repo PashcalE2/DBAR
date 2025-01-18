@@ -1,4 +1,4 @@
-package main.isbd.data.material;
+package main.isbd.data.dto.material;
 
 public interface MaterialShortInfoInterface {
     Integer getId();

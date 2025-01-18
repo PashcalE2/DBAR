@@ -1,10 +1,10 @@
 package main.isbd.repositories;
 
-import main.isbd.data.material.MaterialInfoInterface;
-import main.isbd.data.material.MaterialShortInfoInterface;
-import main.isbd.data.product.ProductInfoInterface;
-import main.isbd.data.product.ProductShortInfoInterface;
-import main.isbd.data.users.Factory;
+import main.isbd.data.dto.material.MaterialInfoInterface;
+import main.isbd.data.dto.material.MaterialShortInfoInterface;
+import main.isbd.data.dto.product.ProductInfoInterface;
+import main.isbd.data.dto.product.ProductShortInfoInterface;
+import main.isbd.data.model.Factory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

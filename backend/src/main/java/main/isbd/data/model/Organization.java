@@ -22,4 +22,7 @@ public class Organization {
     @Column(name = "email", nullable = false, length = 64)
     private String email;
 
+    // TODO enum?
+    @Column(name = "\"название\"", columnDefinition = "\"Доступные_организации_enum\" not null")
+    private Object name;
 }

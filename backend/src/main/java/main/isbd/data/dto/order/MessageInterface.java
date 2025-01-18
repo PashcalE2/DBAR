@@ -1,4 +1,4 @@
-package main.isbd.data.order;
+package main.isbd.data.dto.order;
 
 import java.sql.Timestamp;
 

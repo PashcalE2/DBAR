@@ -1,7 +1,7 @@
 package main.isbd.controllers;
 
-import main.isbd.data.users.Admin;
-import main.isbd.data.users.AdminLogin;
+import main.isbd.data.model.Admin;
+import main.isbd.data.dto.users.AdminLogin;
 import main.isbd.services.AdminRepositoryService;
 import main.isbd.utils.CheckRightsWrapper;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,11 +1,11 @@
 package main.isbd.repositories;
 
-import main.isbd.data.order.MessageInterface;
-import main.isbd.data.order.OrderInterface;
-import main.isbd.data.product.ProductInOrderInfoInterface;
-import main.isbd.data.product.ProductInfoInterface;
-import main.isbd.data.users.Admin;
-import main.isbd.data.users.ClientContactsInterface;
+import main.isbd.data.dto.order.MessageInterface;
+import main.isbd.data.dto.order.OrderInterface;
+import main.isbd.data.dto.product.ProductInOrderInfoInterface;
+import main.isbd.data.dto.product.ProductInfoInterface;
+import main.isbd.data.model.Admin;
+import main.isbd.data.dto.users.ClientContactsInterface;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

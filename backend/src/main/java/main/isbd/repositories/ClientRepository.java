@@ -1,17 +1,17 @@
 package main.isbd.repositories;
 
-import main.isbd.data.order.MessageInterface;
-import main.isbd.data.order.OrderInterface;
-import main.isbd.data.product.ProductInOrderInfoInterface;
-import main.isbd.data.product.ProductInfoInterface;
-import main.isbd.data.product.ProductShortInfoInterface;
-import main.isbd.data.users.*;
+import main.isbd.data.model.Client;
+import main.isbd.data.dto.order.MessageInterface;
+import main.isbd.data.dto.order.OrderInterface;
+import main.isbd.data.dto.product.ProductInOrderInfoInterface;
+import main.isbd.data.dto.product.ProductInfoInterface;
+import main.isbd.data.dto.product.ProductShortInfoInterface;
+import main.isbd.data.dto.users.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 public interface ClientRepository extends JpaRepository<Client, Integer> {

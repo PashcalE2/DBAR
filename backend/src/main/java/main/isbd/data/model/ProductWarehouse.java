@@ -3,7 +3,6 @@ package main.isbd.data.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import main.isbd.data.users.Factory;
 import org.hibernate.annotations.ColumnDefault;
 
 @Getter
@@ -21,4 +20,6 @@ public class ProductWarehouse {
     @JoinColumn(name = "\"ид_завода\"")
     private Factory factoryId;
 
+    @Column(name = "\"адрес\"", nullable = false, length = Integer.MAX_VALUE)
+    private String address;
 }
