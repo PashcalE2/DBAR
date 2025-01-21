@@ -29,8 +29,7 @@ public class Client {
     @Column(name = "пароль", nullable = false, length = 64)
     private String password;
 
-    // TODO enum?
-    @Column(name = "\"название\"", columnDefinition = "\"Доступные_организации_enum\" not null")
+    @Column(name = "\"название\"", nullable = false, length = 64)
     private String name;
 
     @Override

@@ -3,6 +3,7 @@ package main.isbd.data.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import main.isbd.data.model.enums.ProductStatusInOrderEnum;
 
 @Getter
 @Setter
@@ -25,7 +26,6 @@ public class ProductInOrder {
     @Column(name = "\"количество\"", nullable = false)
     private Integer count;
 
-    // TODO enum?
     @Column(name = "\"статус\"", columnDefinition = "\"Статус_продукции_в_заказе_enum\" not null")
-    private Object status;
+    private ProductStatusInOrderEnum status;
 }

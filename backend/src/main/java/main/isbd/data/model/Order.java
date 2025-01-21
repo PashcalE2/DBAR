@@ -3,6 +3,7 @@ package main.isbd.data.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import main.isbd.data.model.enums.OrderStatusEnum;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
@@ -26,9 +27,8 @@ public class Order {
     @JoinColumn(name = "\"ид_консультанта\"", nullable = false)
     private Admin adminId;
 
-    // TODO enum?
     @Column(name = "\"статус\"", columnDefinition = "\"Статус_заказа_enum\" not null")
-    private String status;
+    private OrderStatusEnum status;
 
     @Column(name = "\"поступил\"", nullable = false)
     private Instant createdAt;

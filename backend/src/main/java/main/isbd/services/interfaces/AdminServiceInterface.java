@@ -1,11 +1,11 @@
 package main.isbd.services.interfaces;
 
 import main.isbd.data.dto.order.MessageInterface;
-import main.isbd.data.dto.order.OrderInterface;
-import main.isbd.data.dto.product.ProductInOrderInfoInterface;
-import main.isbd.data.dto.product.ProductInfoInterface;
-import main.isbd.data.dto.users.ClientContactsInterface;
-import main.isbd.data.model.Admin;
+import main.isbd.data.dto.users.ClientContacts;
+import main.isbd.data.model.*;
+import main.isbd.exception.BadCredentialsException;
+import main.isbd.exception.BaseAppException;
+import main.isbd.exception.EntityNotFoundException;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -13,23 +13,23 @@ import java.util.List;
 
 // Вся необходимая логика для Консультанта
 public interface AdminServiceInterface {
-    Boolean checkIfUserIsAuthorized(Integer adminId, String password);
+    Boolean checkIfUserIsAuthorized(Integer adminId, String password) throws BadCredentialsException;
 
-    Admin getAdminByIdAndPassword(Integer adminId, String password);
+    Admin getAdminByIdAndPassword(Integer adminId, String password) throws EntityNotFoundException;
 
-    ProductInfoInterface getProductInfoById(Integer productId);
+    ProductType getProductInfoById(Integer productId) throws EntityNotFoundException;
 
-    List<OrderInterface> getAllOrdersInfoByAdminId(Integer adminId);
+    List<Order> getAllOrdersByAdminId(Integer adminId) throws EntityNotFoundException;
 
-    OrderInterface getOrderInfoByOrderId(Integer orderId);
+    Order getOrderByOrderId(Integer orderId) throws EntityNotFoundException;
 
-    List<ProductInOrderInfoInterface> getAllProductsInOrder(Integer orderId);
+    List<ProductInOrder> getAllProductsInOrder(Integer orderId) throws EntityNotFoundException;
 
-    void askForOrderAssembling(Integer orderId);
+    void askForOrderAssembling(Integer orderId) throws BaseAppException;
 
-    ClientContactsInterface getClientContactsInChat(Integer orderId);
+    ClientContacts getClientContactsInChat(Integer orderId) throws EntityNotFoundException;
 
-    List<MessageInterface> getMessagesInChat(Integer orderId);
+    List<Message> getMessagesInChat(Integer orderId);
 
-    void postMessageInChat(Integer orderId, String content, Timestamp datetime);
+    void postMessageInChat(Integer orderId, String content, Timestamp datetime) throws BaseAppException;
 }

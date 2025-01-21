@@ -3,6 +3,7 @@ package main.isbd.data.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import main.isbd.data.model.enums.SenderEnum;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
@@ -22,9 +23,8 @@ public class Message {
     @JoinColumn(name = "\"ид_заказа\"", nullable = false)
     private Order orderId;
 
-    // TODO enum?
     @Column(name = "\"отправитель\"", columnDefinition = "\"Отправитель_enum\" not null")
-    private String sender;
+    private SenderEnum sender;
 
     @Column(name = "\"текст\"", nullable = false, length = Integer.MAX_VALUE)
     private String text;
