@@ -9,9 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MaterialInfo {
+public class MaterialShortInfo {
     private Integer id;
     private String name;
     private Float price;
-    private String description;
 }

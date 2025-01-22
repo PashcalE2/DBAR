@@ -14,47 +14,47 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface ClientServiceInterface {
-    public List<String> getAllRegisteredOrganizations();
+    List<String> getAllRegisteredOrganizations();
 
-    public List<String> getAllNotRegisteredOrganizations();
+    List<String> getAllNotRegisteredOrganizations();
 
-    public Client registerClient(String phoneNumber, String email, String password, String name);
+    Client registerClient(String phoneNumber, String email, String password, String name);
 
-    public Boolean checkIfUserIsAuthorized(Integer id, String password);
+    Boolean checkIfUserIsAuthorized(Integer id, String password);
 
-    public Client getClientByNameAndPassword(String name, String password);
+    Client getClientByNameAndPassword(String name, String password);
 
-    public ClientProfileInterface getClientProfileById(Integer clientId);
+    ClientProfileInterface getClientProfileById(Integer clientId);
 
-    public void setClientProfileById(Integer clientId, String phoneNumber, String email);
+    void setClientProfileById(Integer clientId, String phoneNumber, String email);
 
-    public List<ProductShortInfoInterface> getAllProductsShortInfo();
+    List<ProductShortInfoInterface> getAllProductsShortInfo();
 
-    public OrderInterface getCurrentOrderInfoByClientId(Integer clientId);
+    OrderInterface getCurrentOrderInfoByClientId(Integer clientId);
 
-    public ProductInfoInterface getProductInfoById(Integer productId);
+    ProductInfoInterface getProductInfoById(Integer productId);
 
-    public void addProductToOrder(Integer orderId, Integer productId);
+    void addProductToOrder(Integer orderId, Integer productId);
 
-    public void removeProductFromOrder(Integer orderId, Integer productId);
+    void removeProductFromOrder(Integer orderId, Integer productId);
 
-    public List<OrderInterface> getAllOrdersInfoByClientId(Integer clientId);
+    List<OrderInterface> getAllOrdersInfoByClientId(Integer clientId);
 
-    public OrderInterface getOrderInfoByOrderId(Integer orderId);
+    OrderInterface getOrderInfoByOrderId(Integer orderId);
 
-    public List<ProductInOrderInfoInterface> getAllProductsInOrder(Integer orderId);
+    List<ProductInOrderInfoInterface> getAllProductsInOrder(Integer orderId);
 
-    public void setProductCountInOrder(Integer orderId, Integer productId, Integer count);
+    void setProductCountInOrder(Integer orderId, Integer productId, Integer count);
 
-    public void acceptOrder(Integer orderId);
+    void acceptOrder(Integer orderId);
 
-    public void payForOrder(Integer orderId);
+    void payForOrder(Integer orderId);
 
-    public void cancelOrder(Integer orderId, Timestamp doneAt);
+    void cancelOrder(Integer orderId, Timestamp doneAt);
 
-    public AdminContactsInterface getAdminContactsInChat(Integer orderId);
+    AdminContactsInterface getAdminContactsInChat(Integer orderId);
 
-    public ArrayList<MessageInterface> getMessagesInChat(Integer orderId);
+    ArrayList<MessageInterface> getMessagesInChat(Integer orderId);
 
-    public void postMessageInChat(Integer orderId, String content, Timestamp datetime);
+    void postMessageInChat(Integer orderId, String content, Timestamp datetime);
 }

@@ -1,6 +1,5 @@
 package main.isbd.services.interfaces;
 
-import main.isbd.data.dto.order.MessageInterface;
 import main.isbd.data.dto.users.ClientContacts;
 import main.isbd.data.model.*;
 import main.isbd.exception.BadCredentialsException;

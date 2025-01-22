@@ -3,11 +3,15 @@ package main.isbd.services;
 import lombok.AllArgsConstructor;
 import main.isbd.data.dto.users.ClientContacts;
 import main.isbd.data.model.*;
+import main.isbd.data.model.enums.OrderStatusEnum;
+import main.isbd.data.model.enums.ProductStatusInOrderEnum;
 import main.isbd.data.model.enums.SenderEnum;
+import main.isbd.exception.BaseAppException;
 import main.isbd.exception.EntityNotFoundException;
 import main.isbd.exception.BadCredentialsException;
 import main.isbd.repositories.*;
 import main.isbd.services.interfaces.AdminServiceInterface;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
@@ -25,6 +29,8 @@ public class AdminService implements AdminServiceInterface {
     private final ProductInOrderRepository productInOrderRepository;
     private final ClientRepository clientRepository;
     private final MessageRepository messageRepository;
+    private final ProductRepository productRepository;
+    private final ProductWarehouseRepository productWarehouseRepository;
 
     @Override
     public Boolean checkIfUserIsAuthorized(Integer adminId, String password) throws BadCredentialsException {
@@ -67,11 +73,55 @@ public class AdminService implements AdminServiceInterface {
     }
 
     @Override
-    public void askForOrderAssembling(Integer orderId) throws EntityNotFoundException {
+    public void askForOrderAssembling(Integer orderId) throws BaseAppException {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Заказ не найден"));
 
-        // TODO собрать продукцию...
+        if (!order.getStatus().equals(OrderStatusEnum.IN_PROGRESS)) {
+            throw new BaseAppException("Можно собирать только выполняющиеся в данный момент заказы", HttpStatus.FORBIDDEN);
+        }
+
+        getAllProductsInOrder(orderId).forEach(productInOrder -> {
+            switch (productInOrder.getStatus()) {
+                case AWAITS_PRODUCTION -> {
+                    ProductId productId = new ProductId();
+                    productId.setTypeId(productInOrder.getTypeId().getId());
+                    productId.setWarehouseId(productWarehouseRepository.findAll().get(0).getId());
+
+                    Product product = new Product();
+                    product.setId(productId);
+                    product.setTypeId(productInOrder.getTypeId());
+                    product.setCount(productInOrder.getCount());
+
+                    productRepository.save(product);
+                }
+                case AWAITS_ASSEMBLING -> {
+                    Optional<Product> optionalProduct = productRepository.findAll().stream()
+                            .filter(product -> product.getTypeId().getId().equals(productInOrder.getTypeId().getId()) && product.getCount() >= productInOrder.getCount())
+                            .findAny();
+
+                    if (optionalProduct.isEmpty()) {
+                        return;
+                    }
+
+                    Product readyProduct = optionalProduct.get();
+                    readyProduct.setCount(readyProduct.getCount() - productInOrder.getCount());
+                    productRepository.save(readyProduct);
+
+                    productInOrder.setStatus(ProductStatusInOrderEnum.ASSEMBLED);
+                    productInOrderRepository.save(productInOrder);
+                }
+            }
+        });
+
+        Long productsRemaining = getAllProductsInOrder(orderId).stream()
+                .filter(product -> !(product.getStatus().equals(ProductStatusInOrderEnum.ASSEMBLED)))
+                .count();
+
+        if (productsRemaining == 0L) {
+            order.setStatus(OrderStatusEnum.DONE);
+            orderRepository.save(order);
+        }
     }
 
     @Override

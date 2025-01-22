@@ -1,4 +1,4 @@
-package main.isbd.data.dto.material;
+package main.isbd.data.dto.product;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,9 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MaterialInfo {
+public class ProductShortInfo {
     private Integer id;
     private String name;
     private Float price;
-    private String description;
 }

@@ -1,27 +1,29 @@
 package main.isbd.services.interfaces;
 
-import main.isbd.data.dto.material.MaterialInfoInterface;
-import main.isbd.data.dto.material.MaterialShortInfoInterface;
-import main.isbd.data.dto.product.ProductInfoInterface;
-import main.isbd.data.dto.product.ProductShortInfoInterface;
+import main.isbd.data.dto.material.MaterialShortInfo;
+import main.isbd.data.dto.product.ProductShortInfo;
 import main.isbd.data.model.Factory;
+import main.isbd.data.model.MaterialType;
+import main.isbd.data.model.ProductType;
+import main.isbd.exception.BadCredentialsException;
+import main.isbd.exception.EntityNotFoundException;
 
 import java.util.List;
 
 public interface FactoryServiceInterface {
-    public Boolean checkIfUserIsAuthorized(Integer factoryId, String password);
+    Boolean checkIfUserIsAuthorized(Integer factoryId, String password) throws BadCredentialsException;
 
-    public Factory getFactoryByIdAndPassword(Integer factoryId, String password);
+    Factory getFactoryByIdAndPassword(Integer factoryId, String password) throws EntityNotFoundException;
 
-    public List<ProductShortInfoInterface> getAllProductsShortInfo();
+    List<ProductShortInfo> getAllProductsShortInfo();
 
-    public ProductInfoInterface getProductInfoById(Integer productId);
+    ProductType getProductInfoById(Integer productId) throws EntityNotFoundException;
 
-    public void setProductInfoById(Integer productId, String name, String description, Float price);
+    void setProductInfoById(Integer productId, String name, String description, Float price) throws EntityNotFoundException;
 
-    public List<MaterialShortInfoInterface> getAllMaterialsShortInfo();
+    List<MaterialShortInfo> getAllMaterialsShortInfo();
 
-    public MaterialInfoInterface getMaterialInfoById(Integer productId);
+    MaterialType getMaterialInfoById(Integer materialId) throws EntityNotFoundException;
 
-    public void setMaterialInfoById(Integer productId, String name, String description, Float price);
+    void setMaterialInfoById(Integer materialId, String name, String description, Float price) throws EntityNotFoundException;
 }
