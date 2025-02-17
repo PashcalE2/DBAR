@@ -53,7 +53,6 @@ with open("data/long_text.txt", encoding="utf-8") as long_text_file:
     long_text_file.close()
 
 text_substrings_set = set(text_substrings)
-print(len(text_substrings), len(text_substrings_set))
 
 text_substrings_set_list = list(text_substrings_set)
 
@@ -247,13 +246,13 @@ lines = []
 
 
 def data_sql():
-    enum_data.append("drop type if exists Доступные_организации_enum;")
+    enum_data.append("drop type if exists доступные_организации_enum;")
     enum_data.append("create type Доступные_организации_enum as enum (\n{}\n);".format(
         ",\n".join(["'{}'".format(v) for v in client_names])
     ))
 
     for i in range(registered_client_count):
-        lines.append("select \"f_i_Клиент\"('{}', '{}', '{}', '{}');".format(
+        lines.append("insert into клиент values (default, '{}', '{}', '{}', '{}');".format(
             client_phones[i],
             client_emails[i],
             client_passwords[i],
@@ -261,7 +260,7 @@ def data_sql():
         ))
 
     for i in range(services_count):
-        lines.append("select \"f_i_Служба_поддержки\"('{}', '{}', '{}', '{}');".format(
+        lines.append("insert into служба_поддержки values (default, '{}', '{}', '{}', '{}');".format(
             services_names[i],
             services_phone[i],
             services_email[i],
@@ -269,13 +268,13 @@ def data_sql():
         ))
 
     for i in range(schedules_count):
-        lines.append("select \"f_i_Расписание_консультантов\"({}, '{}');".format(
+        lines.append("insert into расписание_консультантов values (default, {}, '{}');".format(
             schedules_hours[i],
             schedules_description[i]
         ))
 
     for i in range(admins_count):
-        lines.append("select \"f_i_Консультант\"({}, {}, '{}', '{}', '{}', '{}');".format(
+        lines.append("insert into консультант values (default, {}, {}, '{}', '{}', '{}', '{}');".format(
             admins_service[i],
             admins_schedule[i],
             admins_names[i],
@@ -285,7 +284,7 @@ def data_sql():
         ))
 
     for i in range(factories_count):
-        lines.append("select \"f_i_Завод\"('{}', '{}', '{}', '{}', '{}');".format(
+        lines.append("insert into завод values (default, '{}', '{}', '{}', '{}', '{}');".format(
             factories_names[i],
             factories_phone[i],
             factories_email[i],
@@ -294,135 +293,70 @@ def data_sql():
         ))
 
     for i in range(product_storages_count):
-        lines.append("select \"f_i_Склад_готовой_продукции\"({}, '{}');".format(
+        lines.append("insert into склад_готовой_продукции values (default, {}, '{}');".format(
             p_storages_factories_id[i],
             p_storages_address[i]
         ))
 
     for i in range(products_count):
-        lines.append("select \"f_i_Тип_продукции\"({}, '{}', $${}$$);".format(
+        lines.append("insert into тип_продукции values (default, {}, '{}', $${}$$);".format(
             products_prices[i],
             products_names[i],
             products_descriptions[i]
         ))
 
     for i in range(r_p_count):
-        lines.append("call \"p_u_принести_продукцию_на_склад\"({}, {}, {});".format(
+        lines.append("insert into готовая_продукция values ({}, {}, {});".format(
             r_p_storage_id[i],
             r_p_type_id[i],
             r_p_product_count[i]
         ))
 
     for i in range(material_storages_count):
-        lines.append("select \"f_i_Склад_сырья\"({}, '{}');".format(
+        lines.append("insert into склад_сырья values (default, {}, '{}');".format(
             m_storages_factories_id[i],
             m_storages_address[i]
         ))
 
     for i in range(products_count):
-        lines.append("select \"f_i_Тип_материала\"({}, '{}', $${}$$);".format(
+        lines.append("insert into тип_материала values (default, {}, '{}', $${}$$);".format(
             materials_prices[i],
             materials_names[i],
             materials_descriptions[i]
         ))
 
     for i in range(s_m_count):
-        lines.append("call \"p_u_принести_материалы_на_склад\"({}, {}, {});".format(
+        lines.append("insert into материалы values ({}, {}, {});".format(
             s_m_storage_id[i],
             s_m_type_id[i],
             s_m_material_count[i]
         ))
 
-    last_forming_order_client = 0
     for i in range(orders_count):
-        lines.append("select \"f_ig_новый_заказ\"({}, '{}');".format(
+        lines.append("insert into заказ values (default, {}, {}, '{}', '{}', {});".format(
             orders_client_id[i],
-            orders_formed_at[i]
+            random.randint(1, admins_count),
+            orders_statuses[i],
+            orders_formed_at[i],
+            f"'{orders_done_at[i]}'" if (orders_statuses[i] == "выполнен") or (orders_statuses[i] == "отклонен") else "null"
         ))
 
         for j in range(pio_total_count):
             if pio_order_id[j] == i + 1:
-                lines.append("call \"p_i_добавить_продукцию_к_заказу\"({}, {});".format(
-                    pio_order_id[j],
-                    pio_product_id[j]
-                ))
-
-                lines.append("call \"p_u_изменить_количество_продукции\"({}, {}, {});".format(
+                lines.append("insert into продукция_в_заказе values ({}, {}, '{}', {});".format(
                     pio_order_id[j],
                     pio_product_id[j],
+                    pio_status[j],
                     pio_product_count[j]
                 ))
 
-                if pio_status[j] == "возвращена":
-                    lines.append("call \"p_u_вернуть_продукцию_на_склады\"({}, {});".format(
-                        pio_order_id[j],
-                        pio_product_id[j]
-                    ))
-                elif pio_status[j] == "собрана под заказ":
-                    lines.append("select \"f_u_собрать_продукцию_под_заказ\"({}, {});".format(
-                        pio_order_id[j],
-                        pio_product_id[j]
-                    ))
-                elif pio_status[j] == "ожидает сборки":
-                    lines.append("call \"p_u_произвести_продукцию_под_заказ\"({}, {}, {});".format(
-                        pio_order_id[j],
-                        pio_product_id[j],
-                        random.randint(1, product_storages_count)
-                    ))
-
-        # order_status_options = ["формируется", "ожидает оплаты", "выполняется", "выполнен", "отклонен"]
-
-        if orders_statuses[i] == "ожидает оплаты":
-            lines.append("call \"p_u_подтвердить_заказ\"({});".format(
-                i + 1
-            ))
-
-        if orders_statuses[i] == "выполняется":
-            lines.append("call \"p_u_подтвердить_заказ\"({});".format(
-                i + 1
-            ))
-
-            lines.append("call \"p_u_оплата_заказа\"({});".format(
-                i + 1
-            ))
-
-        if orders_statuses[i] == "выполнен":
-            lines.append("call \"p_u_подтвердить_заказ\"({});".format(
-                i + 1
-            ))
-
-            lines.append("call \"p_u_оплата_заказа\"({});".format(
-                i + 1
-            ))
-
-            lines.append("call \"p_u_заказ_выполнен\"({}, '{}');".format(
-                i + 1,
-                orders_done_at[i]
-            ))
-
-        if orders_statuses[i] == "отклонен":
-            lines.append("call \"p_u_подтвердить_заказ\"({});".format(
-                i + 1
-            ))
-
-            lines.append("call \"p_u_заказ_отклонен\"({}, '{}');".format(
-                i + 1,
-                orders_done_at[i]
-            ))
-
     for i in range(total_messages_count):
-        if messages_senders[i] == "клиент":
-            lines.append("call \"p_i_сообщение_клиента\"({}, $${}$$, '{}');".format(
-                messages_orders[i],
-                messages_content[i],
-                messages_datetime[i]
-            ))
-        else:
-            lines.append("call \"p_i_сообщение_консультанта\"({}, $${}$$, '{}');".format(
-                messages_orders[i],
-                messages_content[i],
-                messages_datetime[i]
-            ))
+        lines.append("insert into сообщение values (default, {}, '{}', $${}$$, '{}');".format(
+            messages_orders[i],
+            messages_senders[i],
+            messages_content[i],
+            messages_datetime[i]
+        ))
 
 
 data_sql()
