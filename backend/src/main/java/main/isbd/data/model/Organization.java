@@ -23,6 +23,6 @@ public class Organization {
     private String email;
 
     // TODO enum?
-    @Column(name = "\"название\"", columnDefinition = "\"Доступные_организации_enum\" not null")
-    private Object name;
+    @Column(name = "название", nullable = false, unique = true)
+    private String name;
 }

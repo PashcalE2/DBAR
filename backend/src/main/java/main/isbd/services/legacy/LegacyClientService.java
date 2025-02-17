@@ -21,10 +21,11 @@ import java.util.List;
 @Service
 @Transactional
 @ApplicationScope
-public class ClientService implements CheckRightsInterface {
+@Deprecated
+public class LegacyClientService implements CheckRightsInterface {
     private final LegacyClientRepository legacyClientRepository;
 
-    public ClientService(LegacyClientRepository legacyClientRepository) {
+    public LegacyClientService(LegacyClientRepository legacyClientRepository) {
         this.legacyClientRepository = legacyClientRepository;
     }
 

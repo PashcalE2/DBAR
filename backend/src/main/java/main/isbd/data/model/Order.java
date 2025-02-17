@@ -6,7 +6,7 @@ import lombok.Setter;
 import main.isbd.data.model.enums.OrderStatusEnum;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.time.Instant;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -19,11 +19,11 @@ public class Order {
     @Column(name = "\"ид\"", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "\"ид_клиента\"", nullable = false)
     private Client clientId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "\"ид_консультанта\"", nullable = false)
     private Admin adminId;
 
@@ -31,8 +31,8 @@ public class Order {
     private OrderStatusEnum status;
 
     @Column(name = "\"поступил\"", nullable = false)
-    private Instant createdAt;
+    private Timestamp createdAt;
 
     @Column(name = "\"завершен\"")
-    private Instant completedAt;
+    private Timestamp completedAt;
 }

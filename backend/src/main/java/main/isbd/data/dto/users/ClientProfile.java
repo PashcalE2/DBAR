@@ -1,5 +1,10 @@
 package main.isbd.data.dto.users;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClientProfile {
     private String phone_number;
     private String email;

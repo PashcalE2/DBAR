@@ -2,7 +2,7 @@ package main.isbd.data.dto.users;
 
 public class ClientRegister {
     private String name;
-    private String phone_number;
+    private String phoneNumber;
     private String email;
     private String password;
 
@@ -15,11 +15,11 @@ public class ClientRegister {
     }
 
     public String getPhoneNumber() {
-        return phone_number;
+        return phoneNumber;
     }
 
     public void setPhoneNumber(String phone_number) {
-        this.phone_number = phone_number;
+        this.phoneNumber = phone_number;
     }
 
     public String getEmail() {
@@ -40,7 +40,7 @@ public class ClientRegister {
 
     public boolean isValid() {
         return  name != null && name.length() > 0 &&
-                phone_number != null && phone_number.length() > 0 &&
+                phoneNumber != null && phoneNumber.length() > 0 &&
                 email != null && email.length() > 0 &&
                 password != null && password.length() > 0;
     }

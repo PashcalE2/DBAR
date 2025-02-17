@@ -14,6 +14,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.sql.Timestamp;
 import java.util.List;
 
+@Deprecated
 public interface LegacyClientRepository extends JpaRepository<Client, Integer> {
     // GET_REGISTERED_ORGANIZATIONS
     @Query(value = "select * from \"f_g_организации_с_аккаунтом\"()", nativeQuery = true)

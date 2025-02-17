@@ -6,7 +6,7 @@ import lombok.Setter;
 import main.isbd.data.model.enums.SenderEnum;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.time.Instant;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -30,5 +30,5 @@ public class Message {
     private String text;
 
     @Column(name = "\"дата_время\"", nullable = false)
-    private Instant sentAt;
+    private Timestamp sentAt;
 }

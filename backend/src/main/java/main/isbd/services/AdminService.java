@@ -114,7 +114,7 @@ public class AdminService implements AdminServiceInterface {
             }
         });
 
-        Long productsRemaining = getAllProductsInOrder(orderId).stream()
+        long productsRemaining = getAllProductsInOrder(orderId).stream()
                 .filter(product -> !(product.getStatus().equals(ProductStatusInOrderEnum.ASSEMBLED)))
                 .count();
 
@@ -148,7 +148,7 @@ public class AdminService implements AdminServiceInterface {
         message.setOrderId(order);
         message.setSender(SenderEnum.ADMIN);
         message.setText(content);
-        message.setSentAt(Instant.now());
+        message.setSentAt(Timestamp.from(Instant.now()));
 
         messageRepository.saveAndFlush(message);
     }
