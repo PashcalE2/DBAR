@@ -63,7 +63,7 @@ create table консультант (
     ид serial primary key,
 	ид_службы_поддержки int not null references служба_поддержки(ид),
 	ид_расписания int not null references расписание_консультантов(ид),
-	ФИО varchar(64) not null,
+	фио varchar(64) not null,
     номер_телефона varchar(20) not null,
     email varchar(64) not null,
     пароль varchar(64) not null
@@ -186,7 +186,7 @@ create table сотрудник (
     ид serial primary key,
 	ид_цеха int not null references цех(ид),
 	ид_расписания int not null references расписание_сотрудников(ид),
-	ФИО varchar(64) not null,
+	фио varchar(64) not null,
     должность должность_enum not null,
     номер_телефона varchar(20) not null,
     email varchar(64) not null,
