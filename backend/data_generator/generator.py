@@ -288,8 +288,8 @@ def data_sql():
             factories_names[i],
             factories_phone[i],
             factories_email[i],
-            factories_address[i],
-            factories_passwords[i]
+            factories_passwords[i],
+            factories_address[i]
         ))
 
     for i in range(product_storages_count):
