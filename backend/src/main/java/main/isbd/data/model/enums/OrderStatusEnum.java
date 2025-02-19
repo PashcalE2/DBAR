@@ -8,7 +8,7 @@ public enum OrderStatusEnum {
     AWAITS_PAYMENT("ожидает оплаты"),
     IN_PROGRESS("выполняется"),
     DONE("выполнен"),
-    CANCELED("отменен");
+    CANCELED("отклонен");
 
     private final String value;
     OrderStatusEnum(String value) {

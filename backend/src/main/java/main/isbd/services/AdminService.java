@@ -1,10 +1,11 @@
 package main.isbd.services;
 
 import lombok.AllArgsConstructor;
+import main.isbd.data.dto.users.AdminLogin;
 import main.isbd.data.dto.users.ClientContacts;
 import main.isbd.data.model.*;
 import main.isbd.data.model.enums.OrderStatusEnum;
-import main.isbd.data.model.enums.ProductStatusInOrderEnum;
+import main.isbd.data.model.enums.ProductInOrderStatusEnum;
 import main.isbd.data.model.enums.SenderEnum;
 import main.isbd.exception.BaseAppException;
 import main.isbd.exception.EntityNotFoundException;
@@ -12,6 +13,7 @@ import main.isbd.exception.BadCredentialsException;
 import main.isbd.repositories.*;
 import main.isbd.services.interfaces.AdminServiceInterface;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 
+@Service
 @AllArgsConstructor
 @Transactional
 public class AdminService implements AdminServiceInterface {
@@ -40,32 +43,42 @@ public class AdminService implements AdminServiceInterface {
     }
 
     @Override
-    public Admin getAdminByIdAndPassword(Integer adminId, String password) throws EntityNotFoundException {
-        return adminRepository.findByIdAndPassword(adminId, password)
+    public Admin loginAdmin(AdminLogin adminLogin) throws BaseAppException {
+        if (adminLogin == null || !adminLogin.isValid()) {
+            throw new BaseAppException("Какой-то странный у вас реквест боди\n", HttpStatus.BAD_REQUEST);
+        }
+
+        return adminRepository.findByIdAndPassword(adminLogin.getId(), adminLogin.getPassword())
                 .orElseThrow(() -> new EntityNotFoundException("Консультант не найден"));
     }
 
     @Override
-    public ProductType getProductInfoById(Integer productId) throws EntityNotFoundException {
+    public ProductType getProductInfoById(Integer adminId, String password, Integer productId) throws BaseAppException {
+        loginAdmin(new AdminLogin(adminId, password));
+
         return productTypeRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Консультант не найден"));
     }
 
     @Override
-    public List<Order> getAllOrdersByAdminId(Integer adminId) throws EntityNotFoundException {
+    public List<Order> getAllOrdersByAdminId(Integer adminId, String password) throws EntityNotFoundException {
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new EntityNotFoundException("Консультант не найден"));
         return orderRepository.findByAdminId_Id(adminId);
     }
 
     @Override
-    public Order getOrderByOrderId(Integer orderId) throws EntityNotFoundException {
+    public Order getOrderByOrderId(Integer adminId, String password, Integer orderId) throws BaseAppException {
+        loginAdmin(new AdminLogin(adminId, password));
+
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Заказ не найден"));
     }
 
     @Override
-    public List<ProductInOrder> getAllProductsInOrder(Integer orderId) throws EntityNotFoundException {
+    public List<ProductInOrder> getAllProductsInOrder(Integer adminId, String password, Integer orderId) throws BaseAppException {
+        loginAdmin(new AdminLogin(adminId, password));
+
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Заказ не найден"));
 
@@ -73,7 +86,9 @@ public class AdminService implements AdminServiceInterface {
     }
 
     @Override
-    public void askForOrderAssembling(Integer orderId) throws BaseAppException {
+    public void askForOrderAssembling(Integer adminId, String password, Integer orderId) throws BaseAppException {
+        loginAdmin(new AdminLogin(adminId, password));
+
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Заказ не найден"));
 
@@ -81,7 +96,7 @@ public class AdminService implements AdminServiceInterface {
             throw new BaseAppException("Можно собирать только выполняющиеся в данный момент заказы", HttpStatus.FORBIDDEN);
         }
 
-        getAllProductsInOrder(orderId).forEach(productInOrder -> {
+        getAllProductsInOrder(adminId, password, orderId).forEach(productInOrder -> {
             switch (productInOrder.getStatus()) {
                 case AWAITS_PRODUCTION -> {
                     ProductId productId = new ProductId();
@@ -108,14 +123,14 @@ public class AdminService implements AdminServiceInterface {
                     readyProduct.setCount(readyProduct.getCount() - productInOrder.getCount());
                     productRepository.save(readyProduct);
 
-                    productInOrder.setStatus(ProductStatusInOrderEnum.ASSEMBLED);
+                    productInOrder.setStatus(ProductInOrderStatusEnum.ASSEMBLED);
                     productInOrderRepository.save(productInOrder);
                 }
             }
         });
 
-        long productsRemaining = getAllProductsInOrder(orderId).stream()
-                .filter(product -> !(product.getStatus().equals(ProductStatusInOrderEnum.ASSEMBLED)))
+        long productsRemaining = getAllProductsInOrder(adminId, password, orderId).stream()
+                .filter(product -> !(product.getStatus().equals(ProductInOrderStatusEnum.ASSEMBLED)))
                 .count();
 
         if (productsRemaining == 0L) {
@@ -125,7 +140,7 @@ public class AdminService implements AdminServiceInterface {
     }
 
     @Override
-    public ClientContacts getClientContactsInChat(Integer orderId) throws EntityNotFoundException {
+    public ClientContacts getClientContactsInChat(Integer adminId, String password, Integer orderId) throws EntityNotFoundException {
         Integer clientId = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Заказ не найден")).getClientId().getId();
         Client client = clientRepository.findById(clientId)
@@ -135,12 +150,12 @@ public class AdminService implements AdminServiceInterface {
     }
 
     @Override
-    public List<Message> getMessagesInChat(Integer orderId) {
+    public List<Message> getMessagesInChat(Integer adminId, String password, Integer orderId) {
         return messageRepository.findByOrderId_Id(orderId);
     }
 
     @Override
-    public void postMessageInChat(Integer orderId, String content, Timestamp datetime) throws EntityNotFoundException {
+    public void postMessageInChat(Integer adminId, String password, Integer orderId, String content, Timestamp datetime) throws EntityNotFoundException {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Заказ не найден"));
 

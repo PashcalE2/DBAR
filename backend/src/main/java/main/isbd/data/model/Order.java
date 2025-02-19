@@ -11,28 +11,28 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Entity
-@Table(name = "\"Заказ\"")
+@Table(name = "заказ")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('\"Заказ_ид_seq\"'")
-    @Column(name = "\"ид\"", nullable = false)
+    @ColumnDefault("nextval('заказ_ид_seq')")
+    @Column(name = "ид", nullable = false)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "\"ид_клиента\"", nullable = false)
+    @JoinColumn(name = "ид_клиента", nullable = false)
     private Client clientId;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "\"ид_консультанта\"", nullable = false)
+    @JoinColumn(name = "ид_консультанта", nullable = false)
     private Admin adminId;
 
-    @Column(name = "\"статус\"", columnDefinition = "\"Статус_заказа_enum\" not null")
+    @Column(name = "статус", columnDefinition = "статус_заказа_enum not null")
     private OrderStatusEnum status;
 
-    @Column(name = "\"поступил\"", nullable = false)
+    @Column(name = "поступил", nullable = false)
     private Timestamp createdAt;
 
-    @Column(name = "\"завершен\"")
+    @Column(name = "завершен")
     private Timestamp completedAt;
 }

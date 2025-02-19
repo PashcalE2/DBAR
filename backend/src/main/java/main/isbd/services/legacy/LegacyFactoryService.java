@@ -16,10 +16,10 @@ import java.util.List;
 @Service
 @Transactional
 @ApplicationScope
-public class FactoryService implements CheckRightsInterface {
+public class LegacyFactoryService implements CheckRightsInterface {
     public final LegacyFactoryRepository legacyFactoryRepository;
 
-    public FactoryService(LegacyFactoryRepository legacyFactoryRepository) {
+    public LegacyFactoryService(LegacyFactoryRepository legacyFactoryRepository) {
         this.legacyFactoryRepository = legacyFactoryRepository;
     }
 

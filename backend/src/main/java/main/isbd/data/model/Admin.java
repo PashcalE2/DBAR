@@ -26,7 +26,7 @@ public class Admin {
     private Integer scheduleId;
 
     @Basic
-    @Column(name = "ФИО", nullable = false, length = 64)
+    @Column(name = "фио", nullable = false, length = 64)
     private String fullName;
 
     @Basic

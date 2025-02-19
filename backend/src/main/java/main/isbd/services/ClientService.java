@@ -11,7 +11,7 @@ import main.isbd.data.dto.users.ClientProfile;
 import main.isbd.data.dto.users.ClientRegister;
 import main.isbd.data.model.*;
 import main.isbd.data.model.enums.OrderStatusEnum;
-import main.isbd.data.model.enums.ProductStatusInOrderEnum;
+import main.isbd.data.model.enums.ProductInOrderStatusEnum;
 import main.isbd.data.model.enums.SenderEnum;
 import main.isbd.exception.BadCredentialsException;
 import main.isbd.exception.BaseAppException;
@@ -125,7 +125,7 @@ public class ClientService {
         productInOrder.setTypeId(productType);
         productInOrder.setOrderId(order);
         productInOrder.setCount(1);
-        productInOrder.setStatus(ProductStatusInOrderEnum.AWAITS_PRODUCTION);
+        productInOrder.setStatus(ProductInOrderStatusEnum.AWAITS_PRODUCTION);
         try {
             productInOrderRepository.save(productInOrder);
         } catch (Exception e) {

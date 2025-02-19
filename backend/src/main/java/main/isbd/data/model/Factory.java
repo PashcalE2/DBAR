@@ -32,7 +32,7 @@ public class Factory {
     @Column(name = "пароль", nullable = false, length = 64)
     private String password;
 
-    @Column(name = "\"адрес\"", nullable = false, length = Integer.MAX_VALUE)
+    @Column(name = "адрес", nullable = false, length = Integer.MAX_VALUE)
     private String address;
 
     @Override

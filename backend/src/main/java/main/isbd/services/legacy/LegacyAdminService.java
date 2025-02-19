@@ -18,10 +18,10 @@ import java.util.List;
 @Service
 @Transactional
 @ApplicationScope
-public class AdminService implements CheckRightsInterface {
+public class LegacyAdminService implements CheckRightsInterface {
     private final LegacyAdminRepository legacyAdminRepository;
 
-    public AdminService(LegacyAdminRepository legacyAdminRepository) {
+    public LegacyAdminService(LegacyAdminRepository legacyAdminRepository) {
         this.legacyAdminRepository = legacyAdminRepository;
     }
 

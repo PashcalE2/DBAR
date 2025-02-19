@@ -4,7 +4,7 @@ import main.isbd.data.dto.material.MaterialInfo;
 import main.isbd.data.dto.product.ProductInfo;
 import main.isbd.data.model.Factory;
 import main.isbd.data.dto.users.FactoryLogin;
-import main.isbd.services.legacy.FactoryService;
+import main.isbd.services.legacy.LegacyFactoryService;
 import main.isbd.utils.CheckRightsWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,11 +14,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.annotation.ApplicationScope;
 
 @Controller
+@RequestMapping("/legacy")
 @CrossOrigin
 @ApplicationScope
-public class FactoryController {
+public class LegacyFactoryController {
     @Autowired
-    private FactoryService factoryService;
+    private LegacyFactoryService legacyFactoryService;
 
     @PostMapping("/factory/profile/check_rights")
     public @ResponseBody ResponseEntity<?> checkFactoryRights(
@@ -26,7 +27,7 @@ public class FactoryController {
             @RequestParam String password
     ) {
         System.out.printf("Запрос проверки прав доступа для управления (%d)\n", factory_id);
-        return new CheckRightsWrapper(factoryService) {
+        return new CheckRightsWrapper(legacyFactoryService) {
             @Override
             public ResponseEntity<?> outer() {
                 return new ResponseEntity<>("Успех!", HttpStatus.OK);
@@ -44,7 +45,7 @@ public class FactoryController {
         Factory db_factory;
 
         try {
-            db_factory = factoryService.getFactoryByIdAndPassword(factory.getId(), factory.getPassword());
+            db_factory = legacyFactoryService.getFactoryByIdAndPassword(factory.getId(), factory.getPassword());
             if (db_factory == null) {
                 throw new RuntimeException("Неверный логин или пароль\n");
             }
@@ -63,10 +64,10 @@ public class FactoryController {
     ) {
         System.out.println("Запрос на получение данных о всей продукции\n");
 
-        return new CheckRightsWrapper(factoryService) {
+        return new CheckRightsWrapper(legacyFactoryService) {
             @Override
             public ResponseEntity<?> outer() {
-                return new ResponseEntity<>(factoryService.getAllProductsShortInfo(), HttpStatus.OK);
+                return new ResponseEntity<>(legacyFactoryService.getAllProductsShortInfo(), HttpStatus.OK);
             }
         }.execute(factory_id, password);
     }
@@ -78,10 +79,10 @@ public class FactoryController {
             @RequestParam Integer product_id
     ) {
         System.out.printf("Запрос на получение данных о продукции (%d)\n", product_id);
-        return new CheckRightsWrapper(factoryService) {
+        return new CheckRightsWrapper(legacyFactoryService) {
             @Override
             public ResponseEntity<?> outer() {
-                return new ResponseEntity<>(factoryService.getProductInfoById(product_id), HttpStatus.OK);
+                return new ResponseEntity<>(legacyFactoryService.getProductInfoById(product_id), HttpStatus.OK);
             }
         }.execute(factory_id, password);
     }
@@ -93,10 +94,10 @@ public class FactoryController {
             @RequestBody ProductInfo product_info
             ) {
         System.out.printf("Запрос на изменение данных о продукции (%d): %s, %f, %s\n", product_info.getId(), product_info.getName(), product_info.getPrice(), product_info.getDescription());
-        return new CheckRightsWrapper(factoryService) {
+        return new CheckRightsWrapper(legacyFactoryService) {
             @Override
             public ResponseEntity<?> outer() {
-                factoryService.setProductInfoById(product_info.getId(), product_info.getName(), product_info.getDescription(), product_info.getPrice());
+                legacyFactoryService.setProductInfoById(product_info.getId(), product_info.getName(), product_info.getDescription(), product_info.getPrice());
                 return new ResponseEntity<>("Успех!", HttpStatus.OK);
             }
         }.execute(factory_id, password);
@@ -109,10 +110,10 @@ public class FactoryController {
     ) {
         System.out.println("Запрос на получение данных о всех материалах\n");
 
-        return new CheckRightsWrapper(factoryService) {
+        return new CheckRightsWrapper(legacyFactoryService) {
             @Override
             public ResponseEntity<?> outer() {
-                return new ResponseEntity<>(factoryService.getAllMaterialsShortInfo(), HttpStatus.OK);
+                return new ResponseEntity<>(legacyFactoryService.getAllMaterialsShortInfo(), HttpStatus.OK);
             }
         }.execute(factory_id, password);
     }
@@ -124,10 +125,10 @@ public class FactoryController {
             @RequestParam Integer material_id
     ) {
         System.out.printf("Запрос на получение данных о материале (%d)\n", material_id);
-        return new CheckRightsWrapper(factoryService) {
+        return new CheckRightsWrapper(legacyFactoryService) {
             @Override
             public ResponseEntity<?> outer() {
-                return new ResponseEntity<>(factoryService.getMaterialInfoById(material_id), HttpStatus.OK);
+                return new ResponseEntity<>(legacyFactoryService.getMaterialInfoById(material_id), HttpStatus.OK);
             }
         }.execute(factory_id, password);
     }
@@ -139,10 +140,10 @@ public class FactoryController {
             @RequestBody MaterialInfo material_info
     ) {
         System.out.printf("Запрос на изменение данных о материале (%d)\n", material_info.getId());
-        return new CheckRightsWrapper(factoryService) {
+        return new CheckRightsWrapper(legacyFactoryService) {
             @Override
             public ResponseEntity<?> outer() {
-                factoryService.setMaterialInfoById(material_info.getId(), material_info.getName(), material_info.getDescription(), material_info.getPrice());
+                legacyFactoryService.setMaterialInfoById(material_info.getId(), material_info.getName(), material_info.getDescription(), material_info.getPrice());
                 return new ResponseEntity<>("Успех!", HttpStatus.OK);
             }
         }.execute(factory_id, password);
