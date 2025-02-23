@@ -1,5 +1,7 @@
 package com.main.auth.filters;
 
+import com.main.auth.exeptions.BadCredentialsException;
+import com.main.auth.exeptions.TokenException;
 import com.main.auth.services.ClientService;
 import com.main.auth.services.JwtTokenService;
 import jakarta.annotation.Nonnull;
@@ -32,20 +34,26 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, @Nonnull HttpServletResponse response,
                                     @Nonnull FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
-        String jwtAccessToken = null;
+        String jwtAccessToken;
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwtAccessToken = authHeader.substring(7);
+        } else {
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        if (jwtTokenService.verifyAccessToken(jwtAccessToken)
-                && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = clientService.loadUserByUsername(
-                    jwtTokenService.extractAccessSubject(jwtAccessToken)
-            );
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities());
-            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+        try {
+            if (jwtTokenService.verifyAccessToken(jwtAccessToken)) {
+                UserDetails userDetails = clientService.loadUserByUsername(
+                        jwtTokenService.extractAccessSubject(jwtAccessToken)
+                );
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
+        } catch (BadCredentialsException e) {
+            throw new TokenException(e);
         }
         filterChain.doFilter(request, response);
     }

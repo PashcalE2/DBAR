@@ -9,9 +9,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class JwtResponse {
+public class JwtRefreshRequest {
 
-    private String access;
     private String refresh;
 
 }

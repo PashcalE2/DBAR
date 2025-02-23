@@ -1,5 +1,6 @@
 package com.main.auth.controllers;
 
+import com.main.auth.data.AuthErrorResponse;
 import com.main.auth.exeptions.AuthException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -14,27 +15,30 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class AuthAdvice {
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<?> handleAuthenticationException(UsernameNotFoundException ex) {
+    public ResponseEntity<AuthErrorResponse> handleAuthenticationException(UsernameNotFoundException ex) {
         log.error(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid jwt");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                new AuthErrorResponse(HttpStatus.UNAUTHORIZED, "Invalid jwt"));
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<?> handleAuthenticationException(AuthenticationException ex) {
+    public ResponseEntity<AuthErrorResponse> handleAuthenticationException(AuthenticationException ex) {
         log.error(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong username or password");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                new AuthErrorResponse(HttpStatus.UNAUTHORIZED, "Wrong username or password"));
     }
 
     @ExceptionHandler(AuthException.class)
-    public ResponseEntity<String> handleBaseAppException(AuthException e) {
+    public ResponseEntity<AuthErrorResponse> handleBaseAppException(AuthException e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(e.getMessage(), e.getStatus());
+        return new ResponseEntity<>(new AuthErrorResponse(e), e.getStatus());
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleException(Exception e) {
+    public ResponseEntity<AuthErrorResponse> handleException(Exception e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new AuthErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()),
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

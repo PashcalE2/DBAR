@@ -1,9 +1,8 @@
 package com.main.auth.services;
 
 import com.main.auth.exeptions.BadCredentialsException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -59,8 +58,12 @@ public class JwtTokenService {
         try {
             claims = Jwts.parser().verifyWith(this.publicRefreshKey).build().
                     parseSignedClaims(refreshToken).getPayload();
-        } catch (JwtException | IllegalArgumentException e) {
-            throw new BadCredentialsException(e.getMessage());
+        } catch (ExpiredJwtException e) {
+            throw new BadCredentialsException("Expired refresh token");
+        } catch (UnsupportedJwtException | MalformedJwtException | IllegalArgumentException | SignatureException e) {
+            throw new BadCredentialsException("Invalid refresh token");
+        } catch (Exception e) {
+            throw new BadCredentialsException("Wrong refresh token");
         }
         String subject = claims.getSubject();
         try {
@@ -85,7 +88,7 @@ public class JwtTokenService {
                 .compact();
     }
 
-    public Boolean verifyAccessToken(String accessToken) {
+    public Boolean verifyAccessToken(String accessToken) throws BadCredentialsException {
         String username;
         try {
             username = extractAccessSubject(accessToken);
@@ -97,18 +100,25 @@ public class JwtTokenService {
         return true;
     }
 
-    public String extractAccessSubject(String accessToken) {
+    public String extractAccessSubject(String accessToken) throws BadCredentialsException {
         Claims claims = extractAccessClaims(accessToken);
         return claims.getSubject();
     }
 
-    private Claims extractAccessClaims(String accessToken) {
-        return Jwts
-                .parser()
-                .verifyWith(this.publicAccessKey)
-                .build()
-                .parseSignedClaims(accessToken)
-                .getPayload();
+    private Claims extractAccessClaims(String accessToken) throws BadCredentialsException {
+        Claims claims;
+        try {
+            claims = Jwts.parser().verifyWith(this.publicAccessKey).build().parseSignedClaims(accessToken).getPayload();
+        } catch (ExpiredJwtException e) {
+            throw new BadCredentialsException("Expired access token");
+        } catch (UnsupportedJwtException | MalformedJwtException | IllegalArgumentException | SignatureException e) {
+            log.error("Invalid access token: {}: {}", e.getClass(), e.getMessage());
+            throw new BadCredentialsException("Invalid access token");
+        } catch (Exception e) {
+            log.error("Wrong access token: {}: {}", e.getClass(), e.getMessage());
+            throw new BadCredentialsException("Wrong access token");
+        }
+        return claims;
     }
 
     private PrivateKey getPrivateKey(String key) {

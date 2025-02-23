@@ -1,6 +1,8 @@
 package com.main.auth.controllers;
 
-import com.main.auth.data.JwtResponse;
+import com.main.auth.data.JwtAccessResponse;
+import com.main.auth.data.JwtPairResponse;
+import com.main.auth.data.JwtRefreshRequest;
 import com.main.auth.data.UserLogin;
 import com.main.auth.exeptions.BadCredentialsException;
 import com.main.auth.exeptions.WrongParamsException;
@@ -21,7 +23,8 @@ public class TokenController {
     private final JwtTokenService jwtTokenService;
     private final ClientService clientService;
 
-    public TokenController(AuthenticationManager authenticationManager, JwtTokenService jwtTokenService, ClientService clientService) {
+    public TokenController(AuthenticationManager authenticationManager, JwtTokenService jwtTokenService,
+                           ClientService clientService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenService = jwtTokenService;
         this.clientService = clientService;
@@ -34,47 +37,48 @@ public class TokenController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody UserLogin userLogin) {
+    public ResponseEntity<JwtPairResponse> login(@RequestBody UserLogin userLogin) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 userLogin.getLogin(), userLogin.getPassword()
         ));
-        return ResponseEntity.ok(new JwtResponse(
+        return ResponseEntity.ok(new JwtPairResponse(
                 jwtTokenService.generateAccessToken(userLogin.getLogin(), "ROLE_CLIENT"),
                 jwtTokenService.generateRefreshToken(userLogin.getLogin(), "ROLE_CLIENT")
         ));
     }
 
     @PostMapping("/login/admin")
-    public ResponseEntity<JwtResponse> loginAdmin(@RequestBody UserLogin userLogin) {
+    public ResponseEntity<JwtPairResponse> loginAdmin(@RequestBody UserLogin userLogin) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 userLogin.getLogin(), userLogin.getPassword()
         ));
-        return ResponseEntity.ok(new JwtResponse(
+        return ResponseEntity.ok(new JwtPairResponse(
                 jwtTokenService.generateAccessToken(userLogin.getLogin(), "ROLE_ADMIN"),
                 jwtTokenService.generateRefreshToken(userLogin.getLogin(), "ROLE_ADMIN")
         ));
     }
 
     @PostMapping("/login/factory")
-    public ResponseEntity<JwtResponse> loginFactory(@RequestBody UserLogin userLogin) {
+    public ResponseEntity<JwtPairResponse> loginFactory(@RequestBody UserLogin userLogin) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 userLogin.getLogin(), userLogin.getPassword()
         ));
-        return ResponseEntity.ok(new JwtResponse(
+        return ResponseEntity.ok(new JwtPairResponse(
                 jwtTokenService.generateAccessToken(userLogin.getLogin(), "ROLE_FACTORY"),
                 jwtTokenService.generateRefreshToken(userLogin.getLogin(), "ROLE_FACTORY")
         ));
     }
 
     @PostMapping("/refresh/login")
-    public ResponseEntity<String> refreshLogin(@RequestBody String refresh) throws BadCredentialsException {
-        return ResponseEntity.ok(jwtTokenService.generateAccessToken(refresh));
+    public ResponseEntity<JwtAccessResponse> refreshLogin(@RequestBody JwtRefreshRequest refresh)
+            throws BadCredentialsException {
+        return ResponseEntity.ok(new JwtAccessResponse(jwtTokenService.generateAccessToken(refresh.getRefresh())));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<JwtResponse> register(@RequestBody Client client) throws WrongParamsException {
+    public ResponseEntity<JwtPairResponse> register(@RequestBody Client client) throws WrongParamsException {
         Client addedClient = clientService.addClient(client, "ROLE_CLIENT");
-        return ResponseEntity.ok(new JwtResponse(
+        return ResponseEntity.ok(new JwtPairResponse(
                 jwtTokenService.generateAccessToken(addedClient.getLogin(), "ROLE_CLIENT"),
                 jwtTokenService.generateRefreshToken(addedClient.getLogin(), "ROLE_CLIENT")
         ));
@@ -82,9 +86,9 @@ public class TokenController {
 
     @PreAuthorize("hasRole('FACTORY')")
     @PostMapping("/register/admin")
-    public ResponseEntity<JwtResponse> registerAdmin(@RequestBody Client client) throws WrongParamsException {
+    public ResponseEntity<JwtPairResponse> registerAdmin(@RequestBody Client client) throws WrongParamsException {
         Client addedClient = clientService.addClient(client, "ROLE_ADMIN");
-        return ResponseEntity.ok(new JwtResponse(
+        return ResponseEntity.ok(new JwtPairResponse(
                 jwtTokenService.generateAccessToken(addedClient.getLogin(), "ROLE_ADMIN"),
                 jwtTokenService.generateRefreshToken(addedClient.getLogin(), "ROLE_ADMIN")
         ));
@@ -92,9 +96,9 @@ public class TokenController {
 
     @PreAuthorize("hasRole('SUPERVISOR')")
     @PostMapping("/register/factory")
-    public ResponseEntity<JwtResponse> registerFactory(@RequestBody Client client) throws WrongParamsException {
+    public ResponseEntity<JwtPairResponse> registerFactory(@RequestBody Client client) throws WrongParamsException {
         Client addedClient = clientService.addClient(client, "ROLE_FACTORY");
-        return ResponseEntity.ok(new JwtResponse(
+        return ResponseEntity.ok(new JwtPairResponse(
                 jwtTokenService.generateAccessToken(addedClient.getLogin(), "ROLE_FACTORY"),
                 jwtTokenService.generateRefreshToken(addedClient.getLogin(), "ROLE_FACTORY")
         ));
