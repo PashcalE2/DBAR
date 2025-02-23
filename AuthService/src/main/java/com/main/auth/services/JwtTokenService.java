@@ -1,73 +1,140 @@
 package com.main.auth.services;
 
+import com.main.auth.exeptions.BadCredentialsException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.Date;
-import java.util.function.Function;
 
+
+@Slf4j
 @Service
 public class JwtTokenService {
 
-    private final String secret;
+    private final PrivateKey privateAccessKey;
+    private final PublicKey publicAccessKey;
+    private final PrivateKey privateRefreshKey;
+    private final PublicKey publicRefreshKey;
+    private final ClientService clientService;
 
-    public JwtTokenService(@Value("${jwt.secret}") String secret) {
-        this.secret = secret;
+    public JwtTokenService(@Value("${jwt.secret.access.private}") String privateAccessKey,
+                           @Value("${jwt.secret.access.public}") String publicAccessKey,
+                           @Value("${jwt.secret.refresh.private}") String privateRefreshKey,
+                           @Value("${jwt.secret.refresh.public}") String publicRefreshKey,
+                           ClientService clientService) {
+        this.privateAccessKey = getPrivateKey(privateAccessKey);
+        this.publicAccessKey = getPublicKey(publicAccessKey);
+        this.privateRefreshKey = getPrivateKey(privateRefreshKey);
+        this.publicRefreshKey = getPublicKey(publicRefreshKey);
+        this.clientService = clientService;
     }
 
-    public String generateToken(String userName, long lifetime) {
+    public String generateAccessToken(String userName, String role) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + lifetime); // устанавливаем срок действия токена (1 день)
+        Date expiryDate = new Date(now.getTime() + 900000L);
+        //Date expiryDate = new Date(now.getTime() + 60000L);
 
         return Jwts.builder()
-                .setSubject(String.valueOf(userName))
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+                .subject(String.valueOf(userName))
+                .claim("role", role)
+                .issuedAt(now)
+                .expiration(expiryDate)
+                .signWith(privateAccessKey, Jwts.SIG.RS256)
                 .compact();
     }
 
-    public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+    public String generateAccessToken(String refreshToken) throws BadCredentialsException {
+        Claims claims;
+        try {
+            claims = Jwts.parser().verifyWith(this.publicRefreshKey).build().
+                    parseSignedClaims(refreshToken).getPayload();
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new BadCredentialsException(e.getMessage());
+        }
+        String subject = claims.getSubject();
+        try {
+            clientService.loadUserByUsername(subject);
+        } catch (UsernameNotFoundException e) {
+            throw new BadCredentialsException("No such user!");
+        }
+        return generateAccessToken(subject, claims.get("role", String.class));
     }
 
-    private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    public String generateRefreshToken(String userName, String role) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + 2592000000L);
+        //Date expiryDate = new Date(now.getTime() + 180000L);
+
+        return Jwts.builder()
+                .subject(String.valueOf(userName))
+                .claim("role", role)
+                .issuedAt(now)
+                .expiration(expiryDate)
+                .signWith(privateRefreshKey, Jwts.SIG.RS256)
+                .compact();
     }
 
-    public Boolean verifyToken(String token, UserDetails userDetails) {
-        String username = extractUserName(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+    public Boolean verifyAccessToken(String accessToken) {
+        String username;
+        try {
+            username = extractAccessSubject(accessToken);
+            clientService.loadUserByUsername(username);
+        } catch (JwtException | IllegalArgumentException | UsernameNotFoundException e) {
+            log.debug("{}: {}", e.getClass(), e.getMessage());
+            return false;
+        }
+        return true;
     }
 
-    public String extractUserName(String token) {
-        return extractClaim(token, Claims::getSubject);
+    public String extractAccessSubject(String accessToken) {
+        Claims claims = extractAccessClaims(accessToken);
+        return claims.getSubject();
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
-
-    private Claims extractAllClaims(String token) {
+    private Claims extractAccessClaims(String accessToken) {
         return Jwts
-                .parserBuilder()
-                .setSigningKey(getSigningKey())
+                .parser()
+                .verifyWith(this.publicAccessKey)
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(accessToken)
+                .getPayload();
     }
 
-    private Key getSigningKey() {
-        byte[] keyBytes = this.secret.getBytes(StandardCharsets.UTF_8);
-        return Keys.hmacShaKeyFor(keyBytes);
+    private PrivateKey getPrivateKey(String key) {
+        byte[] keyBytes = Base64.getDecoder().decode(key);
+        KeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
+        PrivateKey privateKey;
+        try {
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            privateKey = keyFactory.generatePrivate(keySpec);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new RuntimeException(e);
+        }
+        return privateKey;
+    }
+
+    private PublicKey getPublicKey(String key) {
+        byte[] keyBytes = Base64.getDecoder().decode(key);
+        KeySpec keySpec = new X509EncodedKeySpec(keyBytes);
+        PublicKey publicKey;
+        try {
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            publicKey = keyFactory.generatePublic(keySpec);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new RuntimeException(e);
+        }
+        return publicKey;
     }
 
 }

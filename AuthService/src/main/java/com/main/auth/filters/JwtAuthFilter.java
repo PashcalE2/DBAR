@@ -32,21 +32,20 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, @Nonnull HttpServletResponse response,
                                     @Nonnull FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
-        String jwtToken = null;
-        String username = null;
+        String jwtAccessToken = null;
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            jwtToken = authHeader.substring(7);
-            username = jwtTokenService.extractUserName(jwtToken);
+            jwtAccessToken = authHeader.substring(7);
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = clientService.loadUserByUsername(username);
-            if (jwtTokenService.verifyToken(jwtToken, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
+        if (jwtTokenService.verifyAccessToken(jwtAccessToken)
+                && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = clientService.loadUserByUsername(
+                    jwtTokenService.extractAccessSubject(jwtAccessToken)
+            );
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities());
+            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authToken);
         }
         filterChain.doFilter(request, response);
     }

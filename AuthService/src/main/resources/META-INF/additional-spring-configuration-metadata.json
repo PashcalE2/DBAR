@@ -1,0 +1,23 @@
+{
+  "properties": [
+    {
+      "name": "jwt.secret.access.private",
+      "type": "java.lang.String",
+      "description": "Access token coding secret key."
+    },
+    {
+      "name": "jwt.secret.access.public",
+      "type": "java.lang.String",
+      "description": "Access token decoding secret key."
+    },
+    {
+      "name": "jwt.secret.refresh.private",
+      "type": "java.lang.String",
+      "description": "Refresh token coding secret key."
+    },
+    {
+      "name": "jwt.secret.refresh.public",
+      "type": "java.lang.String",
+      "description": "Refresh token decoding secret key."
+    }
+  ] }
