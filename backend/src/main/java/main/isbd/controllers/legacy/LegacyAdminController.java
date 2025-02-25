@@ -13,6 +13,7 @@ import org.springframework.web.context.annotation.ApplicationScope;
 
 import java.sql.Timestamp;
 
+@Deprecated
 @Controller
 @RequestMapping("/legacy")
 @CrossOrigin

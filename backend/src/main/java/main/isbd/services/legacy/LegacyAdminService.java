@@ -15,6 +15,7 @@ import org.springframework.web.context.annotation.ApplicationScope;
 import java.sql.Timestamp;
 import java.util.List;
 
+@Deprecated
 @Service
 @Transactional
 @ApplicationScope

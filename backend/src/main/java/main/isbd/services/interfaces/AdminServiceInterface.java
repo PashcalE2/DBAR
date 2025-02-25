@@ -11,6 +11,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 
+@Deprecated
 // Вся необходимая логика для Консультанта
 public interface AdminServiceInterface {
     Boolean checkIfUserIsAuthorized(Integer adminId, String password) throws BadCredentialsException;

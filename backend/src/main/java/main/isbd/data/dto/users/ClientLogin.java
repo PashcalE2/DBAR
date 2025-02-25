@@ -1,5 +1,6 @@
 package main.isbd.data.dto.users;
 
+@Deprecated
 public class ClientLogin {
     private String name;
     private String password;

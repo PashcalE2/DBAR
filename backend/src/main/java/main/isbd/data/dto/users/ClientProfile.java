@@ -3,6 +3,7 @@ package main.isbd.data.dto.users;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+@Deprecated
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClientProfile {

@@ -12,6 +12,7 @@ import main.isbd.exception.EntityNotFoundException;
 
 import java.util.List;
 
+@Deprecated
 public interface FactoryServiceInterface {
     Boolean checkIfUserIsAuthorized(Integer factoryId, String password) throws BadCredentialsException;
 

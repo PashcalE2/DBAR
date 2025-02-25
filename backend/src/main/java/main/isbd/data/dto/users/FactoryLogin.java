@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+@Deprecated
 @AllArgsConstructor
 @Getter
 @Setter
@@ -13,6 +14,6 @@ public class FactoryLogin {
 
     public boolean isValid() {
         return  id != null
-                && password != null && password.length() > 0;
+                && password != null && !password.isEmpty();
     }
 }

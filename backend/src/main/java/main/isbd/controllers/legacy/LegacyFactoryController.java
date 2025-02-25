@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.annotation.ApplicationScope;
 
+@Deprecated
 @Controller
 @RequestMapping("/legacy")
 @CrossOrigin
