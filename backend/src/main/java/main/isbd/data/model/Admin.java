@@ -29,17 +29,8 @@ public class Admin {
     @Column(name = "фио", nullable = false, length = 64)
     private String fullName;
 
-    @Basic
-    @Column(name = "номер_телефона", nullable = false, length = 20)
-    private String phoneNumber;
-
-    @Basic
-    @Column(name = "email", nullable = false, length = 64)
-    private String email;
-
-    @Basic
-    @Column(name = "пароль", nullable = false, length = 64)
-    private String password;
+    @Column(name = "логин", nullable = false, length = 64)
+    private String login;
 
     @Override
     public boolean equals(Object o) {
@@ -53,12 +44,7 @@ public class Admin {
             return false;
         if (!Objects.equals(scheduleId, admin.scheduleId)) return false;
         if (!Objects.equals(fullName, admin.fullName)) return false;
-        if (!Objects.equals(phoneNumber, admin.phoneNumber))
-            return false;
-        if (!Objects.equals(email, admin.email)) return false;
-        if (!Objects.equals(password, admin.password)) return false;
-
-        return true;
+        return Objects.equals(login, admin.login);
     }
 
     @Override
@@ -67,9 +53,7 @@ public class Admin {
         result = 31 * result + (clientServiceId != null ? clientServiceId.hashCode() : 0);
         result = 31 * result + (scheduleId != null ? scheduleId.hashCode() : 0);
         result = 31 * result + (fullName != null ? fullName.hashCode() : 0);
-        result = 31 * result + (phoneNumber != null ? phoneNumber.hashCode() : 0);
-        result = 31 * result + (email != null ? email.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
+        result = 31 * result + (login != null ? login.hashCode() : 0);
         return result;
     }
 }

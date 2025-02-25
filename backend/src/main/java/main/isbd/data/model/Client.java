@@ -17,19 +17,7 @@ public class Client {
     @Column(name = "ид", nullable = false)
     private Integer id;
 
-    @Basic
-    @Column(name = "номер_телефона", nullable = false, length = 20)
-    private String phoneNumber;
-
-    @Basic
-    @Column(name = "email", nullable = false, length = 64)
-    private String email;
-
-    @Basic
-    @Column(name = "пароль", nullable = false, length = 64)
-    private String password;
-
-    @Column(name = "\"название\"", nullable = false, length = 64)
+    @Column(name = "\"логин\"", nullable = false, length = 64)
     private String name;
 
     @Override
@@ -40,21 +28,12 @@ public class Client {
         Client client = (Client) o;
 
         if (!Objects.equals(id, client.id)) return false;
-        if (!Objects.equals(phoneNumber, client.phoneNumber))
-            return false;
-        if (!Objects.equals(email, client.email)) return false;
-        if (!Objects.equals(password, client.password)) return false;
-        if (!Objects.equals(name, client.name)) return false;
-
-        return true;
+        return Objects.equals(name, client.name);
     }
 
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (phoneNumber != null ? phoneNumber.hashCode() : 0);
-        result = 31 * result + (email != null ? email.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
     }
