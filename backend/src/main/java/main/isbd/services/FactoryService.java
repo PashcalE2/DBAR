@@ -3,103 +3,87 @@ package main.isbd.services;
 import lombok.AllArgsConstructor;
 import main.isbd.data.dto.material.MaterialShortInfo;
 import main.isbd.data.dto.product.ProductShortInfo;
-import main.isbd.data.dto.users.FactoryLogin;
+import main.isbd.data.dto.users.FactoryRegister;
 import main.isbd.data.model.Factory;
 import main.isbd.data.model.MaterialType;
 import main.isbd.data.model.ProductType;
-import main.isbd.exception.BadCredentialsException;
 import main.isbd.exception.BaseAppException;
 import main.isbd.exception.EntityNotFoundException;
 import main.isbd.repositories.FactoryRepository;
 import main.isbd.repositories.MaterialTypeRepository;
 import main.isbd.repositories.ProductTypeRepository;
-import main.isbd.services.interfaces.FactoryServiceInterface;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 @Transactional
-public class FactoryService implements FactoryServiceInterface {
+public class FactoryService {
     private final FactoryRepository factoryRepository;
     private final ProductTypeRepository productTypeRepository;
     private final MaterialTypeRepository materialTypeRepository;
+    private final JwtTokenService jwtTokenService;
 
-    @Override
-    public Boolean checkIfUserIsAuthorized(Integer factoryId, String password) throws BadCredentialsException {
-        Optional<Factory> factory = factoryRepository.findById(factoryId);
-        return factory.map(value -> value.getPassword().equals(password))
-                .orElseThrow(() -> new BadCredentialsException("Владелец не авторизован"));
-    }
-
-    @Override
-    public Factory loginFactory(FactoryLogin factoryLogin) throws BaseAppException {
-        if (factoryLogin == null || !factoryLogin.isValid()) {
-            throw new BaseAppException("Какой-то странный у вас реквест боди\n", HttpStatus.BAD_REQUEST);
+    public Factory registerFactory(FactoryRegister factoryRegister) throws BaseAppException {
+        if (factoryRegister.getAuthToken() == null || factoryRegister.getAuthToken().isEmpty()) {
+            throw new BaseAppException("No token from Auth service. Firstly create user-id with login\n",
+                    HttpStatus.BAD_REQUEST);
         }
-
-        return factoryRepository.findByIdAndPassword(factoryLogin.getId(), factoryLogin.getPassword())
-                .orElseThrow(() -> new EntityNotFoundException("Владелец не найден"));
+        String login = jwtTokenService
+                .extractLoginWithAvailabilityCheck(factoryRegister.getAuthToken(), "ROLE_FACTORY");
+        Factory factory = new Factory();
+        factory.setLogin(login);
+        factory.setName(factoryRegister.getName());
+        factory.setAddress(factoryRegister.getAddress());
+        Factory savedFactory;
+        try {
+            savedFactory = factoryRepository.save(factory);
+        } catch (Exception e) {
+            throw new BaseAppException(e.getMessage(), HttpStatus.CONFLICT);
+        }
+        return savedFactory;
     }
 
-    @Override
-    public List<ProductShortInfo> getAllProductsShortInfo(Integer factoryId, String password) throws BaseAppException {
-        loginFactory(new FactoryLogin(factoryId, password));
-
+    public List<ProductShortInfo> getAllProductsShortInfo() {
         return productTypeRepository.findAll().stream()
-                .map(productType -> new ProductShortInfo(productType.getId(), productType.getName(), productType.getPrice()))
-                .toList();
+                .map(productType -> new ProductShortInfo(productType.getId(), productType.getName(),
+                        productType.getPrice())).toList();
     }
 
-    @Override
-    public ProductType getProductInfoById(Integer factoryId, String password, Integer productId) throws BaseAppException {
-        loginFactory(new FactoryLogin(factoryId, password));
-
+    public ProductType getProductInfoById(Integer productId) throws BaseAppException {
         return productTypeRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Продукт не найден"));
     }
 
-    @Override
-    public void setProductInfoById(Integer factoryId, String password, Integer productId, String name, String description, Float price) throws BaseAppException {
-        loginFactory(new FactoryLogin(factoryId, password));
-
+    public void setProductInfoById(Integer productId, String name, String description, Float price)
+            throws BaseAppException {
         ProductType productType = productTypeRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Продукт не найден"));
-
         productType.setName(name);
         productType.setDescription(description);
         productType.setPrice(price);
         productTypeRepository.save(productType);
     }
 
-    @Override
-    public List<MaterialShortInfo> getAllMaterialsShortInfo(Integer factoryId, String password) throws BaseAppException {
-        loginFactory(new FactoryLogin(factoryId, password));
-
+    public List<MaterialShortInfo> getAllMaterialsShortInfo() {
         return materialTypeRepository.findAll().stream()
-                .map(materialType -> new MaterialShortInfo(materialType.getId(), materialType.getName(), materialType.getPrice()))
-                .toList();
+                .map(materialType -> new MaterialShortInfo(materialType.getId(), materialType.getName(),
+                        materialType.getPrice())).toList();
     }
 
-    @Override
-    public MaterialType getMaterialInfoById(Integer factoryId, String password, Integer materialId) throws BaseAppException {
-        loginFactory(new FactoryLogin(factoryId, password));
-
+    public MaterialType getMaterialInfoById(Integer materialId)
+            throws BaseAppException {
         return materialTypeRepository.findById(materialId)
                 .orElseThrow(() -> new EntityNotFoundException("Материал не найден"));
     }
 
-    @Override
-    public void setMaterialInfoById(Integer factoryId, String password, Integer materialId, String name, String description, Float price) throws BaseAppException {
-        loginFactory(new FactoryLogin(factoryId, password));
-
+    public void setMaterialInfoById(Integer materialId, String name, String description, Float price)
+            throws BaseAppException {
         MaterialType materialType = materialTypeRepository.findById(materialId)
                 .orElseThrow(() -> new EntityNotFoundException("Материал не найден"));
-
         materialType.setName(name);
         materialType.setDescription(description);
         materialType.setPrice(price);

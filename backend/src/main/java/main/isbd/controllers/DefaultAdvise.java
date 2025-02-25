@@ -1,6 +1,7 @@
 package main.isbd.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import main.isbd.data.AppInfoResponse;
 import main.isbd.exception.BaseAppException;
 import main.isbd.exception.BaseAppRuntimeException;
 import org.springframework.http.HttpStatus;
@@ -12,20 +13,21 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 public class DefaultAdvise {
     @ExceptionHandler(BaseAppException.class)
-    public ResponseEntity<?> handleBaseAppException(BaseAppException e) {
+    public ResponseEntity<AppInfoResponse> handleBaseAppException(BaseAppException e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(e.getMessage(), e.getStatus());
+        return new ResponseEntity<>(new AppInfoResponse(e.getMessage(), e.getStatus()), e.getStatus());
     }
 
     @ExceptionHandler(BaseAppRuntimeException.class)
-    public ResponseEntity<?> handleBaseAppRuntimeException(BaseAppRuntimeException e) {
+    public ResponseEntity<AppInfoResponse> handleBaseAppRuntimeException(BaseAppRuntimeException e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(e.getMessage(), e.getStatus());
+        return new ResponseEntity<>(new AppInfoResponse(e.getMessage(), e.getStatus()), e.getStatus());
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleException(Exception e) {
+    public ResponseEntity<AppInfoResponse> handleException(Exception e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new AppInfoResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR),
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

@@ -1,16 +1,16 @@
 package main.isbd;
 
+import jakarta.annotation.Nonnull;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-@SpringBootApplication
 @Slf4j
+@SpringBootApplication
+@ServletComponentScan
 public class ISBDApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ISBDApplication.class, args);
@@ -20,7 +20,7 @@ public class ISBDApplication {
 	public WebMvcConfigurer corsConfigurer() {
 		return new WebMvcConfigurer() {
 			@Override
-			public void addCorsMappings(CorsRegistry registry) {
+			public void addCorsMappings(@Nonnull CorsRegistry registry) {
 				registry.addMapping("/**")
 						.allowedOrigins("*");
 			}

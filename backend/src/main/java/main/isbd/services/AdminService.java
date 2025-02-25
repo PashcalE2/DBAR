@@ -1,7 +1,7 @@
 package main.isbd.services;
 
 import lombok.AllArgsConstructor;
-import main.isbd.data.dto.users.AdminLogin;
+import main.isbd.data.dto.users.AdminRegister;
 import main.isbd.data.dto.users.ClientContacts;
 import main.isbd.data.model.*;
 import main.isbd.data.model.enums.OrderStatusEnum;
@@ -9,9 +9,7 @@ import main.isbd.data.model.enums.ProductInOrderStatusEnum;
 import main.isbd.data.model.enums.SenderEnum;
 import main.isbd.exception.BaseAppException;
 import main.isbd.exception.EntityNotFoundException;
-import main.isbd.exception.BadCredentialsException;
 import main.isbd.repositories.*;
-import main.isbd.services.interfaces.AdminServiceInterface;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +23,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 @Transactional
-public class AdminService implements AdminServiceInterface {
+public class AdminService {
     private final AdminRepository adminRepository;
     private final ProductTypeRepository productTypeRepository;
     private final OrderRepository orderRepository;
@@ -34,61 +32,64 @@ public class AdminService implements AdminServiceInterface {
     private final MessageRepository messageRepository;
     private final ProductRepository productRepository;
     private final ProductWarehouseRepository productWarehouseRepository;
+    private final JwtTokenService jwtTokenService;
+    private final AdminScheduleRepository adminScheduleRepository;
+    private final SupportServiceRepository supportServiceRepository;
 
-    @Override
-    public Boolean checkIfUserIsAuthorized(Integer adminId, String password) throws BadCredentialsException {
-        Optional<Admin> admin = adminRepository.findById(adminId);
-        return admin.map(value -> value.getPassword().equals(password))
-                .orElseThrow(() -> new BadCredentialsException("Консультант не авторизован"));
-    }
-
-    @Override
-    public Admin loginAdmin(AdminLogin adminLogin) throws BaseAppException {
-        if (adminLogin == null || !adminLogin.isValid()) {
-            throw new BaseAppException("Какой-то странный у вас реквест боди\n", HttpStatus.BAD_REQUEST);
+    public Admin registerAdmin(AdminRegister adminRegister) throws BaseAppException {
+        if (adminRegister.getAuthToken() == null || adminRegister.getAuthToken().isEmpty()) {
+            throw new BaseAppException("No token from Auth service. Firstly create user-id with login\n",
+                    HttpStatus.BAD_REQUEST);
         }
-
-        return adminRepository.findByIdAndPassword(adminLogin.getId(), adminLogin.getPassword())
-                .orElseThrow(() -> new EntityNotFoundException("Консультант не найден"));
+        String login = jwtTokenService
+                .extractLoginWithAvailabilityCheck(adminRegister.getAuthToken(), "ROLE_ADMIN");
+        AdminSchedule adminSchedule = new AdminSchedule();
+        adminSchedule.setWorkingHours(adminRegister.getScheduleHours());
+        adminSchedule.setDescription(adminRegister.getScheduleDescription());
+        AdminSchedule savedAdminSchedule = adminScheduleRepository.save(adminSchedule);
+        SupportService supportService = new SupportService();
+        supportService.setAddress(adminRegister.getSupportAddress());
+        supportService.setName(adminRegister.getSupportName());
+        supportService.setEmail(adminRegister.getSupportEmail());
+        supportService.setPhoneNumber(adminRegister.getSupportPhoneNumber());
+        SupportService savedSupportService = supportServiceRepository.save(supportService);
+        Admin admin = new Admin();
+        admin.setLogin(login);
+        admin.setFullName(adminRegister.getFullName());
+        admin.setClientServiceId(savedAdminSchedule.getId());
+        admin.setScheduleId(savedSupportService.getId());
+        Admin savedAdmin;
+        try {
+            savedAdmin = adminRepository.save(admin);
+        } catch (Exception e) {
+            throw new BaseAppException(e.getMessage(), HttpStatus.CONFLICT);
+        }
+        return savedAdmin;
     }
 
-    @Override
-    public ProductType getProductInfoById(Integer adminId, String password, Integer productId) throws BaseAppException {
-        loginAdmin(new AdminLogin(adminId, password));
-
+    public ProductType getProductInfoById(Integer productId) throws BaseAppException {
         return productTypeRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Консультант не найден"));
     }
 
-    @Override
-    public List<Order> getAllOrdersByAdminId(Integer adminId, String password) throws EntityNotFoundException {
-        Admin admin = adminRepository.findById(adminId)
+    public List<Order> getAllOrdersByAdmin(String login) throws EntityNotFoundException {
+        Admin admin = adminRepository.findByLogin(login)
                 .orElseThrow(() -> new EntityNotFoundException("Консультант не найден"));
-        return orderRepository.findByAdminId_Id(adminId);
+        return orderRepository.findAllByAdminId(admin);
     }
 
-    @Override
-    public Order getOrderByOrderId(Integer adminId, String password, Integer orderId) throws BaseAppException {
-        loginAdmin(new AdminLogin(adminId, password));
-
+    public Order getOrderByOrderId(Integer orderId) throws BaseAppException {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Заказ не найден"));
     }
 
-    @Override
-    public List<ProductInOrder> getAllProductsInOrder(Integer adminId, String password, Integer orderId) throws BaseAppException {
-        loginAdmin(new AdminLogin(adminId, password));
-
+    public List<ProductInOrder> getAllProductsInOrder(Integer orderId) throws BaseAppException {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Заказ не найден"));
-
-        return productInOrderRepository.findByOrderId_Id(orderId);
+        return productInOrderRepository.findAllByOrderId(order);
     }
 
-    @Override
-    public void askForOrderAssembling(Integer adminId, String password, Integer orderId) throws BaseAppException {
-        loginAdmin(new AdminLogin(adminId, password));
-
+    public void askForOrderAssembling(Integer orderId) throws BaseAppException {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Заказ не найден"));
 
@@ -96,7 +97,7 @@ public class AdminService implements AdminServiceInterface {
             throw new BaseAppException("Можно собирать только выполняющиеся в данный момент заказы", HttpStatus.FORBIDDEN);
         }
 
-        getAllProductsInOrder(adminId, password, orderId).forEach(productInOrder -> {
+        getAllProductsInOrder(orderId).forEach(productInOrder -> {
             switch (productInOrder.getStatus()) {
                 case AWAITS_PRODUCTION -> {
                     ProductId productId = new ProductId();
@@ -112,8 +113,9 @@ public class AdminService implements AdminServiceInterface {
                 }
                 case AWAITS_ASSEMBLING -> {
                     Optional<Product> optionalProduct = productRepository.findAll().stream()
-                            .filter(product -> product.getTypeId().getId().equals(productInOrder.getTypeId().getId()) && product.getCount() >= productInOrder.getCount())
-                            .findAny();
+                            .filter(product -> product.getTypeId().getId()
+                                    .equals(productInOrder.getTypeId().getId()) &&
+                                    product.getCount() >= productInOrder.getCount()).findAny();
 
                     if (optionalProduct.isEmpty()) {
                         return;
@@ -129,7 +131,7 @@ public class AdminService implements AdminServiceInterface {
             }
         });
 
-        long productsRemaining = getAllProductsInOrder(adminId, password, orderId).stream()
+        long productsRemaining = getAllProductsInOrder(orderId).stream()
                 .filter(product -> !(product.getStatus().equals(ProductInOrderStatusEnum.ASSEMBLED)))
                 .count();
 
@@ -139,32 +141,26 @@ public class AdminService implements AdminServiceInterface {
         }
     }
 
-    @Override
-    public ClientContacts getClientContactsInChat(Integer adminId, String password, Integer orderId) throws EntityNotFoundException {
+    public ClientContacts getClientContactsInChat(Integer orderId) throws EntityNotFoundException {
         Integer clientId = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Заказ не найден")).getClientId().getId();
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new EntityNotFoundException("Клиент не найден"));
-
-        return new ClientContacts(client.getName(), client.getPhoneNumber(), client.getEmail());
+        return new ClientContacts(client.getName());
     }
 
-    @Override
-    public List<Message> getMessagesInChat(Integer adminId, String password, Integer orderId) {
+    public List<Message> getMessagesInChat(Integer orderId) {
         return messageRepository.findByOrderId_Id(orderId);
     }
 
-    @Override
-    public void postMessageInChat(Integer adminId, String password, Integer orderId, String content, Timestamp datetime) throws EntityNotFoundException {
+    public void postMessageInChat(Integer orderId, String content) throws EntityNotFoundException {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Заказ не найден"));
-
         Message message = new Message();
         message.setOrderId(order);
         message.setSender(SenderEnum.ADMIN);
         message.setText(content);
         message.setSentAt(Timestamp.from(Instant.now()));
-
         messageRepository.saveAndFlush(message);
     }
 }

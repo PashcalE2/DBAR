@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "jwt.secret.access.public",
+      "type": "java.lang.String",
+      "description": "Access token decoding secret key."
+  }
+] }

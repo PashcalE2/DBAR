@@ -6,9 +6,6 @@ import main.isbd.data.dto.product.ProductInOrderInfo;
 import main.isbd.data.dto.product.ProductInfo;
 import main.isbd.data.dto.product.ProductShortInfo;
 import main.isbd.data.dto.users.AdminContacts;
-import main.isbd.data.dto.users.ClientLogin;
-import main.isbd.data.dto.users.ClientProfile;
-import main.isbd.data.dto.users.ClientRegister;
 import main.isbd.data.model.*;
 import main.isbd.data.model.enums.OrderStatusEnum;
 import main.isbd.data.model.enums.ProductInOrderStatusEnum;
@@ -34,44 +31,29 @@ public class ClientService {
     private final ProductInOrderRepository productInOrderRepository;
     private final AdminRepository adminRepository;
     private final MessageRepository messageRepository;
+    private final JwtTokenService jwtTokenService;
 
-    public ClientService(ClientRepository clientRepository, ProductTypeRepository productTypeRepository, OrderRepository orderRepository, ProductInOrderRepository productInOrderRepository, AdminRepository adminRepository, MessageRepository messageRepository) {
+    public ClientService(ClientRepository clientRepository, ProductTypeRepository productTypeRepository,
+                         OrderRepository orderRepository, ProductInOrderRepository productInOrderRepository,
+                         AdminRepository adminRepository, MessageRepository messageRepository,
+                         JwtTokenService jwtTokenService) {
         this.clientRepository = clientRepository;
         this.productTypeRepository = productTypeRepository;
         this.orderRepository = orderRepository;
         this.productInOrderRepository = productInOrderRepository;
         this.adminRepository = adminRepository;
         this.messageRepository = messageRepository;
+        this.jwtTokenService = jwtTokenService;
     }
 
-    public Client authorize(Integer client_id, String password) throws BadCredentialsException {
-        Client client = clientRepository.findById(client_id).orElseThrow(
-                () -> new BadCredentialsException("Client not found")
-        );
-        if (!client.getPassword().equals(password)) {
-            throw new BadCredentialsException("Wrong password");
+    public Client registerClient(String authToken) throws BaseAppException {
+        if (authToken == null || authToken.isEmpty()) {
+            throw new BaseAppException("No token from Auth service. Firstly create user-id with login\n",
+                    HttpStatus.BAD_REQUEST);
         }
-        return client;
-    }
-
-    public Client loginClient(ClientLogin clientLogin) throws BaseAppException {
-        if (clientLogin == null || !clientLogin.isValid()) {
-            throw new BaseAppException("Какой-то странный у вас реквест боди\n", HttpStatus.BAD_REQUEST);
-        }
-        System.out.printf("Клиент (%s) пытается зайти\n", clientLogin.getName());
-        return clientRepository.findByNameAndPassword(clientLogin.getName(), clientLogin.getPassword())
-                .orElseThrow(() -> new BadCredentialsException("Неверный логин или пароль\n"));
-    }
-
-    public Client registerClient(ClientRegister clientRegister) throws BaseAppException {
-        if (clientRegister == null || !clientRegister.isValid()) {
-            throw new BaseAppException("Какой-то странный у вас реквест боди\n", HttpStatus.BAD_REQUEST);
-        }
+        String login = jwtTokenService.extractLoginWithAvailabilityCheck(authToken, "ROLE_CLIENT");
         Client client = new Client();
-        client.setPhoneNumber(clientRegister.getPhoneNumber());
-        client.setEmail(clientRegister.getEmail());
-        client.setPassword(clientRegister.getPassword());
-        client.setName(clientRegister.getName());
+        client.setName(login);
         Client savedClient;
         try {
             savedClient = clientRepository.save(client);
@@ -79,20 +61,6 @@ public class ClientService {
             throw new BaseAppException(e.getMessage(), HttpStatus.CONFLICT);
         }
         return savedClient;
-    }
-
-    public ClientProfile getClientProfile(Integer client_id, String password) throws BadCredentialsException {
-        Client client = authorize(client_id, password);
-        return new ClientProfile(client.getPhoneNumber(), client.getEmail());
-    }
-
-    public ClientProfile setClientProfile(Integer client_id, String password, ClientProfile clientProfile)
-            throws BaseAppException {
-        Client client = authorize(client_id, password);
-        client.setPhoneNumber(clientProfile.getPhoneNumber());
-        client.setEmail(clientProfile.getEmail());
-        Client savedClient = clientRepository.save(client);
-        return new ClientProfile(savedClient.getPhoneNumber(), savedClient.getEmail());
     }
 
     public List<ProductShortInfo> getProductsShortInfo() {
@@ -149,8 +117,8 @@ public class ClientService {
         }
     }
 
-    public List<OrderInfo> getAllClientOrdersInfo(Integer clientId) throws BaseAppException {
-        Client client = clientRepository.findById(clientId).orElseThrow(
+    public List<OrderInfo> getAllClientOrdersInfo(String login) throws BaseAppException {
+        Client client = clientRepository.findByName(login).orElseThrow(
                 () -> new BadCredentialsException("Client not found")
         );
         return orderRepository.findAllByClientId(client).stream().map(
@@ -165,8 +133,8 @@ public class ClientService {
                 order.getStatus().getValue(), order.getCreatedAt(), order.getCompletedAt());
     }
 
-    public OrderInfo getClientCurrentOrder(Integer clientId) throws BaseAppException {
-        Client client = clientRepository.findById(clientId).orElseThrow(
+    public OrderInfo getClientCurrentOrder(String login) throws BaseAppException {
+        Client client = clientRepository.findByName(login).orElseThrow(
                 () -> new BadCredentialsException("Client not found")
         );
         Optional<Order> optionalOrder = orderRepository.findOneByClientIdAndStatus(client, OrderStatusEnum.BEING_FORMED);
@@ -232,12 +200,12 @@ public class ClientService {
         }
     }
 
-    public AdminContacts findOrderAdminContacts(Integer orderId) throws BaseAppException {
+    public AdminContacts findOrderAdmin(Integer orderId) throws BaseAppException {
         Order order = orderRepository.findById(orderId).orElseThrow(
                 () -> new BaseAppException("No order with id: " + orderId, HttpStatus.NOT_FOUND)
         );
         Admin admin = order.getAdminId();
-        return new AdminContacts(admin.getFullName(), admin.getPhoneNumber(), admin.getEmail());
+        return new AdminContacts(admin.getFullName(), admin.getLogin());
     }
 
     public List<ChatMessage> findAllOrderMessages(Integer orderId) throws BaseAppException {
