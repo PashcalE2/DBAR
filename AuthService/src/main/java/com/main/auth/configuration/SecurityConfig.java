@@ -71,6 +71,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth.requestMatchers(
                         "auth/register",
                         "auth/login",
+                        "auth/login/admin",
+                        "auth/login/factory",
+                        "auth/login/supervisor",
                         "auth/refresh/login").permitAll())
                 .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
                 .sessionManagement(sess ->

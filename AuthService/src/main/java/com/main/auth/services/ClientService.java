@@ -1,5 +1,6 @@
 package com.main.auth.services;
 
+import com.main.auth.exeptions.AuthException;
 import com.main.auth.exeptions.WrongParamsException;
 import com.main.auth.model.Client;
 import com.main.auth.model.Permission;
@@ -31,6 +32,27 @@ public class ClientService implements UserDetailsService {
         this.clientRepository = clientRepository;
         this.permissionRepository = permissionRepository;
         this.roleRepository = roleRepository;
+    }
+
+    public Client getClientByLogin(String login) throws AuthException {
+        return clientRepository.findByLogin(login).orElseThrow(
+                () -> new AuthException("Client not found", HttpStatus.NOT_FOUND)
+        );
+    }
+
+    public Client updateClient(String login, Client update) throws AuthException {
+        Client client = clientRepository.findByLogin(login).orElseThrow(
+                () -> new AuthException("Client not found", HttpStatus.NOT_FOUND)
+        );
+        client.setLogin(update.getLogin());
+        client.setPassword(passwordService.makeBCryptHash(update.getPassword()));
+        client.setEmail(update.getEmail());
+        client.setPhoneNumber(update.getPhoneNumber());
+        try {
+            return clientRepository.save(client);
+        } catch (Exception e) {
+            throw new AuthException(e.getMessage(), HttpStatus.CONFLICT);
+        }
     }
 
     public Client addClient(Client client, String roleName) throws WrongParamsException {

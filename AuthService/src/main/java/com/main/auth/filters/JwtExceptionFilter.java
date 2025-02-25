@@ -34,4 +34,6 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             response.getWriter().write("Expired jwt OLD");
         }
     }
+
+    //AuthorizationDeniedException
 }

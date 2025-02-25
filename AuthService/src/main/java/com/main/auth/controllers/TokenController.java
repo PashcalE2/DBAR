@@ -4,15 +4,20 @@ import com.main.auth.data.JwtAccessResponse;
 import com.main.auth.data.JwtPairResponse;
 import com.main.auth.data.JwtRefreshRequest;
 import com.main.auth.data.UserLogin;
+import com.main.auth.exeptions.AuthException;
 import com.main.auth.exeptions.BadCredentialsException;
 import com.main.auth.exeptions.WrongParamsException;
 import com.main.auth.model.Client;
 import com.main.auth.services.ClientService;
 import com.main.auth.services.JwtTokenService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -37,10 +42,14 @@ public class TokenController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtPairResponse> login(@RequestBody UserLogin userLogin) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+    public ResponseEntity<JwtPairResponse> login(@RequestBody UserLogin userLogin) throws AuthException {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 userLogin.getLogin(), userLogin.getPassword()
         ));
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        if (!userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_CLIENT"))) {
+            throw new AuthException("Permission denied", HttpStatus.FORBIDDEN);
+        }
         return ResponseEntity.ok(new JwtPairResponse(
                 jwtTokenService.generateAccessToken(userLogin.getLogin(), "ROLE_CLIENT"),
                 jwtTokenService.generateRefreshToken(userLogin.getLogin(), "ROLE_CLIENT")
@@ -48,10 +57,14 @@ public class TokenController {
     }
 
     @PostMapping("/login/admin")
-    public ResponseEntity<JwtPairResponse> loginAdmin(@RequestBody UserLogin userLogin) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+    public ResponseEntity<JwtPairResponse> loginAdmin(@RequestBody UserLogin userLogin) throws AuthException {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 userLogin.getLogin(), userLogin.getPassword()
         ));
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        if (!userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+            throw new AuthException("Permission denied", HttpStatus.FORBIDDEN);
+        }
         return ResponseEntity.ok(new JwtPairResponse(
                 jwtTokenService.generateAccessToken(userLogin.getLogin(), "ROLE_ADMIN"),
                 jwtTokenService.generateRefreshToken(userLogin.getLogin(), "ROLE_ADMIN")
@@ -59,13 +72,32 @@ public class TokenController {
     }
 
     @PostMapping("/login/factory")
-    public ResponseEntity<JwtPairResponse> loginFactory(@RequestBody UserLogin userLogin) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+    public ResponseEntity<JwtPairResponse> loginFactory(@RequestBody UserLogin userLogin) throws AuthException {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 userLogin.getLogin(), userLogin.getPassword()
         ));
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        if (!userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_FACTORY"))) {
+            throw new AuthException("Permission denied", HttpStatus.FORBIDDEN);
+        }
         return ResponseEntity.ok(new JwtPairResponse(
                 jwtTokenService.generateAccessToken(userLogin.getLogin(), "ROLE_FACTORY"),
                 jwtTokenService.generateRefreshToken(userLogin.getLogin(), "ROLE_FACTORY")
+        ));
+    }
+
+    @PostMapping("/login/supervisor")
+    public ResponseEntity<JwtPairResponse> loginSupervisor(@RequestBody UserLogin userLogin) throws AuthException {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                userLogin.getLogin(), userLogin.getPassword()
+        ));
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        if (!userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_SUPERVISOR"))) {
+            throw new AuthException("Permission denied", HttpStatus.FORBIDDEN);
+        }
+        return ResponseEntity.ok(new JwtPairResponse(
+                jwtTokenService.generateAccessToken(userLogin.getLogin(), "ROLE_SUPERVISOR"),
+                jwtTokenService.generateRefreshToken(userLogin.getLogin(), "ROLE_SUPERVISOR")
         ));
     }
 

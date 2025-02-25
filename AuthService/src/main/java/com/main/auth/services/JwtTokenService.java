@@ -15,6 +15,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Objects;
 
 
 @Slf4j
@@ -103,6 +104,12 @@ public class JwtTokenService {
     public String extractAccessSubject(String accessToken) throws BadCredentialsException {
         Claims claims = extractAccessClaims(accessToken);
         return claims.getSubject();
+    }
+
+    public boolean checkRole(String accessToken, String requiredRole) throws BadCredentialsException {
+        Claims claims = extractAccessClaims(accessToken);
+        String role = claims.get("role", String.class);
+        return Objects.equals(requiredRole, role);
     }
 
     private Claims extractAccessClaims(String accessToken) throws BadCredentialsException {

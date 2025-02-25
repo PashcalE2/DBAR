@@ -126,6 +126,8 @@
                 </configuration>
             </plugin>
         </plugins>
+
+        <finalName>AUTH</finalName>
     </build>
 
 </project>
