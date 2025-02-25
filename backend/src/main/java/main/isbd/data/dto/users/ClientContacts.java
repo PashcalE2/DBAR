@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class ClientContacts {
-    private String organization;
-    private String phoneNumber;
-    private String email;
+
+    private String login;
+
 }

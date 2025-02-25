@@ -9,9 +9,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AdminContacts {
+public class FactoryRegister {
 
-    private String fullName;
-    private String login;
+    private String authToken;
+    private String name;
+    private String address;
 
 }
