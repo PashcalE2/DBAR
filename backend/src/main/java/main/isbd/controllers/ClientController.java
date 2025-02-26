@@ -6,9 +6,9 @@ import main.isbd.data.dto.order.OrderInfo;
 import main.isbd.data.dto.product.ProductInOrderInfo;
 import main.isbd.data.dto.product.ProductInfo;
 import main.isbd.data.dto.product.ProductShortInfo;
+import main.isbd.data.dto.users.ActorRegister;
 import main.isbd.data.dto.users.AdminContacts;
-import main.isbd.data.dto.users.ClientRegister;
-import main.isbd.data.model.Client;
+import main.isbd.data.dto.users.ClientRegResponse;
 import main.isbd.data.model.enums.OrderStatusEnum;
 import main.isbd.exception.BaseAppException;
 import main.isbd.services.ClientService;
@@ -32,9 +32,9 @@ public class ClientController {
     }
 
     @PostMapping("/profile/register")
-    public @ResponseBody ResponseEntity<Client> register(@RequestBody ClientRegister clientRegister)
+    public @ResponseBody ResponseEntity<ClientRegResponse> register(@RequestBody ActorRegister clientRegister)
             throws BaseAppException {
-        return new ResponseEntity<>(clientService.registerClient(clientRegister.getAuthToken()), HttpStatus.CREATED);
+        return new ResponseEntity<>(clientService.registerClient(clientRegister), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('CLIENT')")
@@ -149,9 +149,10 @@ public class ClientController {
     @PreAuthorize("hasRole('CLIENT')")
     @GetMapping("/chat/get_admin")
     public @ResponseBody ResponseEntity<AdminContacts> getChatAdmin(
-            @RequestParam(defaultValue = "0") Integer order_id) throws BaseAppException {
+            @RequestParam(defaultValue = "0") Integer order_id, @AuthenticationPrincipal UserDetails userDetails)
+            throws BaseAppException {
         System.out.printf("Запрос на получение информации о консультанте заказа (%d)\n", order_id);
-        return ResponseEntity.ok(clientService.findOrderAdmin(order_id));
+        return ResponseEntity.ok(clientService.findOrderAdmin(order_id, userDetails.getPassword()));
     }
 
     @PreAuthorize("hasRole('CLIENT')")

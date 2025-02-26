@@ -1,8 +1,7 @@
 package main.isbd.services;
 
 import lombok.AllArgsConstructor;
-import main.isbd.data.dto.users.AdminRegister;
-import main.isbd.data.dto.users.ClientContacts;
+import main.isbd.data.dto.users.*;
 import main.isbd.data.model.*;
 import main.isbd.data.model.enums.OrderStatusEnum;
 import main.isbd.data.model.enums.ProductInOrderStatusEnum;
@@ -12,7 +11,6 @@ import main.isbd.exception.EntityNotFoundException;
 import main.isbd.repositories.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -22,7 +20,6 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-@Transactional
 public class AdminService {
     private final AdminRepository adminRepository;
     private final ProductTypeRepository productTypeRepository;
@@ -35,36 +32,44 @@ public class AdminService {
     private final JwtTokenService jwtTokenService;
     private final AdminScheduleRepository adminScheduleRepository;
     private final SupportServiceRepository supportServiceRepository;
+    private final AuthGateway authGateway;
 
-    public Admin registerAdmin(AdminRegister adminRegister) throws BaseAppException {
-        if (adminRegister.getAuthToken() == null || adminRegister.getAuthToken().isEmpty()) {
-            throw new BaseAppException("No token from Auth service. Firstly create user-id with login\n",
-                    HttpStatus.BAD_REQUEST);
-        }
-        String login = jwtTokenService
-                .extractLoginWithAvailabilityCheck(adminRegister.getAuthToken(), "ROLE_ADMIN");
-        AdminSchedule adminSchedule = new AdminSchedule();
-        adminSchedule.setWorkingHours(adminRegister.getScheduleHours());
-        adminSchedule.setDescription(adminRegister.getScheduleDescription());
-        AdminSchedule savedAdminSchedule = adminScheduleRepository.save(adminSchedule);
-        SupportService supportService = new SupportService();
-        supportService.setAddress(adminRegister.getSupportAddress());
-        supportService.setName(adminRegister.getSupportName());
-        supportService.setEmail(adminRegister.getSupportEmail());
-        supportService.setPhoneNumber(adminRegister.getSupportPhoneNumber());
-        SupportService savedSupportService = supportServiceRepository.save(supportService);
-        Admin admin = new Admin();
-        admin.setLogin(login);
-        admin.setFullName(adminRegister.getFullName());
-        admin.setClientServiceId(savedAdminSchedule.getId());
-        admin.setScheduleId(savedSupportService.getId());
+    public AdminRegResponse registerAdmin(AdminRegister adminRegister, String accessToken) throws BaseAppException {
+        JwtPairResponse jwtPairResponse = authGateway.registerActorAsAdmin(new ActorRegister(
+                adminRegister.getPhoneNumber(),
+                adminRegister.getEmail(),
+                adminRegister.getLogin(),
+                adminRegister.getPassword()
+        ), accessToken);
+        String adminToken = jwtPairResponse.getAccess();
         Admin savedAdmin;
         try {
-            savedAdmin = adminRepository.save(admin);
+            String login = jwtTokenService.extractLoginWithAvailabilityCheck(adminToken, "ROLE_ADMIN");
+            AdminSchedule adminSchedule = new AdminSchedule();
+            adminSchedule.setWorkingHours(adminRegister.getScheduleHours());
+            adminSchedule.setDescription(adminRegister.getScheduleDescription());
+            AdminSchedule savedAdminSchedule = adminScheduleRepository.save(adminSchedule);
+            SupportService supportService = new SupportService();
+            supportService.setAddress(adminRegister.getSupportAddress());
+            supportService.setName(adminRegister.getSupportName());
+            supportService.setEmail(adminRegister.getSupportEmail());
+            supportService.setPhoneNumber(adminRegister.getSupportPhoneNumber());
+            SupportService savedSupportService = supportServiceRepository.save(supportService);
+            Admin admin = new Admin();
+            admin.setLogin(login);
+            admin.setFullName(adminRegister.getFullName());
+            admin.setClientServiceId(savedAdminSchedule.getId());
+            admin.setScheduleId(savedSupportService.getId());
+            try {
+                savedAdmin = adminRepository.save(admin);
+            } catch (Exception e) {
+                throw new BaseAppException(e.getMessage(), HttpStatus.CONFLICT);
+            }
         } catch (Exception e) {
-            throw new BaseAppException(e.getMessage(), HttpStatus.CONFLICT);
+            authGateway.deleteActorByHisToken(adminToken);
+            throw e;
         }
-        return savedAdmin;
+        return new AdminRegResponse(adminRegister, savedAdmin, jwtPairResponse);
     }
 
     public ProductType getProductInfoById(Integer productId) throws BaseAppException {

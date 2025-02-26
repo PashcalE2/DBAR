@@ -11,7 +11,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AdminRegister {
 
-    private String authToken;
+    private String phoneNumber;
+    private String email;
+    private String login;
+    private String password;
+
     private String fullName;
 
     private String supportName;

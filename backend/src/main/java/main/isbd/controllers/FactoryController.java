@@ -7,8 +7,8 @@ import main.isbd.data.dto.material.MaterialInfo;
 import main.isbd.data.dto.material.MaterialShortInfo;
 import main.isbd.data.dto.product.ProductInfo;
 import main.isbd.data.dto.product.ProductShortInfo;
+import main.isbd.data.dto.users.FactoryRegResponse;
 import main.isbd.data.dto.users.FactoryRegister;
-import main.isbd.data.model.Factory;
 import main.isbd.data.model.MaterialType;
 import main.isbd.data.model.ProductType;
 import main.isbd.exception.BaseAppException;
@@ -16,6 +16,8 @@ import main.isbd.services.FactoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,9 +33,10 @@ public class FactoryController {
 
     @PreAuthorize("hasRole('SUPERVISOR')")
     @PostMapping("/profile/register")
-    public @ResponseBody ResponseEntity<Factory> register(@RequestBody FactoryRegister factoryRegister)
+    public @ResponseBody ResponseEntity<FactoryRegResponse> register(
+            @RequestBody FactoryRegister factoryRegister, @AuthenticationPrincipal UserDetails userDetails)
             throws BaseAppException {
-        return new ResponseEntity<>(factoryService.registerFactory(factoryRegister), HttpStatus.CREATED);
+        return new ResponseEntity<>(factoryService.registerFactory(factoryRegister, userDetails.getPassword()), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('FACTORY')")

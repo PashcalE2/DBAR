@@ -3,6 +3,7 @@ package main.isbd.controllers;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import main.isbd.data.AppInfoResponse;
+import main.isbd.data.dto.users.AdminRegResponse;
 import main.isbd.data.dto.users.AdminRegister;
 import main.isbd.data.dto.users.ClientContacts;
 import main.isbd.data.model.*;
@@ -28,9 +29,10 @@ public class AdminController {
 
     @PreAuthorize("hasRole('FACTORY')")
     @PostMapping("/profile/register")
-    public @ResponseBody ResponseEntity<Admin> register(@RequestBody AdminRegister adminRegister)
+    public @ResponseBody ResponseEntity<AdminRegResponse> register(
+            @RequestBody AdminRegister adminRegister, @AuthenticationPrincipal UserDetails userDetails)
             throws BaseAppException {
-        return new ResponseEntity<>(adminService.registerAdmin(adminRegister), HttpStatus.CREATED);
+        return new ResponseEntity<>(adminService.registerAdmin(adminRegister, userDetails.getPassword()), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

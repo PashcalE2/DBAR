@@ -1,5 +1,6 @@
 package com.main.auth.controllers;
 
+import com.main.auth.data.AuthInfoResponse;
 import com.main.auth.data.ClientProfile;
 import com.main.auth.exeptions.AuthException;
 import com.main.auth.model.Client;
@@ -13,7 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/user/profile")
 public class UserController {
 
     private final ClientService clientService;
@@ -23,7 +24,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN', 'FACTORY')")
-    @GetMapping("/profile")
+    @GetMapping
     public ResponseEntity<ClientProfile> getProfile(@AuthenticationPrincipal UserDetails userDetails)
             throws AuthException {
         Client client = clientService.getClientByLogin(userDetails.getUsername());
@@ -31,7 +32,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN', 'FACTORY')")
-    @PutMapping("/profile")
+    @PutMapping
     public ResponseEntity<ClientProfile> updateProfile(@AuthenticationPrincipal UserDetails userDetails,
                                                        @RequestBody Client update) throws AuthException {
         Client updatedClient = clientService.updateClient(userDetails.getUsername(), update);
@@ -42,8 +43,17 @@ public class UserController {
         ));
     }
 
+    @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN', 'FACTORY')")
+    @DeleteMapping
+    public ResponseEntity<AuthInfoResponse> deleteProfile(@AuthenticationPrincipal UserDetails userDetails)
+            throws AuthException {
+        clientService.deleteClient(userDetails.getUsername());
+        return ResponseEntity.ok(new AuthInfoResponse(HttpStatus.OK,
+                "Client " + userDetails.getUsername() + " deleted."));
+    }
+
     @PreAuthorize("hasRole('CLIENT')")
-    @GetMapping("profile/admin/{login}")
+    @GetMapping("/admin/{login}")
     public ResponseEntity<ClientProfile> getAdminProfile(@PathVariable String login) throws AuthException {
         Client client = clientService.getClientByLogin(login);
         if (!client.getRoles().stream().map(Role::getName).toList().contains("ROLE_ADMIN")) {

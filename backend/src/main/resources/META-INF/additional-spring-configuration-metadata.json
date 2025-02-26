@@ -4,5 +4,30 @@
       "name": "jwt.secret.access.public",
       "type": "java.lang.String",
       "description": "Access token decoding secret key."
-  }
-] }
+    },
+    {
+      "name": "api.auth.register.client",
+      "type": "java.lang.String",
+      "description": "Register Client in Auth Service api url."
+    },
+    {
+      "name": "api.auth.register.admin",
+      "type": "java.lang.String",
+      "description": "Register Admin in Auth Service api url."
+    },
+    {
+      "name": "api.auth.register.factory",
+      "type": "java.lang.String",
+      "description": "Register Factory in Auth Service api url."
+    },
+    {
+      "name": "api.auth.user.admin",
+      "type": "java.lang.String",
+      "description": "CRUD with admin user Auth Service api url."
+    },
+    {
+      "name": "api.auth.user",
+      "type": "java.lang.String",
+      "description": "CRUD with user Auth Service api url."
+    }
+  ] }

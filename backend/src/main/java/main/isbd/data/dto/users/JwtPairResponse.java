@@ -9,14 +9,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class FactoryRegister {
+public class JwtPairResponse {
 
-    private String phoneNumber;
-    private String email;
-    private String login;
-    private String password;
-
-    private String name;
-    private String address;
+    private String access;
+    private String refresh;
 
 }

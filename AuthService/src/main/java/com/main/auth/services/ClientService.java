@@ -55,9 +55,25 @@ public class ClientService implements UserDetailsService {
         }
     }
 
+    public void deleteClient(String login) throws AuthException {
+        Client client = clientRepository.findByLogin(login).orElseThrow(
+                () -> new AuthException("Client not found to delete", HttpStatus.NOT_FOUND)
+        );
+        try {
+            clientRepository.delete(client);
+        } catch (Exception e) {
+            throw new AuthException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public Client addClient(Client client, String roleName) throws WrongParamsException {
         client.setPassword(passwordService.makeBCryptHash(client.getPassword()));
-        Client savedClient = clientRepository.save(client);
+        Client savedClient;
+        try {
+            savedClient = clientRepository.save(client);
+        } catch (Exception e) {
+            throw new WrongParamsException(e.getMessage(), HttpStatus.CONFLICT);
+        }
         Role userRole = roleRepository.findByName(roleName)
                 .orElseThrow(() -> new WrongParamsException("No role " + roleName, HttpStatus.NOT_FOUND));
         Permission permission = new Permission();

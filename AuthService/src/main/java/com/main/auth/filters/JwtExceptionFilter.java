@@ -1,6 +1,6 @@
 package com.main.auth.filters;
 
-import com.main.auth.data.AuthErrorResponse;
+import com.main.auth.data.AuthInfoResponse;
 import com.main.auth.exeptions.TokenException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
@@ -23,9 +23,9 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (TokenException e) {
-            AuthErrorResponse authErrorResponse = new AuthErrorResponse(e);
+            AuthInfoResponse authInfoResponse = new AuthInfoResponse(e);
             response.setStatus(e.getStatus().value());
-            response.getWriter().write(authErrorResponse.convertToJson());
+            response.getWriter().write(authInfoResponse.convertToJson());
         } catch (SignatureException | UsernameNotFoundException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Invalid jwt OLD");

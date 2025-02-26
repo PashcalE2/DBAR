@@ -14,27 +14,27 @@ import org.springframework.http.HttpStatus;
 @Getter
 @Setter
 @NoArgsConstructor
-public class AuthErrorResponse {
+public class AuthInfoResponse {
 
     private int code;
     private String message;
 
-    public AuthErrorResponse(int code, String message) {
+    public AuthInfoResponse(int code, String message) {
         this.code = code;
         this.message = message;
     }
 
-    public AuthErrorResponse(HttpStatus status, String message) {
+    public AuthInfoResponse(HttpStatus status, String message) {
         this.code = status.value();
         this.message = message;
     }
 
-    public AuthErrorResponse(AuthException e) {
+    public AuthInfoResponse(AuthException e) {
         this.code = e.getStatus().value();
         this.message = e.getMessage();
     }
 
-    public AuthErrorResponse(TokenException e) {
+    public AuthInfoResponse(TokenException e) {
         this.code = e.getStatus().value();
         this.message = e.getMessage();
     }

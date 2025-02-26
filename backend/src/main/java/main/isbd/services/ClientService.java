@@ -5,7 +5,7 @@ import main.isbd.data.dto.order.OrderInfo;
 import main.isbd.data.dto.product.ProductInOrderInfo;
 import main.isbd.data.dto.product.ProductInfo;
 import main.isbd.data.dto.product.ProductShortInfo;
-import main.isbd.data.dto.users.AdminContacts;
+import main.isbd.data.dto.users.*;
 import main.isbd.data.model.*;
 import main.isbd.data.model.enums.OrderStatusEnum;
 import main.isbd.data.model.enums.ProductInOrderStatusEnum;
@@ -32,11 +32,12 @@ public class ClientService {
     private final AdminRepository adminRepository;
     private final MessageRepository messageRepository;
     private final JwtTokenService jwtTokenService;
+    private final AuthGateway authGateway;
 
     public ClientService(ClientRepository clientRepository, ProductTypeRepository productTypeRepository,
                          OrderRepository orderRepository, ProductInOrderRepository productInOrderRepository,
                          AdminRepository adminRepository, MessageRepository messageRepository,
-                         JwtTokenService jwtTokenService) {
+                         JwtTokenService jwtTokenService, AuthGateway authGateway) {
         this.clientRepository = clientRepository;
         this.productTypeRepository = productTypeRepository;
         this.orderRepository = orderRepository;
@@ -44,23 +45,26 @@ public class ClientService {
         this.adminRepository = adminRepository;
         this.messageRepository = messageRepository;
         this.jwtTokenService = jwtTokenService;
+        this.authGateway = authGateway;
     }
 
-    public Client registerClient(String authToken) throws BaseAppException {
-        if (authToken == null || authToken.isEmpty()) {
-            throw new BaseAppException("No token from Auth service. Firstly create user-id with login\n",
-                    HttpStatus.BAD_REQUEST);
-        }
-        String login = jwtTokenService.extractLoginWithAvailabilityCheck(authToken, "ROLE_CLIENT");
-        Client client = new Client();
-        client.setName(login);
-        Client savedClient;
+    public ClientRegResponse registerClient(ActorRegister clientRegister) throws BaseAppException {
+        JwtPairResponse jwtPairResponse = authGateway.registerActorAsClient(clientRegister);
+        String authToken = jwtPairResponse.getAccess();
         try {
-            savedClient = clientRepository.save(client);
+            String login = jwtTokenService.extractLoginWithAvailabilityCheck(authToken, "ROLE_CLIENT");
+            Client client = new Client();
+            client.setName(login);
+            try {
+                clientRepository.save(client);
+            } catch (Exception e) {
+                throw new BaseAppException(e.getMessage(), HttpStatus.CONFLICT);
+            }
         } catch (Exception e) {
-            throw new BaseAppException(e.getMessage(), HttpStatus.CONFLICT);
+            authGateway.deleteActorByHisToken(authToken);
+            throw e;
         }
-        return savedClient;
+        return new ClientRegResponse(clientRegister, jwtPairResponse);
     }
 
     public List<ProductShortInfo> getProductsShortInfo() {
@@ -200,12 +204,13 @@ public class ClientService {
         }
     }
 
-    public AdminContacts findOrderAdmin(Integer orderId) throws BaseAppException {
+    public AdminContacts findOrderAdmin(Integer orderId, String accessToken) throws BaseAppException {
         Order order = orderRepository.findById(orderId).orElseThrow(
                 () -> new BaseAppException("No order with id: " + orderId, HttpStatus.NOT_FOUND)
         );
         Admin admin = order.getAdminId();
-        return new AdminContacts(admin.getFullName(), admin.getLogin());
+        ActorProfile orderAdminProfile = authGateway.getActorAdminProfile(admin.getLogin(), accessToken);
+        return new AdminContacts(admin.getFullName(), orderAdminProfile.getPhone_number(), orderAdminProfile.getEmail());
     }
 
     public List<ChatMessage> findAllOrderMessages(Integer orderId) throws BaseAppException {

@@ -12,6 +12,7 @@ import lombok.Setter;
 public class AdminContacts {
 
     private String fullName;
-    private String login;
+    private String phoneNumber;
+    private String email;
 
 }

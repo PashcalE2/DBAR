@@ -3,7 +3,10 @@ package main.isbd.services;
 import lombok.AllArgsConstructor;
 import main.isbd.data.dto.material.MaterialShortInfo;
 import main.isbd.data.dto.product.ProductShortInfo;
+import main.isbd.data.dto.users.ActorRegister;
+import main.isbd.data.dto.users.FactoryRegResponse;
 import main.isbd.data.dto.users.FactoryRegister;
+import main.isbd.data.dto.users.JwtPairResponse;
 import main.isbd.data.model.Factory;
 import main.isbd.data.model.MaterialType;
 import main.isbd.data.model.ProductType;
@@ -14,37 +17,43 @@ import main.isbd.repositories.MaterialTypeRepository;
 import main.isbd.repositories.ProductTypeRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @AllArgsConstructor
-@Transactional
 public class FactoryService {
     private final FactoryRepository factoryRepository;
     private final ProductTypeRepository productTypeRepository;
     private final MaterialTypeRepository materialTypeRepository;
     private final JwtTokenService jwtTokenService;
+    private final AuthGateway authGateway;
 
-    public Factory registerFactory(FactoryRegister factoryRegister) throws BaseAppException {
-        if (factoryRegister.getAuthToken() == null || factoryRegister.getAuthToken().isEmpty()) {
-            throw new BaseAppException("No token from Auth service. Firstly create user-id with login\n",
-                    HttpStatus.BAD_REQUEST);
-        }
-        String login = jwtTokenService
-                .extractLoginWithAvailabilityCheck(factoryRegister.getAuthToken(), "ROLE_FACTORY");
-        Factory factory = new Factory();
-        factory.setLogin(login);
-        factory.setName(factoryRegister.getName());
-        factory.setAddress(factoryRegister.getAddress());
-        Factory savedFactory;
+    public FactoryRegResponse registerFactory(FactoryRegister factoryRegister, String accessToken)
+            throws BaseAppException {
+        JwtPairResponse jwtPairResponse = authGateway.registerActorAsFactory(new ActorRegister(
+                factoryRegister.getPhoneNumber(),
+                factoryRegister.getEmail(),
+                factoryRegister.getLogin(),
+                factoryRegister.getPassword()
+        ), accessToken);
+        String factoryToken = jwtPairResponse.getAccess();
         try {
-            savedFactory = factoryRepository.save(factory);
+            String login = jwtTokenService.extractLoginWithAvailabilityCheck(factoryToken, "ROLE_FACTORY");
+            Factory factory = new Factory();
+            factory.setLogin(login);
+            factory.setName(factoryRegister.getName());
+            factory.setAddress(factoryRegister.getAddress());
+            try {
+                factoryRepository.save(factory);
+            } catch (Exception e) {
+                throw new BaseAppException(e.getMessage(), HttpStatus.CONFLICT);
+            }
         } catch (Exception e) {
-            throw new BaseAppException(e.getMessage(), HttpStatus.CONFLICT);
+            authGateway.deleteActorByHisToken(factoryToken);
+            throw e;
         }
-        return savedFactory;
+        return new FactoryRegResponse(factoryRegister, jwtPairResponse);
     }
 
     public List<ProductShortInfo> getAllProductsShortInfo() {

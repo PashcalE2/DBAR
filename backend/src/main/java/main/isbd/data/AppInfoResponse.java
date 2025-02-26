@@ -17,10 +17,10 @@ import org.springframework.http.HttpStatus;
 @NoArgsConstructor
 public class AppInfoResponse {
 
-    private int code;
+    private Integer code;
     private String message;
 
-    public AppInfoResponse(int code, String message) {
+    public AppInfoResponse(Integer code, String message) {
         this.code = code;
         this.message = message;
     }

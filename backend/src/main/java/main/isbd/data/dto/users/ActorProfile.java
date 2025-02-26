@@ -7,16 +7,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class FactoryRegister {
+@AllArgsConstructor
+public class ActorProfile {
 
-    private String phoneNumber;
-    private String email;
     private String login;
-    private String password;
-
-    private String name;
-    private String address;
+    private String phone_number;
+    private String email;
 
 }
