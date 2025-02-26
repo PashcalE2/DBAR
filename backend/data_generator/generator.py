@@ -251,7 +251,7 @@ def encrypt_password(raw: str) -> str:
     return "".join([chr(char_code) for char_code in bcrypt.hashpw(bytes([ord(char) for char in raw]), bc_salt)])
 
 
-user_login = [f"login{i + 1}" for i in range(factories_count + admins_count + client_count)]
+user_login = [f"login{i + 1}" for i in range(factories_count + admins_count + registered_client_count)]
 users_count = len(user_login)
 factories_logins = user_login[:factories_count]
 admins_logins = user_login[factories_count:factories_count + admins_count]
@@ -435,7 +435,7 @@ def data_sql():
             Roles.admin
         ))
 
-    for i in range(client_count):
+    for i in range(registered_client_count):
         auth_db.append("insert into permission values ({}, {});".format(
             factories_count + admins_count + i + 1,
             Roles.client
