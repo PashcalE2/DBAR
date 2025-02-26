@@ -2,6 +2,7 @@ import itertools
 import pandas as pd
 import random
 import datetime
+import bcrypt
 
 
 password_alphabet = [chr(num) for num in range(ord("A"), ord("Z") + 1)]
@@ -58,7 +59,7 @@ text_substrings_set_list = list(text_substrings_set)
 
 # Заводы
 
-factories = pd.read_csv("data/factories.csv", delimiter=";")
+factories = pd.read_csv("data/factories.csv", delimiter=";", dtype=str)
 factories_names = factories["name"].to_list()
 factories_count = len(factories_names)
 factories_phone = factories["phone_number"].to_list()
@@ -144,7 +145,7 @@ client_passwords = [Generator.gen_password(random.randint(5, 10)) for _ in range
 
 # Сервисы
 
-services = pd.read_csv("data/client_services.csv", delimiter=";")
+services = pd.read_csv("data/client_services.csv", delimiter=";", dtype=str)
 services_names = services["name"].to_list()
 services_count = len(services_names)
 services_phone = services["phone_number"].to_list()
@@ -160,7 +161,7 @@ schedules_description = schedules["description"].to_list()
 
 # Консультанты
 
-admins = pd.read_csv("data/admins.csv", delimiter=",")
+admins = pd.read_csv("data/admins.csv", delimiter=",", dtype=str)
 admins_names = admins["name"].to_list()
 admins_count = len(admins_names)
 admins_phone = admins["phone_number"].to_list()
@@ -241,26 +242,57 @@ for i in range(orders_count):
     pio_product_count.extend([random.randint(1, 10) for _ in range(current_pio_types_count)])
 
 
-enum_data = []
-lines = []
+# Логины
+
+bc_salt = bcrypt.gensalt(rounds=10, prefix=b"2a")
+
+
+def encrypt_password(raw: str) -> str:
+    return "".join([chr(char_code) for char_code in bcrypt.hashpw(bytes([ord(char) for char in raw]), bc_salt)])
+
+
+user_login = [f"login{i + 1}" for i in range(factories_count + admins_count + client_count)]
+users_count = len(user_login)
+factories_logins = user_login[:factories_count]
+admins_logins = user_login[factories_count:factories_count + admins_count]
+client_logins = user_login[factories_count + admins_count:]
+
+user_phone = factories_phone + admins_phone + client_phones
+user_email = factories_email + admins_email + client_emails
+# user_raw_password = factories_passwords + admins_passwords + client_passwords
+user_raw_password = ["123" for i in range(users_count)]
+user_password = [encrypt_password(password) for password in user_raw_password]
+
+
+class Roles:
+    client = 1
+    admin = 2
+    factory = 3
+    supervisor = 4
+
+
+main_app_db = []
+auth_db = []
 
 
 def data_sql():
-    enum_data.append("drop type if exists доступные_организации_enum;")
-    enum_data.append("create type Доступные_организации_enum as enum (\n{}\n);".format(
-        ",\n".join(["'{}'".format(v) for v in client_names])
-    ))
-
     for i in range(registered_client_count):
+        """
         lines.append("insert into клиент values (default, '{}', '{}', '{}', '{}');".format(
             client_phones[i],
             client_emails[i],
             client_passwords[i],
             client_names[i]
         ))
+        """
+        main_app_db.append("insert into клиент values ({}, '{}');".format(
+            i + 1,
+            client_logins[i]
+        ))
 
     for i in range(services_count):
-        lines.append("insert into служба_поддержки values (default, '{}', '{}', '{}', '{}');".format(
+        main_app_db.append("insert into служба_поддержки values ({}, '{}', '{}', '{}', '{}');".format(
+            i + 1,
             services_names[i],
             services_phone[i],
             services_email[i],
@@ -268,12 +300,14 @@ def data_sql():
         ))
 
     for i in range(schedules_count):
-        lines.append("insert into расписание_консультантов values (default, {}, '{}');".format(
+        main_app_db.append("insert into расписание_консультантов values ({}, {}, '{}');".format(
+            i + 1,
             schedules_hours[i],
             schedules_description[i]
         ))
 
     for i in range(admins_count):
+        """
         lines.append("insert into консультант values (default, {}, {}, '{}', '{}', '{}', '{}');".format(
             admins_service[i],
             admins_schedule[i],
@@ -282,8 +316,17 @@ def data_sql():
             admins_email[i],
             admins_passwords[i]
         ))
+        """
+        main_app_db.append("insert into консультант values ({}, {}, {}, '{}', '{}');".format(
+            i + 1,
+            admins_service[i],
+            admins_schedule[i],
+            admins_names[i],
+            admins_logins[i]
+        ))
 
     for i in range(factories_count):
+        """
         lines.append("insert into завод values (default, '{}', '{}', '{}', '{}', '{}');".format(
             factories_names[i],
             factories_phone[i],
@@ -291,49 +334,61 @@ def data_sql():
             factories_passwords[i],
             factories_address[i]
         ))
+        """
+        main_app_db.append("insert into завод values ({}, '{}', '{}', '{}');".format(
+            i + 1,
+            factories_names[i],
+            factories_address[i],
+            factories_logins[i]
+        ))
 
     for i in range(product_storages_count):
-        lines.append("insert into склад_готовой_продукции values (default, {}, '{}');".format(
+        main_app_db.append("insert into склад_готовой_продукции values ({}, {}, '{}');".format(
+            i + 1,
             p_storages_factories_id[i],
             p_storages_address[i]
         ))
 
     for i in range(products_count):
-        lines.append("insert into тип_продукции values (default, {}, '{}', $${}$$);".format(
+        main_app_db.append("insert into тип_продукции values ({}, {}, '{}', $${}$$);".format(
+            i + 1,
             products_prices[i],
             products_names[i],
             products_descriptions[i]
         ))
 
     for i in range(r_p_count):
-        lines.append("insert into готовая_продукция values ({}, {}, {});".format(
+        main_app_db.append("insert into готовая_продукция values ({}, {}, {});".format(
             r_p_storage_id[i],
             r_p_type_id[i],
             r_p_product_count[i]
         ))
 
     for i in range(material_storages_count):
-        lines.append("insert into склад_сырья values (default, {}, '{}');".format(
+        main_app_db.append("insert into склад_сырья values ({}, {}, '{}');".format(
+            i + 1,
             m_storages_factories_id[i],
             m_storages_address[i]
         ))
 
     for i in range(products_count):
-        lines.append("insert into тип_материала values (default, {}, '{}', $${}$$);".format(
+        main_app_db.append("insert into тип_материала values ({}, {}, '{}', $${}$$);".format(
+            i + 1,
             materials_prices[i],
             materials_names[i],
             materials_descriptions[i]
         ))
 
     for i in range(s_m_count):
-        lines.append("insert into материалы values ({}, {}, {});".format(
+        main_app_db.append("insert into материалы values ({}, {}, {});".format(
             s_m_storage_id[i],
             s_m_type_id[i],
             s_m_material_count[i]
         ))
 
     for i in range(orders_count):
-        lines.append("insert into заказ values (default, {}, {}, '{}', '{}', {});".format(
+        main_app_db.append("insert into заказ values ({}, {}, {}, '{}', '{}', {});".format(
+            i + 1,
             orders_client_id[i],
             random.randint(1, admins_count),
             orders_statuses[i],
@@ -343,7 +398,7 @@ def data_sql():
 
         for j in range(pio_total_count):
             if pio_order_id[j] == i + 1:
-                lines.append("insert into продукция_в_заказе values ({}, {}, '{}', {});".format(
+                main_app_db.append("insert into продукция_в_заказе values ({}, {}, '{}', {});".format(
                     pio_order_id[j],
                     pio_product_id[j],
                     pio_status[j],
@@ -351,17 +406,48 @@ def data_sql():
                 ))
 
     for i in range(total_messages_count):
-        lines.append("insert into сообщение values (default, {}, '{}', $${}$$, '{}');".format(
+        main_app_db.append("insert into сообщение values ({}, {}, '{}', $${}$$, '{}');".format(
+            i + 1,
             messages_orders[i],
             messages_senders[i],
             messages_content[i],
             messages_datetime[i]
         ))
 
+    for i in range(users_count):
+        auth_db.append("insert into client values ({}, '{}', '{}', '{}', '{}');".format(
+            i + 1,
+            user_phone[i],
+            user_email[i],
+            user_login[i],
+            user_password[i]
+        ))
+
+    for i in range(factories_count):
+        auth_db.append("insert into permission values ({}, {});".format(
+            i + 1,
+            Roles.factory
+        ))
+
+    for i in range(admins_count):
+        auth_db.append("insert into permission values ({}, {});".format(
+            factories_count + i + 1,
+            Roles.admin
+        ))
+
+    for i in range(client_count):
+        auth_db.append("insert into permission values ({}, {});".format(
+            factories_count + admins_count + i + 1,
+            Roles.client
+        ))
+
 
 data_sql()
 
-with open("output.txt", "w", encoding="utf-8") as out:
-    out.write("\n".join(lines))
+with open("main_db_insert.sql", "w", encoding="utf-8") as out:
+    out.write("\n".join(main_app_db))
     out.flush()
-    out.close()
+
+with open("auth_db_insert.sql", "w", encoding="utf-8") as out:
+    out.write("\n".join(auth_db))
+    out.flush()

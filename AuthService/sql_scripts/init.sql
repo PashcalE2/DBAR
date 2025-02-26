@@ -18,7 +18,7 @@ insert into role (name) values ('ROLE_SUPERVISOR');
 
 
 create table permission (
-                            client integer references client on delete cascade not null,
+                            client integer references client on delete cascade,
                             role integer references role,
                             primary key(client, role)
 );
