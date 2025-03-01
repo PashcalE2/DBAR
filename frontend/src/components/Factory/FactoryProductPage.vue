@@ -69,7 +69,7 @@
 
 <script>
 import axios from "axios";
-import {MY_APIS} from "@/js/my_apis";
+import {BACKEND_API} from "@/js/backend_apis";
 import * as FactoryStorage from "@/js/factory_storage";
 import StringInputField from "@/components/Commons/StringInputField.vue";
 import DefaultButton from "@/components/Commons/DefaultButton.vue";
@@ -153,12 +153,13 @@ export default {
 
         onAcceptClick() {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.FACTORY.PRODUCT.SET;
 
             this.$refs.accept_button.disable();
-
+            // TODO
             axios.request({
-                url: MY_APIS.FACTORY.PRODUCT.SET.url,
-                method: MY_APIS.FACTORY.PRODUCT.SET.method,
+                url: endpoint.url,
+                method: endpoint.method,
                 params: {
                     factory_id: FactoryStorage.getId(),
                     password: FactoryStorage.getPassword()
@@ -241,10 +242,11 @@ export default {
 
         getProductInfo() {
             let page = this;
-
+            let endpoint = BACKEND_API.MAIN_SERVICE.FACTORY.PRODUCT.GET;
+            // TODO
             axios.request({
-                url: MY_APIS.FACTORY.PRODUCT.GET.url,
-                method: MY_APIS.FACTORY.PRODUCT.GET.method,
+                url: endpoint.url,
+                method: endpoint.method,
                 params: {
                     factory_id: FactoryStorage.getId(),
                     password: FactoryStorage.getPassword(),

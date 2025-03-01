@@ -65,7 +65,7 @@
 <script>
 import DefaultButton from "@/components/Commons/DefaultButton.vue";
 import axios from "axios";
-import {MY_APIS} from "@/js/my_apis";
+import {BACKEND_API} from "@/js/backend_apis";
 import * as AdminStorage from "@/js/admin_storage";
 import {reformatDate} from "@/js/utils";
 import OrderStatus from "@/components/Commons/OrderStatus.vue";
@@ -114,11 +114,12 @@ export default {
         assemblyOnClick() {
             let page = this;
             page.$refs.assembly_button.disable();
-            console.log(MY_APIS.ADMIN.ORDER.ASK_FOR_ASSEMBLING.url);
+
+            let endpoint = BACKEND_API.MAIN_SERVICE.ADMIN.ORDER.ASK_FOR_ASSEMBLING;
 
             axios.request({
-                url: MY_APIS.ADMIN.ORDER.ASK_FOR_ASSEMBLING.url,
-                method: MY_APIS.ADMIN.ORDER.ASK_FOR_ASSEMBLING.method,
+                url: endpoint.url,
+                method: endpoint.method,
                 params: {
                     admin_id: AdminStorage.getId(),
                     password: AdminStorage.getPassword(),
@@ -126,6 +127,7 @@ export default {
                 }
             })
                 .then(function (response) {
+                    // TODO
                     response;
                     page.order_info = {};
                     page.getOrderInfo();
@@ -138,10 +140,11 @@ export default {
 
         getOrderInfo() {
             let page = this;
-
+            let endpoint = BACKEND_API.MAIN_SERVICE.ADMIN.ORDER.GET;
+            // TODO
             axios.request({
-                url: MY_APIS.ADMIN.ORDER.GET.url,
-                method: MY_APIS.ADMIN.ORDER.GET.method,
+                url: endpoint.url,
+                method: endpoint.method,
                 params: {
                     admin_id: AdminStorage.getId(),
                     password: AdminStorage.getPassword(),
@@ -166,10 +169,11 @@ export default {
 
         getProductsInOrder() {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.ADMIN.ORDER.GET_PRODUCTS;
 
             axios.request({
-                url: MY_APIS.ADMIN.ORDER.GET_PRODUCTS.url,
-                method: MY_APIS.ADMIN.ORDER.GET_PRODUCTS.method,
+                url: endpoint.url,
+                method: endpoint.method,
                 params: {
                     admin_id: AdminStorage.getId(),
                     password: AdminStorage.getPassword(),
@@ -177,6 +181,7 @@ export default {
                 }
             })
                 .then(function (response) {
+                    // TODO
                     page.products_in_order = response.data;
                 })
                 .catch(function (exception) {

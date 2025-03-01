@@ -18,7 +18,7 @@
 
 import FlexRowNavigationBar from "@/components/Commons/FlexRowNavigationBar.vue";
 import axios from "axios";
-import {MY_APIS} from "@/js/my_apis";
+import {BACKEND_API} from "@/js/backend_apis";
 import * as FactoryStorage from "@/js/factory_storage";
 
 export default {
@@ -106,11 +106,13 @@ export default {
         },
 
         checkIfAuthenticated() {
+            // TODO
+            /*
             let page = this;
 
             axios.request({
-                url: MY_APIS.FACTORY.PROFILE.CHECK_RIGHTS.url,
-                method: MY_APIS.FACTORY.PROFILE.CHECK_RIGHTS.method,
+                url: BACKEND_API.FACTORY.PROFILE.CHECK_RIGHTS.url,
+                method: BACKEND_API.FACTORY.PROFILE.CHECK_RIGHTS.method,
                 params: {
                     factory_id: FactoryStorage.getId(),
                     password: FactoryStorage.getPassword()
@@ -126,6 +128,7 @@ export default {
                     console.log("Ошибка: " + exception.response.data);
                     page.$router.replace({ name: "FactoryLogin" });
                 })
+            */
         },
     }
 }

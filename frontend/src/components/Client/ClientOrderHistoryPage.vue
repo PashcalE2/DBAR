@@ -74,7 +74,7 @@
 import DefaultButton from "@/components/Commons/DefaultButton.vue";
 import ClientProductInOrderHistory from "@/components/Client/ClientProductInOrderHistory.vue";
 import axios from "axios";
-import {MY_APIS} from "@/js/my_apis";
+import {BACKEND_API} from "@/js/backend_apis";
 import * as ClientStorage from "@/js/client_storage";
 import {reformatDate} from "@/js/utils";
 import OrderStatus from "@/components/Commons/OrderStatus.vue";
@@ -125,8 +125,8 @@ export default {
             this.$refs.pay_button.disable();
 
             axios.request({
-                url: MY_APIS.CLIENT.ORDER.PAY.url,
-                method: MY_APIS.CLIENT.ORDER.PAY.method,
+                url: BACKEND_API.CLIENT.ORDER.PAY.url,
+                method: BACKEND_API.CLIENT.ORDER.PAY.method,
                 params: {
                     client_id: ClientStorage.getId(),
                     password: ClientStorage.getPassword(),
@@ -151,8 +151,8 @@ export default {
             let page = this;
 
             axios.request({
-                url: MY_APIS.CLIENT.ORDER.CANCEL.url,
-                method: MY_APIS.CLIENT.ORDER.CANCEL.method,
+                url: BACKEND_API.CLIENT.ORDER.CANCEL.url,
+                method: BACKEND_API.CLIENT.ORDER.CANCEL.method,
                 params: {
                     client_id: ClientStorage.getId(),
                     password: ClientStorage.getPassword(),
@@ -173,8 +173,8 @@ export default {
             let page = this;
 
             axios.request({
-                url: MY_APIS.CLIENT.ORDER.GET.url,
-                method: MY_APIS.CLIENT.ORDER.GET.method,
+                url: BACKEND_API.CLIENT.ORDER.GET.url,
+                method: BACKEND_API.CLIENT.ORDER.GET.method,
                 params: {
                     client_id: ClientStorage.getId(),
                     password: ClientStorage.getPassword(),
@@ -206,8 +206,8 @@ export default {
             let page = this;
 
             axios.request({
-                url: MY_APIS.CLIENT.ORDER.GET_PRODUCTS.url,
-                method: MY_APIS.CLIENT.ORDER.GET_PRODUCTS.method,
+                url: BACKEND_API.CLIENT.ORDER.GET_PRODUCTS.url,
+                method: BACKEND_API.CLIENT.ORDER.GET_PRODUCTS.method,
                 params: {
                     client_id: ClientStorage.getId(),
                     password: ClientStorage.getPassword(),

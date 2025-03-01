@@ -45,7 +45,7 @@ public class AdminController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/order/all_info")
+    @GetMapping("/order/all-info")
     public ResponseEntity<List<Order>> getAllOrdersInfo(@AuthenticationPrincipal UserDetails userDetails)
             throws EntityNotFoundException {
         log.info("Запрос на получение информации о заказах консультанта ({})", userDetails.getUsername());

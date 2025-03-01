@@ -35,7 +35,7 @@
 
 <script>
 import axios from "axios";
-import {MY_APIS} from "@/js/my_apis";
+import {BACKEND_API} from "@/js/backend_apis";
 import * as AdminStorage from "@/js/admin_storage";
 import ProductStatus from "@/components/Commons/ProductStatus.vue";
 
@@ -60,10 +60,11 @@ export default {
     methods: {
         getProductInfo() {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.ADMIN.PRODUCT.GET;
 
             axios.request({
-                url: MY_APIS.ADMIN.PRODUCT.GET.url,
-                method: MY_APIS.ADMIN.PRODUCT.GET.method,
+                url: endpoint.url,
+                method: endpoint.method,
                 params: {
                     admin_id: AdminStorage.getId(),
                     password: AdminStorage.getPassword(),
@@ -71,6 +72,7 @@ export default {
                 }
             })
                 .then(function (response) {
+                    // TODO
                     page.product_name = response.data.name;
                     page.product_price = response.data.price;
                     page.product_description = response.data.description;

@@ -51,7 +51,7 @@ import DefaultButton from "@/components/Commons/DefaultButton.vue";
 import ChatMessage from "@/components/Commons/ChatMessage.vue";
 import {reformatDateTime} from "@/js/utils";
 import axios from "axios";
-import {MY_APIS} from "@/js/my_apis";
+import {BACKEND_API} from "@/js/backend_apis";
 import * as ClientStorage from "@/js/client_storage";
 
 export default {
@@ -98,8 +98,8 @@ export default {
             let page = this;
 
             axios.request({
-                url: MY_APIS.CLIENT.CHAT.POST_MESSAGE.url,
-                method: MY_APIS.CLIENT.CHAT.POST_MESSAGE.method,
+                url: BACKEND_API.CLIENT.CHAT.POST_MESSAGE.url,
+                method: BACKEND_API.CLIENT.CHAT.POST_MESSAGE.method,
                 params: {
                     client_id: ClientStorage.getId(),
                     password: ClientStorage.getPassword(),
@@ -122,8 +122,8 @@ export default {
             let page = this;
 
             axios.request({
-                url: MY_APIS.CLIENT.CHAT.GET_ADMIN.url,
-                method: MY_APIS.CLIENT.CHAT.GET_ADMIN.method,
+                url: BACKEND_API.CLIENT.CHAT.GET_ADMIN.url,
+                method: BACKEND_API.CLIENT.CHAT.GET_ADMIN.method,
                 params: {
                     client_id: ClientStorage.getId(),
                     password: ClientStorage.getPassword(),
@@ -147,8 +147,8 @@ export default {
             let page = this;
 
             axios.request({
-                url: MY_APIS.CLIENT.CHAT.GET_MESSAGES.url,
-                method: MY_APIS.CLIENT.CHAT.GET_MESSAGES.method,
+                url: BACKEND_API.CLIENT.CHAT.GET_MESSAGES.url,
+                method: BACKEND_API.CLIENT.CHAT.GET_MESSAGES.method,
                 params: {
                     client_id: ClientStorage.getId(),
                     password: ClientStorage.getPassword(),

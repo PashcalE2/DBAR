@@ -52,7 +52,7 @@
 import DefaultButton from "@/components/Commons/DefaultButton.vue";
 import PasswordInputField from "@/components/Commons/PasswordInputField.vue";
 import axios from "axios";
-import {MY_APIS} from "@/js/my_apis";
+import {BACKEND_API} from "@/js/backend_apis";
 import * as AdminStorage from "@/js/admin_storage";
 import AdminWelcomeHeader from "@/components/Admin/AdminWelcomeHeader.vue";
 import StringInputField from "@/components/Commons/StringInputField.vue";
@@ -160,20 +160,19 @@ export default {
             }
 
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.ADMIN.PROFILE.LOGIN;
 
             this.$refs.login_button.disable();
-
+            // TODO
             axios.request({
-                url: MY_APIS.ADMIN.PROFILE.LOGIN.url,
-                method: MY_APIS.ADMIN.PROFILE.LOGIN.method,
+                url: endpoint.url,
+                method: endpoint.method,
                 data: {
                     id: page.input.login,
                     password: page.input.password
                 }
             })
                 .then(function (response) {
-                    //console.log(response);
-
                     AdminStorage.setAdmin(
                         response.data.id,
                         response.data.password

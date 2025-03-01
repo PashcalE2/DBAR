@@ -50,7 +50,7 @@
 import DefaultButton from "@/components/Commons/DefaultButton.vue";
 import ChatMessage from "@/components/Commons/ChatMessage.vue";
 import axios from "axios";
-import {MY_APIS} from "@/js/my_apis";
+import {BACKEND_API} from "@/js/backend_apis";
 import * as AdminStorage from "@/js/admin_storage";
 import {reformatDateTime} from "@/js/utils";
 
@@ -96,10 +96,11 @@ export default {
 
         chatSendOnClick() {
             let page = this;
-
+            let endpoint = BACKEND_API.MAIN_SERVICE.ADMIN.CHAT.POST_MESSAGE;
+            // TODO
             axios.request({
-                url: MY_APIS.ADMIN.CHAT.POST_MESSAGE.url,
-                method: MY_APIS.ADMIN.CHAT.POST_MESSAGE.method,
+                url: endpoint.url,
+                method: endpoint.method,
                 params: {
                     admin_id: AdminStorage.getId(),
                     password: AdminStorage.getPassword(),
@@ -120,10 +121,11 @@ export default {
 
         getClient() {
             let page = this;
-
+            let endpoint = BACKEND_API.MAIN_SERVICE.ADMIN.CHAT.GET_CLIENT;
+            // TODO
             axios.request({
-                url: MY_APIS.ADMIN.CHAT.GET_CLIENT.url,
-                method: MY_APIS.ADMIN.CHAT.GET_CLIENT.method,
+                url: endpoint.url,
+                method: endpoint.method,
                 params: {
                     admin_id: AdminStorage.getId(),
                     password: AdminStorage.getPassword(),
@@ -147,10 +149,11 @@ export default {
 
         getMessages() {
             let page = this;
-
+            let endpoint = BACKEND_API.MAIN_SERVICE.ADMIN.CHAT.GET_MESSAGES;
+            // TODO
             axios.request({
-                url: MY_APIS.ADMIN.CHAT.GET_MESSAGES.url,
-                method: MY_APIS.ADMIN.CHAT.GET_MESSAGES.method,
+                url: endpoint.url,
+                method: endpoint.method,
                 params: {
                     admin_id: AdminStorage.getId(),
                     password: AdminStorage.getPassword(),

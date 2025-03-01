@@ -33,7 +33,7 @@
 import ListInputField from "@/components/Commons/ListInputField.vue";
 import ProductGridPlate from "@/components/Commons/ProductGridPlate.vue";
 import axios from "axios";
-import {MY_APIS} from "@/js/my_apis";
+import {BACKEND_API} from "@/js/backend_apis";
 import * as FactoryStorage from "@/js/factory_storage";
 
 export default {
@@ -96,10 +96,11 @@ export default {
 
         getProducts() {
             let page = this;
-
+            let endpoint = BACKEND_API.MAIN_SERVICE.FACTORY.PRODUCT.GET_ALL_SHORT;
+            // TODO
             axios.request({
-                url: MY_APIS.FACTORY.PRODUCT.GET_ALL_SHORT.url,
-                method: MY_APIS.FACTORY.PRODUCT.GET_ALL_SHORT.method,
+                url: endpoint.url,
+                method: endpoint.method,
                 params: {
                     factory_id: FactoryStorage.getId(),
                     password: FactoryStorage.getPassword()

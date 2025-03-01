@@ -18,7 +18,7 @@
 <script>
 import OrderGridPlate from "@/components/Commons/OrderGridPlate.vue";
 import axios from "axios";
-import {MY_APIS} from "@/js/my_apis";
+import {BACKEND_API} from "@/js/backend_apis";
 import * as AdminStorage from "@/js/admin_storage";
 import {reformatDate} from "@/js/utils";
 
@@ -44,16 +44,18 @@ export default {
 
         getAdminOrders() {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.ADMIN.ORDER.GET_ALL_INFO;
 
             axios.request({
-                url: MY_APIS.ADMIN.ORDER.GET_ALL_INFO.url,
-                method: MY_APIS.ADMIN.ORDER.GET_ALL_INFO.method,
+                url: endpoint.url,
+                method: endpoint.method,
                 params: {
                     admin_id: AdminStorage.getId(),
                     password: AdminStorage.getPassword()
                 }
             })
                 .then(function (response) {
+                    // TODO
                     page.orders_info = response.data;
                 })
                 .catch(function (exception) {

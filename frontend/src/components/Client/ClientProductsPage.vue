@@ -33,7 +33,7 @@
 import ListInputField from "@/components/Commons/ListInputField.vue";
 import ProductGridPlate from "@/components/Commons/ProductGridPlate.vue";
 import axios from "axios";
-import {MY_APIS} from "@/js/my_apis";
+import {BACKEND_API} from "@/js/backend_apis";
 import * as ClientStorage from "@/js/client_storage";
 
 export default {
@@ -104,8 +104,8 @@ export default {
             let page = this;
 
             axios.request({
-                url: MY_APIS.CLIENT.PRODUCT.ADD_TO_ORDER.url,
-                method: MY_APIS.CLIENT.PRODUCT.ADD_TO_ORDER.method,
+                url: BACKEND_API.CLIENT.PRODUCT.ADD_TO_ORDER.url,
+                method: BACKEND_API.CLIENT.PRODUCT.ADD_TO_ORDER.method,
                 params: {
                     client_id: ClientStorage.getId(),
                     password: ClientStorage.getPassword(),
@@ -126,8 +126,8 @@ export default {
             let page = this;
 
             axios.request({
-                url: MY_APIS.CLIENT.PRODUCT.REMOVE_FROM_ORDER.url,
-                method: MY_APIS.CLIENT.PRODUCT.REMOVE_FROM_ORDER.method,
+                url: BACKEND_API.CLIENT.PRODUCT.REMOVE_FROM_ORDER.url,
+                method: BACKEND_API.CLIENT.PRODUCT.REMOVE_FROM_ORDER.method,
                 params: {
                     client_id: ClientStorage.getId(),
                     password: ClientStorage.getPassword(),
@@ -148,8 +148,8 @@ export default {
             let page = this;
 
             axios.request({
-                url: MY_APIS.CLIENT.ORDER.GET_CURRENT.url,
-                method: MY_APIS.CLIENT.ORDER.GET_CURRENT.method,
+                url: BACKEND_API.CLIENT.ORDER.GET_CURRENT.url,
+                method: BACKEND_API.CLIENT.ORDER.GET_CURRENT.method,
                 params: {
                     client_id: ClientStorage.getId(),
                     password: ClientStorage.getPassword()
@@ -168,8 +168,8 @@ export default {
             let page = this;
 
             axios.request({
-                url: MY_APIS.CLIENT.PRODUCT.GET_ALL_SHORT.url,
-                method: MY_APIS.CLIENT.PRODUCT.GET_ALL_SHORT.method,
+                url: BACKEND_API.CLIENT.PRODUCT.GET_ALL_SHORT.url,
+                method: BACKEND_API.CLIENT.PRODUCT.GET_ALL_SHORT.method,
                 params: {
                     client_id: ClientStorage.getId(),
                     password: ClientStorage.getPassword()
@@ -194,8 +194,8 @@ export default {
             let page = this;
 
             axios.request({
-                url: MY_APIS.CLIENT.ORDER.GET_PRODUCTS.url,
-                method: MY_APIS.CLIENT.ORDER.GET_PRODUCTS.method,
+                url: BACKEND_API.CLIENT.ORDER.GET_PRODUCTS.url,
+                method: BACKEND_API.CLIENT.ORDER.GET_PRODUCTS.method,
                 params: {
                     client_id: ClientStorage.getId(),
                     password: ClientStorage.getPassword(),

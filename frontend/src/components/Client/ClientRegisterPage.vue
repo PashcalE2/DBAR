@@ -99,7 +99,7 @@ import PhoneInputField from "@/components/Commons/PhoneInputField.vue";
 import ClientWelcomeHeader from "@/components/Client/ClientWelcomeHeader.vue";
 import EmailInputField from "@/components/Commons/EmailInputField.vue";
 import axios from "axios";
-import {MY_APIS} from "@/js/my_apis";
+import {BACKEND_API} from "@/js/backend_apis";
 import * as ClientStorage from "@/js/client_storage";
 
 export default {
@@ -258,8 +258,8 @@ export default {
             page.$refs.register_button.disable();
 
             axios.request({
-                url: MY_APIS.CLIENT.PROFILE.REGISTER.url,
-                method: MY_APIS.CLIENT.PROFILE.REGISTER.method,
+                url: BACKEND_API.CLIENT.PROFILE.REGISTER.url,
+                method: BACKEND_API.CLIENT.PROFILE.REGISTER.method,
                 data: {
                     name: page.input.login,
                     password: page.input.password,
@@ -287,8 +287,8 @@ export default {
             let page = this;
 
             axios.request({
-                url: MY_APIS.CLIENT.PROFILE.GET_NOT_REGISTERED_ORGANIZATIONS.url,
-                method: MY_APIS.CLIENT.PROFILE.GET_NOT_REGISTERED_ORGANIZATIONS.method
+                url: BACKEND_API.CLIENT.PROFILE.GET_NOT_REGISTERED_ORGANIZATIONS.url,
+                method: BACKEND_API.CLIENT.PROFILE.GET_NOT_REGISTERED_ORGANIZATIONS.method
             })
                 .then(function (response) {
                     console.log(response.data);

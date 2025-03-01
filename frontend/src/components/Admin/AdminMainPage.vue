@@ -17,8 +17,8 @@
 <script>
 
 import FlexRowNavigationBar from "@/components/Commons/FlexRowNavigationBar.vue";
-import axios from "axios";
-import {MY_APIS} from "@/js/my_apis";
+// import axios from "axios";
+// import {BACKEND_API} from "@/js/backend_apis";
 import * as AdminStorage from "@/js/admin_storage";
 
 export default {
@@ -89,11 +89,13 @@ export default {
         },
 
         checkIfAuthenticated() {
+            // TODO
+            /*
             let page = this;
 
             axios.request({
-                url: MY_APIS.ADMIN.PROFILE.CHECK_RIGHTS.url,
-                method: MY_APIS.ADMIN.PROFILE.CHECK_RIGHTS.method,
+                url: BACKEND_API.ADMIN.PROFILE.CHECK_RIGHTS.url,
+                method: BACKEND_API.ADMIN.PROFILE.CHECK_RIGHTS.method,
                 params: {
                     admin_id: AdminStorage.getId(),
                     password: AdminStorage.getPassword()
@@ -109,6 +111,7 @@ export default {
                     console.log("Ошибка: " + exception.response.data);
                     page.$router.replace({ name: "AdminLogin" });
                 })
+            */
         },
     }
 }

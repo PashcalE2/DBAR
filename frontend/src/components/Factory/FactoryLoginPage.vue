@@ -52,7 +52,7 @@
 import DefaultButton from "@/components/Commons/DefaultButton.vue";
 import PasswordInputField from "@/components/Commons/PasswordInputField.vue";
 import axios from "axios";
-import {MY_APIS} from "@/js/my_apis";
+import {BACKEND_API} from "@/js/backend_apis";
 import * as FactoryStorage from "@/js/factory_storage";
 import StringInputField from "@/components/Commons/StringInputField.vue";
 import FactoryWelcomeHeader from "@/components/Factory/FactoryWelcomeHeader.vue";
@@ -160,19 +160,20 @@ export default {
             }
 
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.FACTORY.PROFILE.LOGIN;
 
             this.$refs.login_button.disable();
 
             axios.request({
-                url: MY_APIS.FACTORY.PROFILE.LOGIN.url,
-                method: MY_APIS.FACTORY.PROFILE.LOGIN.method,
+                url: endpoint.url,
+                method: endpoint.method,
                 data: {
                     id: page.input.login,
                     password: page.input.password
                 }
             })
                 .then(function (response) {
-                    //console.log(response);
+                    // TODO
 
                     FactoryStorage.setFactory(
                         response.data.id,

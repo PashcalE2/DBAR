@@ -46,7 +46,7 @@
 import CountField from "@/components/Commons/CountField.vue";
 import DefaultButton from "@/components/Commons/DefaultButton.vue";
 import axios from "axios";
-import {MY_APIS} from "@/js/my_apis";
+import {BACKEND_API} from "@/js/backend_apis";
 import * as ClientStorage from "@/js/client_storage";
 
 export default {
@@ -79,8 +79,8 @@ export default {
             let page = this;
 
             axios.request({
-                url: MY_APIS.CLIENT.PRODUCT.GET.url,
-                method: MY_APIS.CLIENT.PRODUCT.GET.method,
+                url: BACKEND_API.CLIENT.PRODUCT.GET.url,
+                method: BACKEND_API.CLIENT.PRODUCT.GET.method,
                 params: {
                     client_id: ClientStorage.getId(),
                     password: ClientStorage.getPassword(),

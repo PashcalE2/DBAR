@@ -19,7 +19,7 @@
 import FlexRowNavigationBar from "@/components/Commons/FlexRowNavigationBar.vue";
 import * as ClientStorage from "@/js/client_storage";
 import axios from "axios";
-import {MY_APIS} from "@/js/my_apis";
+import {BACKEND_API} from "@/js/backend_apis";
 
 export default {
     name: "ClientMainPage",
@@ -147,8 +147,8 @@ export default {
             let page = this;
 
             axios.request({
-                url: MY_APIS.CLIENT.PROFILE.CHECK_RIGHTS.url,
-                method: MY_APIS.CLIENT.PROFILE.CHECK_RIGHTS.method,
+                url: BACKEND_API.CLIENT.PROFILE.CHECK_RIGHTS.url,
+                method: BACKEND_API.CLIENT.PROFILE.CHECK_RIGHTS.method,
                 params: {
                     client_id: ClientStorage.getId(),
                     password: ClientStorage.getPassword()

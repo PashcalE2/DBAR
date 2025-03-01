@@ -52,7 +52,7 @@ import DefaultButton from "@/components/Commons/DefaultButton.vue";
 import EmailInputField from "@/components/Commons/EmailInputField.vue";
 import PhoneInputField from "@/components/Commons/PhoneInputField.vue";
 import axios from "axios";
-import {MY_APIS} from "@/js/my_apis";
+import {BACKEND_API} from "@/js/backend_apis";
 import * as ClientStorage from "@/js/client_storage";
 
 export default {
@@ -79,8 +79,8 @@ export default {
             let page = this;
 
             axios.request({
-                url: MY_APIS.CLIENT.PROFILE.SET_PROFILE.url,
-                method: MY_APIS.CLIENT.PROFILE.SET_PROFILE.method,
+                url: BACKEND_API.CLIENT.PROFILE.SET_PROFILE.url,
+                method: BACKEND_API.CLIENT.PROFILE.SET_PROFILE.method,
                 params: {
                     client_id: ClientStorage.getId(),
                     password: ClientStorage.getPassword(),
@@ -108,8 +108,8 @@ export default {
             let page = this;
 
             axios.request({
-                url: MY_APIS.CLIENT.PROFILE.GET_PROFILE.url,
-                method: MY_APIS.CLIENT.PROFILE.GET_PROFILE.method,
+                url: BACKEND_API.CLIENT.PROFILE.GET_PROFILE.url,
+                method: BACKEND_API.CLIENT.PROFILE.GET_PROFILE.method,
                 params: {
                     client_id: ClientStorage.getId(),
                     password: ClientStorage.getPassword()
