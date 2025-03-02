@@ -53,6 +53,7 @@ import axios from "axios";
 import {BACKEND_API} from "@/js/backend_apis";
 import * as AdminStorage from "@/js/admin_storage";
 import {reformatDateTime} from "@/js/utils";
+import {ENUMS} from "@/js/model/enums";
 
 export default {
     name: "AdminChatHistoryPage",
@@ -116,7 +117,7 @@ export default {
                 })
                 .catch(function (exception) {
                     console.log(exception);
-                    // page.$router.replace({ name: "AdminMain"});
+                    page.$router.replace({ name: "AdminMain"});
                 })
         },
 
@@ -135,8 +136,6 @@ export default {
                 }
             })
                 .then(function (response) {
-                    console.log(response);
-
                     page.client = {
                         name: response.data.name,
                         phone_number: response.data.phoneNumber,
@@ -145,7 +144,7 @@ export default {
                 })
                 .catch(function (exception) {
                     console.log(exception);
-                    // page.$router.replace({ name: "AdminMain"});
+                    page.$router.replace({ name: "AdminMain"});
                 })
         },
 
@@ -166,9 +165,9 @@ export default {
                 .then(function (response) {
                     page.chat_history = [];
 
-                    for (let message of response.data) {
+                    for (let message of response.data.sort((a, b) => (a.sentAt > b.sentAt) ? 1 : ((b.sentAt > a.sentAt) ? -1 : 0))) {
                         page.chat_history.push({
-                            from_user: message.sender === "ADMIN",
+                            from_user: message.sender === ENUMS.MESSAGE_SENDER.ADMIN,
                             content: message.text,
                             posted: message.sentAt
                         });
@@ -176,7 +175,7 @@ export default {
                 })
                 .catch(function (exception) {
                     console.log(exception);
-                    // page.$router.replace({ name: "AdminMain"});
+                    page.$router.replace({ name: "AdminMain"});
                 })
         }
     }

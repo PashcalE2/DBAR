@@ -160,9 +160,8 @@ export default {
             axios.request({
                 url: endpoint.url,
                 method: endpoint.method,
-                params: {
-                    factory_id: FactoryStorage.getId(),
-                    password: FactoryStorage.getPassword()
+                headers: {
+                    "Authorization": "Bearer " + FactoryStorage.getAccessToken()
                 },
                 data: {
                     id: page.material.id,
@@ -247,9 +246,10 @@ export default {
             axios.request({
                 url: endpoint.url,
                 method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + FactoryStorage.getAccessToken()
+                },
                 params: {
-                    factory_id: FactoryStorage.getId(),
-                    password: FactoryStorage.getPassword(),
                     material_id: page.material.id
                 }
             })

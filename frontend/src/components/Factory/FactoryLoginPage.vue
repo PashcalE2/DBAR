@@ -14,7 +14,7 @@
                     input_id="factory_id_input"
                     input_style_width="400px"
                     label_text="Идентификатор"
-                    placeholder="Введите свой идентификатор"
+                    placeholder="Введите свой логин"
                     v-bind:on_input="onLoginInput"
                     v-bind:error_message="active_error_messages.login"
                 />
@@ -83,9 +83,9 @@ export default {
 
             error_messages: {
                 login: {
-                    NoSuchId: "Проверьте идентификатор",
-                    EmptyField: "Введите свой идентификатор консультанта",
-                    WrongSymbols: "Только цифры"
+                    NoSuchId: "Логин не найден",
+                    EmptyField: "Введите свой логин владельца",
+                    WrongSymbols: "Только латинские буквы или цифры (первый символ - буква)"
                 },
 
                 password: {
@@ -94,7 +94,7 @@ export default {
                 }
             },
 
-            login_re: /^[1-9]\d*$/,
+            login_re: /^[a-zA-Z][a-zA-Z0-9]*$/,
             password_re: /^[a-zA-Z0-9]+$/
         }
     },
@@ -160,7 +160,7 @@ export default {
             }
 
             let page = this;
-            let endpoint = BACKEND_API.MAIN_SERVICE.FACTORY.PROFILE.LOGIN;
+            let endpoint = BACKEND_API.AUTH_SERVICE.AUTH.LOGIN.FACTORY;
 
             this.$refs.login_button.disable();
 
@@ -168,16 +168,14 @@ export default {
                 url: endpoint.url,
                 method: endpoint.method,
                 data: {
-                    id: page.input.login,
+                    login: page.input.login,
                     password: page.input.password
                 }
             })
                 .then(function (response) {
-                    // TODO
-
                     FactoryStorage.setFactory(
-                        response.data.id,
-                        response.data.password
+                        response.data.access,
+                        response.data.refresh
                     );
 
                     page.$router.push({ name: "FactoryMain"});
@@ -185,7 +183,7 @@ export default {
                 .catch(function (exception) {
                     console.log(exception);
 
-                    if (exception.response.status === 409) {
+                    if (exception.response.status === 401) {
                         page.form_errors.login = true;
                         page.active_error_messages.login = page.error_messages.login.NoSuchId;
 

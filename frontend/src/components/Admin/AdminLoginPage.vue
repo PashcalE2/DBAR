@@ -14,7 +14,7 @@
                     input_id="admin_id_input"
                     input_style_width="400px"
                     label_text="Идентификатор"
-                    placeholder="Введите свой идентификатор"
+                    placeholder="Введите свой логин"
                     v-bind:on_input="onLoginInput"
                     v-bind:error_message="active_error_messages.login"
                 />
@@ -83,9 +83,9 @@ export default {
 
             error_messages: {
                 login: {
-                    NoSuchId: "Проверьте идентификатор",
-                    EmptyField: "Введите свой идентификатор консультанта",
-                    WrongSymbols: "Только цифры"
+                    NoSuchId: "Логин не найден",
+                    EmptyField: "Введите свой логин консультанта",
+                    WrongSymbols: "Только латинские буквы или цифры (первый символ - буква)"
                 },
 
                 password: {
@@ -94,7 +94,7 @@ export default {
                 }
             },
 
-            login_re: /^\w+$/,
+            login_re: /^[a-zA-Z][a-zA-Z0-9]*$/,
             password_re: /^[a-zA-Z0-9]+$/
         }
     },
@@ -173,8 +173,6 @@ export default {
                 }
             })
                 .then(function (response) {
-                    console.log(response);
-
                     AdminStorage.setAdmin(
                         response.data.access,
                         response.data.refresh

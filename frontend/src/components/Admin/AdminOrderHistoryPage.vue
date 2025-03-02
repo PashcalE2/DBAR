@@ -70,6 +70,7 @@ import * as AdminStorage from "@/js/admin_storage";
 import {reformatDate} from "@/js/utils";
 import OrderStatus from "@/components/Commons/OrderStatus.vue";
 import AdminProductInOrderHistory from "@/components/Admin/AdminProductInOrderHistory.vue";
+import {ENUMS} from "@/js/model/enums";
 
 export default {
     name: "AdminOrderHistoryPage",
@@ -128,14 +129,18 @@ export default {
                 }
             })
                 .then(function (response) {
-                    // TODO
                     response;
                     page.order_info = {};
                     page.getOrderInfo();
                 })
                 .catch(function (exception) {
-                    console.log(exception);
-                    page.$router.replace({ name: "AdminMain"});
+                    if (exception.response.status === 403) {
+                        alert(exception.response.data.message);
+                    }
+                    else {
+                        console.log(exception);
+                        page.$router.replace({name: "AdminMain"});
+                    }
                 })
         },
 
@@ -156,7 +161,7 @@ export default {
                 .then(function (response) {
                     page.order_info = response.data;
 
-                    if (page.order_info.status !== "отклонен" && page.order_info.status !== "выполнен" && page.order_info.status !== "ожидает оплаты") {
+                    if (page.order_info.status === ENUMS.ORDER_STATUS.IN_PROGRESS) {
                         page.$refs.assembly_button.enable();
                     }
 
@@ -164,8 +169,13 @@ export default {
                     page.getProductsInOrder();
                 })
                 .catch(function (exception) {
-                    console.log(exception);
-                    page.$router.replace({ name: "AdminMain"});
+                    if (exception.response.status === 403) {
+                        alert(exception.response.data.message);
+                    }
+                    else {
+                        console.log(exception);
+                        page.$router.replace({name: "AdminMain"});
+                    }
                 })
         },
 

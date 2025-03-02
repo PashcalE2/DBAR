@@ -100,9 +100,8 @@ export default {
             axios.request({
                 url: endpoint.url,
                 method: endpoint.method,
-                params: {
-                    factory_id: FactoryStorage.getId(),
-                    password: FactoryStorage.getPassword()
+                headers: {
+                    "Authorization": "Bearer " + FactoryStorage.getAccessToken()
                 }
             })
                 .then(function (response) {

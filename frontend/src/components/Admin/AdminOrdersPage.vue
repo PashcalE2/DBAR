@@ -58,7 +58,13 @@ export default {
                     page.orders_info = response.data;
                 })
                 .catch(function (exception) {
-                    console.log(exception);
+                    if (exception.response.status === 403) {
+                        alert(exception.response.data.message);
+                    }
+                    else {
+                        console.log(exception);
+                        page.$router.replace({name: "AdminMain"});
+                    }
                 })
         }
     }
