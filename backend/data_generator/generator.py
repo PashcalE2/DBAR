@@ -276,24 +276,24 @@ auth_db = []
 
 
 def data_sql():
-    for i in range(registered_client_count):
+    for i in range(factories_count):
         """
-        lines.append("insert into клиент values (default, '{}', '{}', '{}', '{}');".format(
-            client_phones[i],
-            client_emails[i],
-            client_passwords[i],
-            client_names[i]
+        lines.append("insert into завод values (default, '{}', '{}', '{}', '{}', '{}');".format(
+            factories_names[i],
+            factories_phone[i],
+            factories_email[i],
+            factories_passwords[i],
+            factories_address[i]
         ))
         """
-        main_app_db.append("insert into клиент values ({}, '{}', '{}');".format(
-            i + 1,
-            client_names[i],
-            client_logins[i]
+        main_app_db.append("insert into завод values (default, '{}', '{}', '{}');".format(
+            factories_names[i],
+            factories_address[i],
+            factories_logins[i]
         ))
 
     for i in range(services_count):
-        main_app_db.append("insert into служба_поддержки values ({}, '{}', '{}', '{}', '{}');".format(
-            i + 1,
+        main_app_db.append("insert into служба_поддержки values (default, '{}', '{}', '{}', '{}');".format(
             services_names[i],
             services_phone[i],
             services_email[i],
@@ -301,8 +301,7 @@ def data_sql():
         ))
 
     for i in range(schedules_count):
-        main_app_db.append("insert into расписание_консультантов values ({}, {}, '{}');".format(
-            i + 1,
+        main_app_db.append("insert into расписание_консультантов values (default, {}, '{}');".format(
             schedules_hours[i],
             schedules_description[i]
         ))
@@ -318,41 +317,35 @@ def data_sql():
             admins_passwords[i]
         ))
         """
-        main_app_db.append("insert into консультант values ({}, {}, {}, '{}', '{}');".format(
-            i + 1,
+        main_app_db.append("insert into консультант values (default, {}, {}, '{}', '{}');".format(
             admins_service[i],
             admins_schedule[i],
             admins_names[i],
             admins_logins[i]
         ))
 
-    for i in range(factories_count):
+    for i in range(registered_client_count):
         """
-        lines.append("insert into завод values (default, '{}', '{}', '{}', '{}', '{}');".format(
-            factories_names[i],
-            factories_phone[i],
-            factories_email[i],
-            factories_passwords[i],
-            factories_address[i]
+        lines.append("insert into клиент values (default, '{}', '{}', '{}', '{}');".format(
+            client_phones[i],
+            client_emails[i],
+            client_passwords[i],
+            client_names[i]
         ))
         """
-        main_app_db.append("insert into завод values ({}, '{}', '{}', '{}');".format(
-            i + 1,
-            factories_names[i],
-            factories_address[i],
-            factories_logins[i]
+        main_app_db.append("insert into клиент values (default, '{}', '{}');".format(
+            client_names[i],
+            client_logins[i]
         ))
 
     for i in range(product_storages_count):
-        main_app_db.append("insert into склад_готовой_продукции values ({}, {}, '{}');".format(
-            i + 1,
+        main_app_db.append("insert into склад_готовой_продукции values (default, {}, '{}');".format(
             p_storages_factories_id[i],
             p_storages_address[i]
         ))
 
     for i in range(products_count):
-        main_app_db.append("insert into тип_продукции values ({}, {}, '{}', $${}$$);".format(
-            i + 1,
+        main_app_db.append("insert into тип_продукции values (default, {}, '{}', $${}$$);".format(
             products_prices[i],
             products_names[i],
             products_descriptions[i]
@@ -366,15 +359,13 @@ def data_sql():
         ))
 
     for i in range(material_storages_count):
-        main_app_db.append("insert into склад_сырья values ({}, {}, '{}');".format(
-            i + 1,
+        main_app_db.append("insert into склад_сырья values (default, {}, '{}');".format(
             m_storages_factories_id[i],
             m_storages_address[i]
         ))
 
     for i in range(products_count):
-        main_app_db.append("insert into тип_материала values ({}, {}, '{}', $${}$$);".format(
-            i + 1,
+        main_app_db.append("insert into тип_материала values (default, {}, '{}', $${}$$);".format(
             materials_prices[i],
             materials_names[i],
             materials_descriptions[i]
@@ -388,8 +379,7 @@ def data_sql():
         ))
 
     for i in range(orders_count):
-        main_app_db.append("insert into заказ values ({}, {}, {}, '{}', '{}', {});".format(
-            i + 1,
+        main_app_db.append("insert into заказ values (default, {}, {}, '{}', '{}', {});".format(
             orders_client_id[i],
             random.randint(1, admins_count),
             orders_statuses[i],
@@ -407,8 +397,7 @@ def data_sql():
                 ))
 
     for i in range(total_messages_count):
-        main_app_db.append("insert into сообщение values ({}, {}, '{}', $${}$$, '{}');".format(
-            i + 1,
+        main_app_db.append("insert into сообщение values (default, {}, '{}', $${}$$, '{}');".format(
             messages_orders[i],
             messages_senders[i],
             messages_content[i],
@@ -416,8 +405,7 @@ def data_sql():
         ))
 
     for i in range(users_count):
-        auth_db.append("insert into client values ({}, '{}', '{}', '{}', '{}');".format(
-            i + 1,
+        auth_db.append("insert into client values (default, '{}', '{}', '{}', '{}');".format(
             user_phone[i],
             user_email[i],
             user_login[i],
