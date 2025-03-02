@@ -1,25 +1,17 @@
-export function setAdmin(id, password) {
-    sessionStorage.id = id;
-    sessionStorage.password = password;
+export function setAdmin(access_token, refresh_token) {
+    sessionStorage.access_token = access_token;
+    sessionStorage.refresh_token = refresh_token;
 }
 
 export function clearAdmin() {
-    sessionStorage.id = null;
-    sessionStorage.password = null;
+    sessionStorage.access_token = null;
+    sessionStorage.refresh_token = null;
 }
 
-export function getId() {
-    return sessionStorage.id;
+export function getAccessToken() {
+    return sessionStorage.access_token
 }
 
-export function setId(id) {
-    sessionStorage.id = id;
-}
-
-export function getPassword() {
-    return sessionStorage.password;
-}
-
-export function setPassword(password) {
-    sessionStorage.password = password;
+export function getRefreshToken() {
+    return sessionStorage.refresh_token
 }

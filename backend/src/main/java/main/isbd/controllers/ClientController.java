@@ -23,6 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/client")
+@CrossOrigin
 public class ClientController {
 
     private final ClientService clientService;

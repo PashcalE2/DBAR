@@ -17,8 +17,8 @@
 <script>
 
 import FlexRowNavigationBar from "@/components/Commons/FlexRowNavigationBar.vue";
-import axios from "axios";
-import {BACKEND_API} from "@/js/backend_apis";
+// import axios from "axios";
+// import {BACKEND_API} from "@/js/backend_apis";
 import * as FactoryStorage from "@/js/factory_storage";
 
 export default {

@@ -94,7 +94,7 @@ export default {
                 }
             },
 
-            login_re: /^[1-9]\d*$/,
+            login_re: /^\w+$/,
             password_re: /^[a-zA-Z0-9]+$/
         }
     },
@@ -160,7 +160,7 @@ export default {
             }
 
             let page = this;
-            let endpoint = BACKEND_API.MAIN_SERVICE.ADMIN.PROFILE.LOGIN;
+            let endpoint = BACKEND_API.AUTH_SERVICE.AUTH.LOGIN.ADMIN;
 
             this.$refs.login_button.disable();
             // TODO
@@ -168,14 +168,16 @@ export default {
                 url: endpoint.url,
                 method: endpoint.method,
                 data: {
-                    id: page.input.login,
+                    login: page.input.login,
                     password: page.input.password
                 }
             })
                 .then(function (response) {
+                    console.log(response);
+
                     AdminStorage.setAdmin(
-                        response.data.id,
-                        response.data.password
+                        response.data.access,
+                        response.data.refresh
                     );
 
                     page.$router.push({ name: "AdminMain"});

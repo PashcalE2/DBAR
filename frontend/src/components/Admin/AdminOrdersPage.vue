@@ -46,16 +46,15 @@ export default {
             let page = this;
             let endpoint = BACKEND_API.MAIN_SERVICE.ADMIN.ORDER.GET_ALL_INFO;
 
+            // TODO
             axios.request({
                 url: endpoint.url,
                 method: endpoint.method,
-                params: {
-                    admin_id: AdminStorage.getId(),
-                    password: AdminStorage.getPassword()
+                headers: {
+                  "Authorization": "Bearer " + AdminStorage.getAccessToken()
                 }
             })
                 .then(function (response) {
-                    // TODO
                     page.orders_info = response.data;
                 })
                 .catch(function (exception) {

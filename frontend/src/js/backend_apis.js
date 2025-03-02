@@ -187,13 +187,6 @@ export const BACKEND_API = {
         },
 
         ADMIN: {
-            PROFILE: {
-                LOGIN: {
-                    url: ADMIN_PATH + "/profile/login",
-                    method: "post"
-                }
-            },
-
             PRODUCT: {
                 GET: {
                     url: ADMIN_PATH + "/product",
@@ -242,13 +235,6 @@ export const BACKEND_API = {
         },
 
         FACTORY: {
-            PROFILE: {
-                LOGIN: {
-                    url: FACTORY_PATH + "/profile/login",
-                    method: "post"
-                }
-            },
-
             PRODUCT: {
                 GET_ALL_SHORT: {
                     url: FACTORY_PATH + "/product/all-short",

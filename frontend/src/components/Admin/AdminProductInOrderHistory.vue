@@ -65,9 +65,10 @@ export default {
             axios.request({
                 url: endpoint.url,
                 method: endpoint.method,
+                headers: {
+                  "Authorization": "Bearer " + AdminStorage.getAccessToken()
+                },
                 params: {
-                    admin_id: AdminStorage.getId(),
-                    password: AdminStorage.getPassword(),
                     product_id: page.product_id
                 }
             })

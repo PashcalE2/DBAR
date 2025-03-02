@@ -101,9 +101,10 @@ export default {
             axios.request({
                 url: endpoint.url,
                 method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + AdminStorage.getAccessToken()
+                },
                 params: {
-                    admin_id: AdminStorage.getId(),
-                    password: AdminStorage.getPassword(),
                     order_id: page.order_id,
                     content: page.$refs.chat_input.value
                 }
@@ -126,9 +127,10 @@ export default {
             axios.request({
                 url: endpoint.url,
                 method: endpoint.method,
+                headers: {
+                  "Authorization": "Bearer " + AdminStorage.getAccessToken()
+                },
                 params: {
-                    admin_id: AdminStorage.getId(),
-                    password: AdminStorage.getPassword(),
                     order_id: page.order_id
                 }
             })
@@ -154,9 +156,10 @@ export default {
             axios.request({
                 url: endpoint.url,
                 method: endpoint.method,
+                headers: {
+                  "Authorization": "Bearer " + AdminStorage.getAccessToken()
+                },
                 params: {
-                    admin_id: AdminStorage.getId(),
-                    password: AdminStorage.getPassword(),
                     order_id: page.order_id
                 }
             })
