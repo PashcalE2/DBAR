@@ -8,20 +8,20 @@ import org.hibernate.annotations.ColumnDefault;
 @Getter
 @Setter
 @Entity
-@Table(name = "\"Тип_материала\"")
+@Table(name = "тип_материала")
 public class MaterialType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('\"Тип_материала_ид_seq\"'")
-    @Column(name = "\"ид\"", nullable = false)
+    @ColumnDefault("nextval('тип_материала_ид_seq'")
+    @Column(name = "ид", nullable = false)
     private Integer id;
 
-    @Column(name = "\"цена\"", nullable = false)
+    @Column(name = "цена", nullable = false)
     private Float price;
 
-    @Column(name = "\"название\"", length = Integer.MAX_VALUE)
+    @Column(name = "название", length = Integer.MAX_VALUE)
     private String name;
 
-    @Column(name = "\"описание\"", length = Integer.MAX_VALUE)
+    @Column(name = "описание", length = Integer.MAX_VALUE)
     private String description;
 }

@@ -54,7 +54,7 @@ public class ClientService {
         try {
             String login = jwtTokenService.extractLoginWithAvailabilityCheck(authToken, "ROLE_CLIENT");
             Client client = new Client();
-            client.setName(login);
+            client.setLogin(login);
             try {
                 clientRepository.save(client);
             } catch (Exception e) {
@@ -210,7 +210,7 @@ public class ClientService {
         );
         Admin admin = order.getAdminId();
         ActorProfile orderAdminProfile = authGateway.getActorAdminProfile(admin.getLogin(), accessToken);
-        return new AdminContacts(admin.getFullName(), orderAdminProfile.getPhone_number(), orderAdminProfile.getEmail());
+        return new AdminContacts(admin.getFullName(), orderAdminProfile.getPhoneNumber(), orderAdminProfile.getEmail());
     }
 
     public List<ChatMessage> findAllOrderMessages(Integer orderId) throws BaseAppException {

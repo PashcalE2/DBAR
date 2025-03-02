@@ -13,10 +13,10 @@ import java.util.Objects;
 @Embeddable
 public class CooperationId implements java.io.Serializable {
     private static final long serialVersionUID = -6075105752456044926L;
-    @Column(name = "\"ид_завода\"", nullable = false)
+    @Column(name = "ид_завода", nullable = false)
     private Integer factoryId;
 
-    @Column(name = "\"ид_организации\"", nullable = false)
+    @Column(name = "ид_организации", nullable = false)
     private Integer organizationId;
 
     @Override

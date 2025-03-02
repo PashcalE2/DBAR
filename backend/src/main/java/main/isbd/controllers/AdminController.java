@@ -77,10 +77,12 @@ public class AdminController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/chat/client")
-    public ResponseEntity<ClientContacts> getChatAdminInfo(@RequestParam(defaultValue = "0") Integer order_id)
+    public ResponseEntity<ClientContacts> getClientInfoInChat(
+            @RequestParam(defaultValue = "0") Integer order_id,
+            @AuthenticationPrincipal UserDetails userDetails)
             throws EntityNotFoundException {
         log.info("Запрос на получение информации о клиенте заказа ({})", order_id);
-        return new ResponseEntity<>(adminService.getClientContactsInChat(order_id), HttpStatus.OK);
+        return new ResponseEntity<>(adminService.getClientContactsInChat(order_id, userDetails.getPassword()), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

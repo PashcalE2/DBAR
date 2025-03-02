@@ -10,28 +10,28 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Entity
-@Table(name = "\"Оборудование\"")
+@Table(name = "оборудование")
 public class Equipment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('\"Оборудование_ид_seq\"'")
-    @Column(name = "\"ид\"", nullable = false)
+    @ColumnDefault("nextval('оборудование_ид_seq'")
+    @Column(name = "ид", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "\"ид_цеха\"", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "ид_цеха", nullable = false)
     private Workshop workshopId;
 
     // TODO enum?
-    @Column(name = "\"состояние\"", columnDefinition = "\"Состояние_оборудования_enum\" not null")
+    @Column(name = "состояние", columnDefinition = "состояние_оборудования_enum not null")
     private String status;
 
-    @Column(name = "\"название\"", nullable = false, length = Integer.MAX_VALUE)
+    @Column(name = "название", nullable = false, length = Integer.MAX_VALUE)
     private String name;
 
-    @Column(name = "\"описание\"", length = Integer.MAX_VALUE)
+    @Column(name = "описание", length = Integer.MAX_VALUE)
     private String description;
 
-    @Column(name = "\"дата_выпуска\"", nullable = false)
+    @Column(name = "дата_выпуска", nullable = false)
     private LocalDate releasedAt;
 }

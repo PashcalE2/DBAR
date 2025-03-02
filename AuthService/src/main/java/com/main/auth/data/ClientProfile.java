@@ -12,7 +12,7 @@ import lombok.Setter;
 public class ClientProfile {
 
     private String login;
-    private String phone_number;
+    private String phoneNumber;
     private String email;
 
 }

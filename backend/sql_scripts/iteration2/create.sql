@@ -69,6 +69,7 @@ create table консультант (
 
 create table клиент (
                         ид serial primary key,
+                        название varchar(64) unique not null,
                         логин varchar(64) unique not null
 );
 

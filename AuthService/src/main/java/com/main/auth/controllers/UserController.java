@@ -53,6 +53,16 @@ public class UserController {
                 "Client " + userDetails.getUsername() + " deleted."));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/{login}")
+    public ResponseEntity<ClientProfile> getClientProfile(@PathVariable String login) throws AuthException {
+        Client client = clientService.getClientByLogin(login);
+        if (!client.getRoles().stream().map(Role::getName).toList().contains("ROLE_CLIENT")) {
+            throw new AuthException("Client " + login + " is not client.", HttpStatus.FORBIDDEN);
+        }
+        return ResponseEntity.ok(new ClientProfile(client.getLogin(), client.getPhoneNumber(), client.getEmail()));
+    }
+
     @PreAuthorize("hasRole('CLIENT')")
     @GetMapping("/admin/{login}")
     public ResponseEntity<ClientProfile> getAdminProfile(@PathVariable String login) throws AuthException {

@@ -8,18 +8,18 @@ import org.hibernate.annotations.ColumnDefault;
 @Getter
 @Setter
 @Entity
-@Table(name = "\"Склад_сырья\"")
+@Table(name = "склад_сырья")
 public class MaterialWarehouse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('\"Склад_сырья_ид_seq\"'")
-    @Column(name = "\"ид\"", nullable = false)
+    @ColumnDefault("nextval('склад_сырья_ид_seq'")
+    @Column(name = "ид", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "\"ид_завода\"")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ид_завода")
     private Factory factoryId;
 
-    @Column(name = "\"адрес\"", nullable = false, length = Integer.MAX_VALUE)
+    @Column(name = "адрес", nullable = false, length = Integer.MAX_VALUE)
     private String address;
 }

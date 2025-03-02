@@ -6,8 +6,8 @@
                 v-bind:key="i"
                 v-bind:order_id="order.id"
                 v-bind:order_status="order.status"
-                v-bind:order_formed_date="reformatDate(order.formedAt)"
-                v-bind:order_done_date="reformatDate(order.doneAt)"
+                v-bind:order_formed_date="reformatDate(order.createdAt)"
+                v-bind:order_done_date="reformatDate(order.completedAt)"
                 v-bind:order_sum="order.sum"
                 v-bind:on_click="goToOrderHistory"
             />

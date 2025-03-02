@@ -10,15 +10,18 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table(name = "\"Клиент\"")
+@Table(name = "клиент")
 public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "ид", nullable = false)
     private Integer id;
 
-    @Column(name = "\"логин\"", nullable = false, length = 64)
+    @Column(name = "название", nullable = false, length = 64)
     private String name;
+
+    @Column(name = "логин", nullable = false, length = 64)
+    private String login;
 
     @Override
     public boolean equals(Object o) {
@@ -28,13 +31,15 @@ public class Client {
         Client client = (Client) o;
 
         if (!Objects.equals(id, client.id)) return false;
-        return Objects.equals(name, client.name);
+        if (!Objects.equals(name, client.name)) return false;
+        return Objects.equals(login, client.login);
     }
 
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (login != null ? login.hashCode() : 0);
         return result;
     }
 }

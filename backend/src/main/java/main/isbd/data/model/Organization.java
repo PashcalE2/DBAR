@@ -8,15 +8,15 @@ import org.hibernate.annotations.ColumnDefault;
 @Getter
 @Setter
 @Entity
-@Table(name = "\"Организация\"")
+@Table(name = "организация")
 public class Organization {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('\"Организация_ид_seq\"'")
-    @Column(name = "\"ид\"", nullable = false)
+    @ColumnDefault("nextval('организация_ид_seq'")
+    @Column(name = "ид", nullable = false)
     private Integer id;
 
-    @Column(name = "\"номер_телефона\"", nullable = false, length = 20)
+    @Column(name = "номер_телефона", nullable = false, length = 20)
     private String phoneNumber;
 
     @Column(name = "email", nullable = false, length = 64)

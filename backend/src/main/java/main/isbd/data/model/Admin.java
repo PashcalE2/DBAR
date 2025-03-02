@@ -10,7 +10,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table(name = "Консультант")
+@Table(name = "консультант")
 public class Admin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

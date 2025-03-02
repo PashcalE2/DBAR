@@ -8,35 +8,35 @@ import org.hibernate.annotations.ColumnDefault;
 @Getter
 @Setter
 @Entity
-@Table(name = "\"Сотрудник\"")
+@Table(name = "сотрудник")
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('\"Сотрудник_ид_seq\"'")
-    @Column(name = "\"ид\"", nullable = false)
+    @ColumnDefault("nextval('Сотрудник_ид_seq'")
+    @Column(name = "ид", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "\"ид_цеха\"", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "ид_цеха", nullable = false)
     private Workshop workshopId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "\"ид_расписания\"", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "ид_расписания", nullable = false)
     private EmployeeSchedule scheduleId;
 
-    @Column(name = "\"ФИО\"", nullable = false, length = 64)
+    @Column(name = "фио", nullable = false, length = 64)
     private String fullName;
 
     // TODO enum?
-    @Column(name = "\"должность\"", columnDefinition = "\"Должность_enum\" not null")
+    @Column(name = "должность", columnDefinition = "должность_enum not null")
     private String position;
 
-    @Column(name = "\"номер_телефона\"", nullable = false, length = 20)
+    @Column(name = "номер_телефона", nullable = false, length = 20)
     private String phoneNumber;
 
     @Column(name = "email", nullable = false, length = 64)
     private String email;
 
-    @Column(name = "\"пароль\"", nullable = false, length = 64)
+    @Column(name = "пароль", nullable = false, length = 64)
     private String password;
 }

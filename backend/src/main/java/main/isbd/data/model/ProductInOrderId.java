@@ -16,10 +16,10 @@ public class ProductInOrderId implements java.io.Serializable {
     @Serial
     private static final long serialVersionUID = -6959250931304743409L;
 
-    @Column(name = "\"ид_заказа\"", nullable = false)
+    @Column(name = "ид_заказа", nullable = false)
     private Integer orderId;
 
-    @Column(name = "\"ид_типа\"", nullable = false)
+    @Column(name = "ид_типа", nullable = false)
     private Integer typeId;
 
     @Override

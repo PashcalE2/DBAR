@@ -65,6 +65,16 @@ public class AuthGateway {
         response.getBody();
     }
 
+    public ActorProfile getClientProfile(String clientLogin, String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        headers.set("Authorization", "Bearer " + accessToken);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<ActorProfile> response = restTemplate.exchange(crudUserUrl + "/" + clientLogin,
+                HttpMethod.GET, entity, ActorProfile.class);
+        return response.getBody();
+    }
+
     public ActorProfile getActorAdminProfile(String adminLogin, String accessToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");

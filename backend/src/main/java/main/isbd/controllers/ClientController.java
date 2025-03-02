@@ -39,14 +39,14 @@ public class ClientController {
     }
 
     @PreAuthorize("hasRole('CLIENT')")
-    @GetMapping("/product/get_all_short")
+    @GetMapping("/product/all-short")
     public @ResponseBody ResponseEntity<List<ProductShortInfo>> getProductsShortInfo() {
         System.out.println("Запрос на получение данных о всей продукции\n");
         return ResponseEntity.ok(clientService.getProductsShortInfo());
     }
 
     @PreAuthorize("hasRole('CLIENT')")
-    @GetMapping("/product/get")
+    @GetMapping("/product")
     public @ResponseBody ResponseEntity<ProductInfo> getProductInfo(@RequestParam Integer product_id)
             throws BaseAppException {
         System.out.printf("Запрос на получение данных о продукции (%d)\n", product_id);
@@ -54,7 +54,7 @@ public class ClientController {
     }
 
     @PreAuthorize("hasRole('CLIENT')")
-    @PostMapping("/product/add_to_order")
+    @PostMapping("/product/add-to-order")
     public @ResponseBody ResponseEntity<AppInfoResponse> addProductToOrder(
             @RequestParam(defaultValue = "0") Integer orderId,
             @RequestParam(defaultValue = "0") Integer productId
@@ -65,7 +65,7 @@ public class ClientController {
     }
 
     @PreAuthorize("hasRole('CLIENT')")
-    @PostMapping("/product/remove_from_order")
+    @PostMapping("/product/remove-from-order")
     public @ResponseBody ResponseEntity<AppInfoResponse> removeProductFromOrder(
             @RequestParam(defaultValue = "0") Integer orderId,
             @RequestParam(defaultValue = "0") Integer productId
@@ -76,7 +76,7 @@ public class ClientController {
     }
 
     @PreAuthorize("hasRole('CLIENT')")
-    @GetMapping("/order/get_all_info")
+    @GetMapping("/order/all-info")
     public @ResponseBody ResponseEntity<List<OrderInfo>> getAllOrdersInfo(
             @AuthenticationPrincipal UserDetails userDetails) throws BaseAppException {
         System.out.printf("Запрос на получение информации о заказах клиента (%s)\n", userDetails.getUsername());
@@ -84,7 +84,7 @@ public class ClientController {
     }
 
     @PreAuthorize("hasRole('CLIENT')")
-    @GetMapping("/order/get")
+    @GetMapping("/order")
     public @ResponseBody ResponseEntity<OrderInfo> getOrderInfo(
             @RequestParam Integer order_id) throws BaseAppException {
         System.out.printf("Запрос на получение информации о заказе (%d)\n", order_id);
@@ -92,7 +92,7 @@ public class ClientController {
     }
 
     @PreAuthorize("hasRole('CLIENT')")
-    @GetMapping("/order/get_current")
+    @GetMapping("/order/current")
     public @ResponseBody ResponseEntity<OrderInfo> getCurrentOrder(@AuthenticationPrincipal UserDetails userDetails)
             throws BaseAppException {
         System.out.printf("Запрос на получение информации о формирующемся заказе клиента (%s)\n",
@@ -101,7 +101,7 @@ public class ClientController {
     }
 
     @PreAuthorize("hasRole('CLIENT')")
-    @GetMapping("/order/get_products")
+    @GetMapping("/order/products")
     public @ResponseBody ResponseEntity<List<ProductInOrderInfo>> getAllProductsInOrder(
             @RequestParam(defaultValue = "0") Integer order_id) throws BaseAppException {
         System.out.printf("Запрос на получение информации о заказе (%d)\n", order_id);
@@ -109,7 +109,7 @@ public class ClientController {
     }
 
     @PreAuthorize("hasRole('CLIENT')")
-    @PostMapping("/order/set_product_count")
+    @PostMapping("/order/product-count")
     public @ResponseBody ResponseEntity<AppInfoResponse> setProductCountInOrder(
             @RequestParam(defaultValue = "0") Integer order_id,
             @RequestParam(defaultValue = "0") Integer product_id,
@@ -148,7 +148,7 @@ public class ClientController {
     }
 
     @PreAuthorize("hasRole('CLIENT')")
-    @GetMapping("/chat/get_admin")
+    @GetMapping("/chat/admin")
     public @ResponseBody ResponseEntity<AdminContacts> getChatAdmin(
             @RequestParam(defaultValue = "0") Integer order_id, @AuthenticationPrincipal UserDetails userDetails)
             throws BaseAppException {
@@ -157,7 +157,7 @@ public class ClientController {
     }
 
     @PreAuthorize("hasRole('CLIENT')")
-    @GetMapping("/chat/get_messages")
+    @GetMapping("/chat/messages")
     public @ResponseBody ResponseEntity<List<ChatMessage>> getChatMessages(
             @RequestParam(defaultValue = "0") Integer order_id) throws BaseAppException {
         System.out.printf("Запрос на получение сообщений заказа (%d)\n", order_id);
@@ -165,7 +165,7 @@ public class ClientController {
     }
 
     @PreAuthorize("hasRole('CLIENT')")
-    @PostMapping("/chat/post_message")
+    @PostMapping("/chat/message")
     public @ResponseBody ResponseEntity<AppInfoResponse> postChatMessage(
             @RequestParam(defaultValue = "0") Integer order_id, @RequestParam String content) throws BaseAppException {
         System.out.printf("Запрос на отправку сообщения в заказе (%d)\n", order_id);

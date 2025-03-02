@@ -285,8 +285,9 @@ def data_sql():
             client_names[i]
         ))
         """
-        main_app_db.append("insert into клиент values ({}, '{}');".format(
+        main_app_db.append("insert into клиент values ({}, '{}', '{}');".format(
             i + 1,
+            client_names[i],
             client_logins[i]
         ))
 

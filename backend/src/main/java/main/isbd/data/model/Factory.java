@@ -9,7 +9,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table(name = "Завод")
+@Table(name = "завод")
 public class Factory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

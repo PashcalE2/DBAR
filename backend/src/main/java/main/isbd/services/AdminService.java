@@ -146,12 +146,16 @@ public class AdminService {
         }
     }
 
-    public ClientContacts getClientContactsInChat(Integer orderId) throws EntityNotFoundException {
+    public ClientContacts getClientContactsInChat(Integer orderId, String accessToken) throws EntityNotFoundException {
         Integer clientId = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Заказ не найден")).getClientId().getId();
+
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new EntityNotFoundException("Клиент не найден"));
-        return new ClientContacts(client.getName());
+
+        ActorProfile orderClientProfile = authGateway.getClientProfile(client.getLogin(), accessToken);
+
+        return new ClientContacts(client.getName(), orderClientProfile.getEmail(), orderClientProfile.getPhoneNumber());
     }
 
     public List<Message> getMessagesInChat(Integer orderId) {
@@ -166,6 +170,6 @@ public class AdminService {
         message.setSender(SenderEnum.ADMIN);
         message.setText(content);
         message.setSentAt(Timestamp.from(Instant.now()));
-        messageRepository.saveAndFlush(message);
+        messageRepository.save(message);
     }
 }

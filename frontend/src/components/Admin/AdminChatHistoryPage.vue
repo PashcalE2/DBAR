@@ -138,7 +138,7 @@ export default {
                     console.log(response);
 
                     page.client = {
-                        name: response.data.organization,
+                        name: response.data.name,
                         phone_number: response.data.phoneNumber,
                         email: response.data.email
                     };
@@ -168,8 +168,8 @@ export default {
 
                     for (let message of response.data) {
                         page.chat_history.push({
-                            from_user: message.sender === "консультант",
-                            content: message.content,
+                            from_user: message.sender === "ADMIN",
+                            content: message.text,
                             posted: message.sentAt
                         });
                     }

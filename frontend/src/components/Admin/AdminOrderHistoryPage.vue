@@ -13,11 +13,11 @@
                 </div>
 
                 <div class="order_header" style="font-weight: normal">
-                    Сформирован: {{ reformatDate(order_info.formedAt) }}
+                    Сформирован: {{ reformatDate(order_info.createdAt) }}
                 </div>
 
                 <div class="order_header" style="font-weight: normal">
-                    Завершен: {{ reformatDate(order_info.doneAt) }}
+                    Завершен: {{ reformatDate(order_info.completedAt) }}
                 </div>
             </div>
 
@@ -185,7 +185,14 @@ export default {
             })
                 .then(function (response) {
                     // TODO
-                    page.products_in_order = response.data;
+                    let product_types = [];
+                    response.data.forEach((element) => product_types.push({
+                      "id": element.typeId.id,
+                      "count": element.count,
+                      "status": element.status
+                    }));
+                    console.log(product_types);
+                    page.products_in_order = product_types;
                 })
                 .catch(function (exception) {
                     console.log(exception);

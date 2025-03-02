@@ -8,17 +8,17 @@ import org.hibernate.annotations.ColumnDefault;
 @Getter
 @Setter
 @Entity
-@Table(name = "\"Расписание_сотрудников\"")
+@Table(name = "расписание_сотрудников")
 public class EmployeeSchedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('\"Расписание_сотрудников_ид_seq\"'")
-    @Column(name = "\"ид\"", nullable = false)
+    @ColumnDefault("nextval('расписание_сотрудников_ид_seq'")
+    @Column(name = "ид", nullable = false)
     private Integer id;
 
-    @Column(name = "\"рабочее_время\"", nullable = false)
+    @Column(name = "рабочее_время", nullable = false)
     private Integer workingHours;
 
-    @Column(name = "\"описание\"", length = Integer.MAX_VALUE)
+    @Column(name = "описание", length = Integer.MAX_VALUE)
     private String description;
 }

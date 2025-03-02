@@ -8,23 +8,23 @@ import org.hibernate.annotations.ColumnDefault;
 @Getter
 @Setter
 @Entity
-@Table(name = "\"Служба_поддержки\"")
+@Table(name = "служба_поддержки")
 public class SupportService {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('\"Служба_поддержки_ид_seq\"'")
-    @Column(name = "\"ид\"", nullable = false)
+    @ColumnDefault("nextval('служба_поддержки_ид_seq'")
+    @Column(name = "ид", nullable = false)
     private Integer id;
 
-    @Column(name = "\"название\"", nullable = false, length = Integer.MAX_VALUE)
+    @Column(name = "название", nullable = false, length = Integer.MAX_VALUE)
     private String name;
 
-    @Column(name = "\"номер_телефона\"", nullable = false, length = 20)
+    @Column(name = "номер_телефона", nullable = false, length = 20)
     private String phoneNumber;
 
     @Column(name = "email", nullable = false, length = 64)
     private String email;
 
-    @Column(name = "\"адрес\"", nullable = false, length = Integer.MAX_VALUE)
+    @Column(name = "адрес", nullable = false, length = Integer.MAX_VALUE)
     private String address;
 }

@@ -11,24 +11,24 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Entity
-@Table(name = "\"Сообщение\"")
+@Table(name = "сообщение")
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('\"Сообщение_ид_seq\"'")
-    @Column(name = "\"ид\"", nullable = false)
+    @ColumnDefault("nextval('сообщение_ид_seq')")
+    @Column(name = "ид", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "\"ид_заказа\"", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "ид_заказа", nullable = false)
     private Order orderId;
 
-    @Column(name = "\"отправитель\"", columnDefinition = "\"Отправитель_enum\" not null")
+    @Column(name = "отправитель", columnDefinition = "отправитель_enum not null")
     private SenderEnum sender;
 
-    @Column(name = "\"текст\"", nullable = false, length = Integer.MAX_VALUE)
+    @Column(name = "текст", nullable = false, length = Integer.MAX_VALUE)
     private String text;
 
-    @Column(name = "\"дата_время\"", nullable = false)
+    @Column(name = "дата_время", nullable = false)
     private Timestamp sentAt;
 }

@@ -16,10 +16,10 @@ public class MaterialId implements java.io.Serializable {
     @Serial
     private static final long serialVersionUID = -8578646759939182285L;
 
-    @Column(name = "\"ид_склада\"", nullable = false)
+    @Column(name = "ид_склада", nullable = false)
     private Integer warehouseId;
 
-    @Column(name = "\"ид_типа\"", nullable = false)
+    @Column(name = "ид_типа", nullable = false)
     private Integer typeId;
 
     @Override
