@@ -8,17 +8,25 @@
             <h1>Вход в систему</h1>
 
             <div class="column" style="margin: 0 auto">
-                <ListInputField
-                    ref="organization"
+                <StringInputField
+                    ref="name"
 
-                    input_id="organization_input"
+                    input_id="name_input"
                     input_style_width="400px"
-                    datalist_id="organization_datalist"
-                    label_text="Выберите организацию"
-                    placeholder="Начните вводить название организации"
+                    label_text="Организация"
+                    placeholder="Введите имя своей организации"
+                    v-bind:on_input="onNameInput"
+                    v-bind:error_message="active_error_messages.name"
+                />
 
+                <StringInputField
+                    ref="login"
+
+                    input_id="login_input"
+                    input_style_width="400px"
+                    label_text="Логин"
+                    placeholder="Введите свой логин"
                     v-bind:on_input="onLoginInput"
-                    v-bind:datalist_options="organizations_options"
                     v-bind:error_message="active_error_messages.login"
                 />
 
@@ -93,7 +101,6 @@
 
 <script>
 import DefaultButton from "@/components/Commons/DefaultButton.vue";
-import ListInputField from "@/components/Commons/ListInputField.vue";
 import PasswordInputField from "@/components/Commons/PasswordInputField.vue";
 import PhoneInputField from "@/components/Commons/PhoneInputField.vue";
 import ClientWelcomeHeader from "@/components/Client/ClientWelcomeHeader.vue";
@@ -101,43 +108,46 @@ import EmailInputField from "@/components/Commons/EmailInputField.vue";
 import axios from "axios";
 import {BACKEND_API} from "@/js/backend_apis";
 import * as ClientStorage from "@/js/client_storage";
+import StringInputField from "@/components/Commons/StringInputField.vue";
 
 export default {
     name: "ClientRegisterPage",
     components: {
+      StringInputField,
         EmailInputField,
         ClientWelcomeHeader,
-        PhoneInputField, PasswordInputField, ListInputField, DefaultButton},
+        PhoneInputField, PasswordInputField, DefaultButton},
 
     data() {
         return {
             input: {
+                name: "",
                 login: "",
                 password: ""
             },
 
-            organizations_options: [
-                "Mozilla",
-                "Chrome",
-                "Firefox"
-            ],
-
             form_errors: {
+                name: false,
                 login: false,
                 password: false,
                 repeat_password: false
             },
 
             active_error_messages: {
+                name: "",
                 login: "",
                 password: "",
                 repeat_password: ""
             },
 
             error_messages: {
-                login: {
-                    NoSuchOrganization: "Такой организации нет",
+                name: {
                     EmptyField: "Введите название организации"
+                },
+
+                login: {
+                    EmptyField: "Введите логин",
+                    WrongSymbols: "Только буквы латинского алфавита или цифры (первый символ - буква)"
                 },
 
                 password: {
@@ -146,14 +156,13 @@ export default {
                 }
             },
 
+            name_re: /^[а-яА-Яa-zA-Z()'"<>&. -]+$/,
             login_re: /^[а-яА-Яa-zA-Z0-9 \-'".,&]+$/,
             password_re: /^[a-zA-Z0-9]+$/
         }
     },
 
     mounted() {
-        this.getOrganizations();
-
         this.$refs.login_button.enable();
     },
 
@@ -177,6 +186,29 @@ export default {
             }
         },
 
+        onNameInput(element) {
+            this.input.name = element.value;
+            let is_empty = element.value.length === 0;
+
+            if (is_empty) {
+                this.form_errors.name = true;
+                this.active_error_messages.name = this.error_messages.name.EmptyField;
+            }
+            else if (this.isWrongString(element.value, this.name_re)) {
+                this.form_errors.name = true;
+                this.active_error_messages.name = this.error_messages.name.WrongSymbols;
+            }
+            else {
+                this.form_errors.name = false;
+            }
+
+            if (!this.form_errors.name) {
+                this.active_error_messages.name = "";
+            }
+
+            this.checkForm();
+        },
+
         onLoginInput(element) {
             this.input.login = element.value;
             let is_empty = element.value.length === 0;
@@ -185,18 +217,16 @@ export default {
                 this.form_errors.login = true;
                 this.active_error_messages.login = this.error_messages.login.EmptyField;
             }
+            else if (this.isWrongString(element.value, this.login_re)) {
+                this.form_errors.login = true;
+                this.active_error_messages.login = this.error_messages.login.WrongSymbols;
+            }
             else {
                 this.form_errors.login = false;
             }
 
             if (!this.form_errors.login) {
-                if (!is_empty && !(this.organizations_options.includes(element.value))) {
-                    this.form_errors.login = true;
-                    this.active_error_messages.login = this.error_messages.login.NoSuchOrganization;
-                } else {
-                    this.form_errors.login = false;
-                    this.active_error_messages.login = "";
-                }
+                this.active_error_messages.login = "";
             }
 
             this.checkForm();
@@ -254,14 +284,16 @@ export default {
             }
 
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.PROFILE.REGISTER;
 
             page.$refs.register_button.disable();
 
             axios.request({
-                url: BACKEND_API.CLIENT.PROFILE.REGISTER.url,
-                method: BACKEND_API.CLIENT.PROFILE.REGISTER.method,
+                url: endpoint.url,
+                method: endpoint.method,
                 data: {
-                    name: page.input.login,
+                    name: page.input.name,
+                    login: page.input.login,
                     password: page.input.password,
                     phoneNumber: page.$refs.phone_number.getPhoneNumber(),
                     email: page.$refs.email.getEmail()
@@ -269,30 +301,11 @@ export default {
             })
                 .then(function (response) {
                     ClientStorage.setClient(
-                        response.data.id,
-                        page.input.login,
-                        response.data.email,
-                        response.data.phoneNumber,
-                        response.data.password
+                        response.data.jwtPairResponse.access,
+                        response.data.jwtPairResponse.refresh
                     );
 
                     page.$router.push({ name: "ClientMain"});
-                })
-                .catch(function (exception) {
-                    console.log(exception);
-                })
-        },
-
-        getOrganizations() {
-            let page = this;
-
-            axios.request({
-                url: BACKEND_API.CLIENT.PROFILE.GET_NOT_REGISTERED_ORGANIZATIONS.url,
-                method: BACKEND_API.CLIENT.PROFILE.GET_NOT_REGISTERED_ORGANIZATIONS.method
-            })
-                .then(function (response) {
-                    console.log(response.data);
-                    page.organizations_options = response.data;
                 })
                 .catch(function (exception) {
                     console.log(exception);

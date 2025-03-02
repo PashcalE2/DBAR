@@ -2,6 +2,7 @@ package main.isbd.services;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
+import lombok.extern.slf4j.Slf4j;
 import main.isbd.exception.BadCredentialsException;
 import main.isbd.exception.BaseAppException;
 import main.isbd.repositories.AdminRepository;
@@ -50,7 +51,7 @@ public class JwtTokenService {
         }
         switch (requiredRole) {
             case "ROLE_CLIENT" -> {
-                return availabilityCheck(clientRepository.findByName(subject).isEmpty(), subject);
+                return availabilityCheck(clientRepository.findByLogin(subject).isEmpty(), subject);
             }
             case "ROLE_ADMIN" -> {
                 return availabilityCheck(adminRepository.findByLogin(subject).isEmpty(), subject);
@@ -80,7 +81,7 @@ public class JwtTokenService {
         }
         switch (role) {
             case "ROLE_CLIENT" -> {
-                return clientRepository.findByName(subject).isPresent();
+                return clientRepository.findByLogin(subject).isPresent();
             }
             case "ROLE_ADMIN" -> {
                 return adminRepository.findByLogin(subject).isPresent();

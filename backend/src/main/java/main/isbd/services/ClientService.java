@@ -48,12 +48,18 @@ public class ClientService {
         this.authGateway = authGateway;
     }
 
-    public ClientRegResponse registerClient(ActorRegister clientRegister) throws BaseAppException {
-        JwtPairResponse jwtPairResponse = authGateway.registerActorAsClient(clientRegister);
+    public ClientRegResponse registerClient(ClientRegister clientRegister) throws BaseAppException {
+        JwtPairResponse jwtPairResponse = authGateway.registerActorAsClient(new ActorRegister(
+                clientRegister.getPhoneNumber(),
+                clientRegister.getEmail(),
+                clientRegister.getLogin(),
+                clientRegister.getPassword()
+        ));
         String authToken = jwtPairResponse.getAccess();
         try {
             String login = jwtTokenService.extractLoginWithAvailabilityCheck(authToken, "ROLE_CLIENT");
             Client client = new Client();
+            client.setName(clientRegister.getName());
             client.setLogin(login);
             try {
                 clientRepository.save(client);
@@ -122,7 +128,7 @@ public class ClientService {
     }
 
     public List<OrderInfo> getAllClientOrdersInfo(String login) throws BaseAppException {
-        Client client = clientRepository.findByName(login).orElseThrow(
+        Client client = clientRepository.findByLogin(login).orElseThrow(
                 () -> new BadCredentialsException("Client not found")
         );
         return orderRepository.findAllByClientId(client).stream().map(
@@ -138,7 +144,7 @@ public class ClientService {
     }
 
     public OrderInfo getClientCurrentOrder(String login) throws BaseAppException {
-        Client client = clientRepository.findByName(login).orElseThrow(
+        Client client = clientRepository.findByLogin(login).orElseThrow(
                 () -> new BadCredentialsException("Client not found")
         );
         Optional<Order> optionalOrder = orderRepository.findOneByClientIdAndStatus(client, OrderStatusEnum.BEING_FORMED);

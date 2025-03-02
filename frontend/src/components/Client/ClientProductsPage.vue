@@ -102,15 +102,17 @@ export default {
 
         addProductToOrder(product_id) {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.PRODUCT.ADD_TO_ORDER;
 
             axios.request({
-                url: BACKEND_API.CLIENT.PRODUCT.ADD_TO_ORDER.url,
-                method: BACKEND_API.CLIENT.PRODUCT.ADD_TO_ORDER.method,
+                url: endpoint.url,
+                method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + ClientStorage.getAccessToken()
+                },
                 params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword(),
-                    order_id: page.current_order_info.id,
-                    product_id: product_id
+                    orderId: page.current_order_info.id,
+                    productId: product_id
                 }
             })
                 .then(function (response) {
@@ -124,13 +126,15 @@ export default {
 
         removeProductFromOrder(product_id) {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.PRODUCT.REMOVE_FROM_ORDER;
 
             axios.request({
-                url: BACKEND_API.CLIENT.PRODUCT.REMOVE_FROM_ORDER.url,
-                method: BACKEND_API.CLIENT.PRODUCT.REMOVE_FROM_ORDER.method,
+                url: endpoint.url,
+                method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + ClientStorage.getAccessToken()
+                },
                 params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword(),
                     order_id: page.current_order_info.id,
                     product_id: product_id
                 }
@@ -146,13 +150,13 @@ export default {
 
         getCurrentOrderInfo() {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.ORDER.GET_CURRENT;
 
             axios.request({
-                url: BACKEND_API.CLIENT.ORDER.GET_CURRENT.url,
-                method: BACKEND_API.CLIENT.ORDER.GET_CURRENT.method,
-                params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword()
+                url: endpoint.url,
+                method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + ClientStorage.getAccessToken()
                 }
             })
                 .then(function (response) {
@@ -166,13 +170,13 @@ export default {
 
         getProducts() {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.PRODUCT.GET_ALL_SHORT;
 
             axios.request({
-                url: BACKEND_API.CLIENT.PRODUCT.GET_ALL_SHORT.url,
-                method: BACKEND_API.CLIENT.PRODUCT.GET_ALL_SHORT.method,
-                params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword()
+                url: endpoint.url,
+                method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + ClientStorage.getAccessToken()
                 }
             })
                 .then(function (response) {
@@ -192,13 +196,15 @@ export default {
 
         getCurrentOrderProducts() {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.ORDER.GET_PRODUCTS;
 
             axios.request({
-                url: BACKEND_API.CLIENT.ORDER.GET_PRODUCTS.url,
-                method: BACKEND_API.CLIENT.ORDER.GET_PRODUCTS.method,
+                url: endpoint.url,
+                method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + ClientStorage.getAccessToken()
+                },
                 params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword(),
                     order_id: page.current_order_info.id
                 }
             })

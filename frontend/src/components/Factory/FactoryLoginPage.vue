@@ -13,7 +13,7 @@
 
                     input_id="factory_id_input"
                     input_style_width="400px"
-                    label_text="Идентификатор"
+                    label_text="Логин"
                     placeholder="Введите свой логин"
                     v-bind:on_input="onLoginInput"
                     v-bind:error_message="active_error_messages.login"

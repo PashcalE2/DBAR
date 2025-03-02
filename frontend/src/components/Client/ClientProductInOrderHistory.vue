@@ -60,13 +60,15 @@ export default {
     methods: {
         getProductInfo() {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.PRODUCT.GET;
 
             axios.request({
-                url: BACKEND_API.CLIENT.PRODUCT.GET.url,
-                method: BACKEND_API.CLIENT.PRODUCT.GET.method,
+                url: endpoint.url,
+                method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + ClientStorage.getAccessToken()
+                },
                 params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword(),
                     product_id: page.product_id
                 }
             })

@@ -8,17 +8,14 @@
             <h1>Вход в систему</h1>
 
             <div class="column" style="margin: 0 auto">
-                <ListInputField
-                    ref="organization"
+                <StringInputField
+                    ref="login"
 
-                    input_id="organization_input"
+                    input_id="login_input"
                     input_style_width="400px"
-                    datalist_id="organization_datalist"
-                    label_text="Организация"
-                    placeholder="Начните вводить название организации"
-
+                    label_text="Логин"
+                    placeholder="Введите свой логин"
                     v-bind:on_input="onLoginInput"
-                    v-bind:datalist_options="organizations_options"
                     v-bind:error_message="active_error_messages.login"
                 />
 
@@ -60,27 +57,23 @@
 
 <script>
 
-import ListInputField from "@/components/Commons/ListInputField.vue";
 import DefaultButton from "@/components/Commons/DefaultButton.vue";
 import PasswordInputField from "@/components/Commons/PasswordInputField.vue";
 import ClientWelcomeHeader from "@/components/Client/ClientWelcomeHeader.vue";
 import axios from "axios";
 import {BACKEND_API} from "@/js/backend_apis";
 import * as ClientStorage from "@/js/client_storage";
+import StringInputField from "@/components/Commons/StringInputField.vue";
 
 export default {
     name: "ClientLoginPage",
-    components: {ClientWelcomeHeader, PasswordInputField, DefaultButton, ListInputField},
+    components: {StringInputField, ClientWelcomeHeader, PasswordInputField, DefaultButton},
     data() {
         return {
             input: {
                 login: "",
                 password: ""
             },
-
-            organizations_options: [
-                "Если опций не появилось - обновите страницу"
-            ],
 
             form_errors: {
                 login: false,
@@ -94,7 +87,7 @@ export default {
 
             error_messages: {
                 login: {
-                    NoSuchOrganization: "Такой организации нет",
+                    NoSuchLogin: "Такой организации нет",
                     EmptyField: "Введите название организации"
                 },
 
@@ -110,20 +103,6 @@ export default {
     },
 
     mounted() {
-        let page = this;
-
-        axios.request({
-            url: BACKEND_API.CLIENT.PROFILE.GET_REGISTERED_ORGANIZATIONS.url,
-            method: BACKEND_API.CLIENT.PROFILE.GET_REGISTERED_ORGANIZATIONS.method
-        })
-            .then(function (response) {
-                // console.log(response.data);
-                page.organizations_options = response.data;
-            })
-            .catch(function (exception) {
-                console.log(exception);
-            })
-
         this.$refs.register_button.enable();
     },
 
@@ -138,33 +117,28 @@ export default {
         },
 
         onLoginInput(element) {
-            this.input.login = element.value;
-            let is_empty = element.value.length === 0;
+          this.input.login = element.value;
+          let is_empty = element.value.length === 0;
 
-            if (is_empty) {
-                this.form_errors.login = true;
-                this.active_error_messages.login = this.error_messages.login.EmptyField;
-            }
-            else {
-                this.form_errors.login = false;
-            }
+          if (is_empty) {
+            this.form_errors.login = true;
+            this.active_error_messages.login = this.error_messages.login.EmptyField;
+          }
+          else if (this.isWrongString(element.value, this.login_re)) {
+            this.form_errors.login = true;
+            this.active_error_messages.login = this.error_messages.login.WrongSymbols;
+          }
+          else {
+            this.form_errors.login = false;
+            this.active_error_messages.login = "";
+          }
 
-            if (!this.form_errors.login) {
-                if (!is_empty && !(this.organizations_options.includes(element.value))) {
-                    this.form_errors.login = true;
-                    this.active_error_messages.login = this.error_messages.login.NoSuchOrganization;
-                } else {
-                    this.form_errors.login = false;
-                    this.active_error_messages.login = "";
-                }
-            }
-
-            if (this.canLogin()) {
-                this.$refs.login_button.enable();
-            }
-            else {
-                this.$refs.login_button.disable();
-            }
+          if (this.canLogin()) {
+            this.$refs.login_button.enable();
+          }
+          else {
+            this.$refs.login_button.disable();
+          }
         },
 
         onPasswordInput(element) {
@@ -193,26 +167,22 @@ export default {
             }
 
             let page = this;
+            let endpoint = BACKEND_API.AUTH_SERVICE.AUTH.LOGIN.CLIENT;
 
             this.$refs.login_button.disable();
 
             axios.request({
-                url: BACKEND_API.CLIENT.PROFILE.LOGIN.url,
-                method: BACKEND_API.CLIENT.PROFILE.LOGIN.method,
+                url: endpoint.url,
+                method: endpoint.method,
                 data: {
-                    name: page.input.login,
+                    login: page.input.login,
                     password: page.input.password
                 }
             })
                 .then(function (response) {
-                    //console.log(response);
-
                     ClientStorage.setClient(
-                        response.data.id,
-                        page.input.login,
-                        response.data.email,
-                        response.data.phoneNumber,
-                        response.data.password
+                        response.data.access,
+                        response.data.refresh
                     );
 
                     page.$router.push({ name: "ClientMain"});
@@ -220,7 +190,7 @@ export default {
                 .catch(function (exception) {
                     //console.log(exception);
 
-                    if (exception.response.status === 409) {
+                    if (exception.response.status === 401) {
                         page.form_errors.password = true;
                         page.active_error_messages.password = page.error_messages.password.WrongPassword;
                     }

@@ -53,6 +53,7 @@ import axios from "axios";
 import {BACKEND_API} from "@/js/backend_apis";
 import * as ClientStorage from "@/js/client_storage";
 import {reformatDateTime} from "@/js/utils";
+import {ENUMS} from "@/js/model/enums";
 
 export default {
     name: "ClientChatHistoryPage",
@@ -96,13 +97,15 @@ export default {
 
         chatSendOnClick() {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.CHAT.POST_MESSAGE;
 
             axios.request({
-                url: BACKEND_API.CLIENT.CHAT.POST_MESSAGE.url,
-                method: BACKEND_API.CLIENT.CHAT.POST_MESSAGE.method,
+                url: endpoint.url,
+                method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + ClientStorage.getAccessToken()
+                },
                 params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword(),
                     order_id: page.order_id,
                     content: page.$refs.chat_input.value
                 }
@@ -120,13 +123,15 @@ export default {
 
         getAdmin() {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.CHAT.GET_ADMIN;
 
             axios.request({
-                url: BACKEND_API.CLIENT.CHAT.GET_ADMIN.url,
-                method: BACKEND_API.CLIENT.CHAT.GET_ADMIN.method,
+                url: endpoint.url,
+                method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + ClientStorage.getAccessToken()
+                },
                 params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword(),
                     order_id: page.order_id
                 }
             })
@@ -145,22 +150,24 @@ export default {
 
         getMessages() {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.CHAT.GET_MESSAGES;
 
             axios.request({
-                url: BACKEND_API.CLIENT.CHAT.GET_MESSAGES.url,
-                method: BACKEND_API.CLIENT.CHAT.GET_MESSAGES.method,
+                url: endpoint.url,
+                method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + ClientStorage.getAccessToken()
+                },
                 params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword(),
                     order_id: page.order_id
                 }
             })
                 .then(function (response) {
                     page.chat_history = [];
 
-                    for (let message of response.data) {
+                    for (let message of response.data.sort((a, b) => (a.sentAt > b.sentAt) ? 1 : ((b.sentAt > a.sentAt) ? -1 : 0))) {
                         page.chat_history.push({
-                            from_user: message.sender === "клиент",
+                            from_user: message.senderType === ENUMS.MESSAGE_SENDER.CLIENT,
                             content: message.content,
                             posted: message.sentAt
                         });

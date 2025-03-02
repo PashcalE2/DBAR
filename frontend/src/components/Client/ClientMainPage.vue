@@ -18,8 +18,8 @@
 
 import FlexRowNavigationBar from "@/components/Commons/FlexRowNavigationBar.vue";
 import * as ClientStorage from "@/js/client_storage";
-import axios from "axios";
-import {BACKEND_API} from "@/js/backend_apis";
+// import axios from "axios";
+// import {BACKEND_API} from "@/js/backend_apis";
 
 export default {
     name: "ClientMainPage",
@@ -77,11 +77,9 @@ export default {
     },
 
     beforeUpdate() {
-        this.checkIfAuthenticated();
     },
 
     beforeMount() {
-        this.checkIfAuthenticated();
         //this.getCurrentOrderInfo();
     },
 
@@ -141,30 +139,7 @@ export default {
             let page = this;
             page.$router.replace({ name: "ClientProfile"});
             this.$refs.navigation_bar.enableRef(this.references.profile);
-        },
-
-        checkIfAuthenticated() {
-            let page = this;
-
-            axios.request({
-                url: BACKEND_API.CLIENT.PROFILE.CHECK_RIGHTS.url,
-                method: BACKEND_API.CLIENT.PROFILE.CHECK_RIGHTS.method,
-                params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword()
-                }
-            })
-                .then(function (response) {
-                    if (response.status !== 200) {
-                        console.log("Нет доступа");
-                        page.$router.replace({ name: "ClientLogin" });
-                    }
-                })
-                .catch(function (exception) {
-                    console.log("Ошибка: " + exception.response.data);
-                    page.$router.replace({ name: "ClientLogin" });
-                })
-        },
+        }
     }
 }
 </script>

@@ -30,23 +30,6 @@ export const BACKEND_API = {
                     url: AUTH_SERVICE_URL + "/auth/refresh/login",
                     method: "post"
                 }
-            },
-
-            REGISTER: {
-                CLIENT: {
-                    url: AUTH_SERVICE_URL + "/auth/register",
-                    method: "post"
-                },
-
-                ADMIN: {
-                    url: AUTH_SERVICE_URL + "/auth/register/admin",
-                    method: "post"
-                },
-
-                FACTORY: {
-                    url: AUTH_SERVICE_URL + "/auth/register/factory",
-                    method: "post"
-                }
             }
         },
 
@@ -68,87 +51,67 @@ export const BACKEND_API = {
     MAIN_SERVICE: {
         CLIENT: {
             PROFILE: {
-                GET_REGISTERED_ORGANIZATIONS: {
-                    url: CLIENT_PATH + "/profile/get_all_registered_organizations",
-                    method: "get"
-                },
-
-                GET_NOT_REGISTERED_ORGANIZATIONS: {
-                    url: CLIENT_PATH + "/profile/get_all_not_registered_organizations",
-                    method: "get"
-                },
-
-                CHECK_RIGHTS: {
-                    url: CLIENT_PATH + "/profile/check_rights",
-                    method: "post"
-                },
-
-                LOGIN: {
-                    url: CLIENT_PATH + "/profile/login",
-                    method: "post"
-                },
-
                 REGISTER: {
                     url: CLIENT_PATH + "/profile/register",
                     method: "post"
                 },
 
                 GET_PROFILE: {
-                    url: CLIENT_PATH + "/profile/get",
+                    url: AUTH_SERVICE_URL + "/user/profile",
                     method: "get"
                 },
 
                 SET_PROFILE: {
-                    url: CLIENT_PATH + "/profile/set",
-                    method: "post"
+                    url: AUTH_SERVICE_URL + "/user/profile",
+                    method: "put"
                 }
             },
 
             PRODUCT: {
                 GET_ALL_SHORT: {
-                    url: CLIENT_PATH + "/product/get_all_short",
+                    url: CLIENT_PATH + "/product/all-short",
                     method: "get"
                 },
 
                 GET: {
-                    url: CLIENT_PATH + "/product/get",
+                    url: CLIENT_PATH + "/product",
                     method: "get"
                 },
 
                 ADD_TO_ORDER: {
-                    url: CLIENT_PATH + "/product/add_to_order",
+                    url: CLIENT_PATH + "/product/add-to-order",
                     method: "post"
                 },
 
                 REMOVE_FROM_ORDER: {
-                    url: CLIENT_PATH + "/product/remove_from_order",
+                    url: CLIENT_PATH + "/product/remove-from-order",
                     method: "post"
                 }
             },
 
             ORDER: {
                 GET_ALL_INFO: {
-                    url: CLIENT_PATH + "/order/get_all_info",
+                    url: CLIENT_PATH + "/order/all-info",
                     method: "get"
                 },
 
                 GET: {
-                    url: CLIENT_PATH + "/order/get",
+                    url: CLIENT_PATH + "/order",
                     method: "get"
                 },
 
                 GET_CURRENT: {
-                    url: CLIENT_PATH + "/order/get_current",
+                    url: CLIENT_PATH + "/order/current",
                     method: "get"
                 },
 
                 GET_PRODUCTS: {
-                    url: CLIENT_PATH + "/order/get_products",
+                    url: CLIENT_PATH + "/order/products",
                     method: "get"
                 },
 
                 SET_PRODUCT_COUNT: {
-                    url: CLIENT_PATH + "/order/set_product_count",
+                    url: CLIENT_PATH + "/order/product-count",
                     method: "post"
                 },
 
@@ -170,17 +133,17 @@ export const BACKEND_API = {
 
             CHAT: {
                 GET_ADMIN: {
-                    url: CLIENT_PATH + "/chat/get_admin",
+                    url: CLIENT_PATH + "/chat/admin",
                     method: "get"
                 },
 
                 GET_MESSAGES: {
-                    url: CLIENT_PATH + "/chat/get_messages",
+                    url: CLIENT_PATH + "/chat/messages",
                     method: "get"
                 },
 
                 POST_MESSAGE: {
-                    url: CLIENT_PATH + "/chat/post_message",
+                    url: CLIENT_PATH + "/chat/message",
                     method: "post"
                 }
             }

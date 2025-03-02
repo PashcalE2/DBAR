@@ -1,6 +1,7 @@
 package main.isbd.services;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import main.isbd.data.dto.users.*;
 import main.isbd.data.model.*;
 import main.isbd.data.model.enums.OrderStatusEnum;
@@ -112,9 +113,12 @@ public class AdminService {
                     Product product = new Product();
                     product.setId(productId);
                     product.setTypeId(productInOrder.getTypeId());
-                    product.setCount(productInOrder.getCount());
+                    product.setCount(productInOrder.getCount() * 2);
+
+                    productInOrder.setStatus(ProductInOrderStatusEnum.AWAITS_ASSEMBLING);
 
                     productRepository.save(product);
+                    productInOrderRepository.save(productInOrder);
                 }
                 case AWAITS_ASSEMBLING -> {
                     Optional<Product> optionalProduct = productRepository.findAll().stream()

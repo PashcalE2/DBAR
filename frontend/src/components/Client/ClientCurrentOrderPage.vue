@@ -83,14 +83,16 @@ export default {
         acceptOnClick(element) {
             element;
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.ORDER.ACCEPT;
             this.$refs.accept_button.disable();
 
             axios.request({
-                url: BACKEND_API.CLIENT.ORDER.ACCEPT.url,
-                method: BACKEND_API.CLIENT.ORDER.ACCEPT.method,
+                url: endpoint.url,
+                method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + ClientStorage.getAccessToken()
+                },
                 params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword(),
                     order_id: page.order_info.id
                 }
             })
@@ -118,13 +120,13 @@ export default {
 
         getCurrentOrderInfo() {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.ORDER.GET_CURRENT;
 
             axios.request({
-                url: BACKEND_API.CLIENT.ORDER.GET_CURRENT.url,
-                method: BACKEND_API.CLIENT.ORDER.GET_CURRENT.method,
-                params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword()
+                url: endpoint.url,
+                method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + ClientStorage.getAccessToken()
                 }
             })
                 .then(function (response) {
@@ -141,13 +143,15 @@ export default {
         updateProductCount(product_id, count) {
             console.log("Update");
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.ORDER.SET_PRODUCT_COUNT;
 
             axios.request({
-                url: BACKEND_API.CLIENT.ORDER.SET_PRODUCT_COUNT.url,
-                method: BACKEND_API.CLIENT.ORDER.SET_PRODUCT_COUNT.method,
+                url: endpoint.url,
+                method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + ClientStorage.getAccessToken()
+                },
                 params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword(),
                     order_id: page.order_info.id,
                     product_id: product_id,
                     count: count
@@ -165,13 +169,15 @@ export default {
 
         getProductsInOrder() {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.ORDER.GET_PRODUCTS;
 
             axios.request({
-                url: BACKEND_API.CLIENT.ORDER.GET_PRODUCTS.url,
-                method: BACKEND_API.CLIENT.ORDER.GET_PRODUCTS.method,
+                url: endpoint.url,
+                method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + ClientStorage.getAccessToken()
+                },
                 params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword(),
                     order_id: page.order_info.id
                 }
             })
@@ -194,13 +200,15 @@ export default {
 
         removeProductFromOrder(product_id) {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.PRODUCT.REMOVE_FROM_ORDER;
 
             axios.request({
-                url: BACKEND_API.CLIENT.PRODUCT.REMOVE_FROM_ORDER.url,
-                method: BACKEND_API.CLIENT.PRODUCT.REMOVE_FROM_ORDER.method,
+                url: endpoint.url,
+                method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + ClientStorage.getAccessToken()
+                },
                 params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword(),
                     order_id: page.order_info.id,
                     product_id: product_id
                 }

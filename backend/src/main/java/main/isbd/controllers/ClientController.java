@@ -9,6 +9,7 @@ import main.isbd.data.dto.product.ProductShortInfo;
 import main.isbd.data.dto.users.ActorRegister;
 import main.isbd.data.dto.users.AdminContacts;
 import main.isbd.data.dto.users.ClientRegResponse;
+import main.isbd.data.dto.users.ClientRegister;
 import main.isbd.data.model.enums.OrderStatusEnum;
 import main.isbd.exception.BaseAppException;
 import main.isbd.services.ClientService;
@@ -33,7 +34,7 @@ public class ClientController {
     }
 
     @PostMapping("/profile/register")
-    public @ResponseBody ResponseEntity<ClientRegResponse> register(@RequestBody ActorRegister clientRegister)
+    public @ResponseBody ResponseEntity<ClientRegResponse> register(@RequestBody ClientRegister clientRegister)
             throws BaseAppException {
         return new ResponseEntity<>(clientService.registerClient(clientRegister), HttpStatus.CREATED);
     }

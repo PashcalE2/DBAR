@@ -77,15 +77,20 @@ export default {
 
         acceptChanges() {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.PROFILE.SET_PROFILE;
 
             axios.request({
-                url: BACKEND_API.CLIENT.PROFILE.SET_PROFILE.url,
-                method: BACKEND_API.CLIENT.PROFILE.SET_PROFILE.method,
-                params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword(),
-                    phone_number: page.$refs.phone_number.getPhoneNumber(),
+                url: endpoint.url,
+                method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + ClientStorage.getAccessToken()
+                },
+                data: {
+                    id: 0,
+                    phoneNumber: page.$refs.phone_number.getPhoneNumber(),
                     email: page.$refs.email.getEmail(),
+                    login: "",
+                    password: ""
                 }
             })
                 .then(function (response) {
@@ -106,13 +111,13 @@ export default {
 
         getClientProfile() {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.PROFILE.GET_PROFILE;
 
             axios.request({
-                url: BACKEND_API.CLIENT.PROFILE.GET_PROFILE.url,
-                method: BACKEND_API.CLIENT.PROFILE.GET_PROFILE.method,
-                params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword()
+                url: endpoint.url,
+                method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + ClientStorage.getAccessToken()
                 }
             })
                 .then(function (response) {

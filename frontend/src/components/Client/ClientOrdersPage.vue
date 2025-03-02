@@ -21,6 +21,7 @@ import axios from "axios";
 import {BACKEND_API} from "@/js/backend_apis";
 import * as ClientStorage from "@/js/client_storage";
 import {reformatDate} from "@/js/utils";
+import {ENUMS} from "@/js/model/enums";
 
 export default {
     name: "ClientOrdersPage",
@@ -44,13 +45,13 @@ export default {
 
         getClientOrders() {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.ORDER.GET_ALL_INFO;
 
             axios.request({
-                url: BACKEND_API.CLIENT.ORDER.GET_ALL_INFO.url,
-                method: BACKEND_API.CLIENT.ORDER.GET_ALL_INFO.method,
-                params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword()
+                url: endpoint.url,
+                method: endpoint.method,
+                headers: {
+                  "Authorization": "Bearer " + ClientStorage.getAccessToken()
                 }
             })
                 .then(function (response) {
@@ -58,7 +59,7 @@ export default {
                     let without_current = []
 
                     for (let i = 0; i < all.length; i++) {
-                        if (all[i].status !== "формируется") {
+                        if (all[i].status !== ENUMS.ORDER_STATUS.BEING_FORMED) {
                             without_current.push(all[i]);
                         }
                     }

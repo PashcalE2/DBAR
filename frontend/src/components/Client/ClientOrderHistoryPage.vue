@@ -78,6 +78,7 @@ import {BACKEND_API} from "@/js/backend_apis";
 import * as ClientStorage from "@/js/client_storage";
 import {reformatDate} from "@/js/utils";
 import OrderStatus from "@/components/Commons/OrderStatus.vue";
+import {ENUMS} from "@/js/model/enums";
 
 export default {
     name: "ClientOrderHistoryPage",
@@ -122,14 +123,16 @@ export default {
 
         payOnClick() {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.ORDER.PAY;
             this.$refs.pay_button.disable();
 
             axios.request({
-                url: BACKEND_API.CLIENT.ORDER.PAY.url,
-                method: BACKEND_API.CLIENT.ORDER.PAY.method,
+                url: endpoint.url,
+                method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + ClientStorage.getAccessToken()
+                },
                 params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword(),
                     order_id: page.order_info.id
                 }
             })
@@ -149,13 +152,15 @@ export default {
             this.$refs.cancel_button.disable();
 
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.ORDER.CANCEL;
 
             axios.request({
-                url: BACKEND_API.CLIENT.ORDER.CANCEL.url,
-                method: BACKEND_API.CLIENT.ORDER.CANCEL.method,
+                url: endpoint.url,
+                method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + ClientStorage.getAccessToken()
+                },
                 params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword(),
                     order_id: page.order_id
                 }
             })
@@ -171,27 +176,29 @@ export default {
 
         getOrderInfo() {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.ORDER.GET;
 
             axios.request({
-                url: BACKEND_API.CLIENT.ORDER.GET.url,
-                method: BACKEND_API.CLIENT.ORDER.GET.method,
+                url: endpoint.url,
+                method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + ClientStorage.getAccessToken()
+                },
                 params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword(),
                     order_id: page.order_id
                 }
             })
                 .then(function (response) {
                     page.order_info = response.data;
 
-                    if (page.order_info.status === "формируется") {
+                    if (page.order_info.status === ENUMS.ORDER_STATUS.BEING_FORMED) {
                         page.$router.replace({ name: "ClientMain" });
                     }
-                    else if (page.order_info.status === "ожидает оплаты") {
+                    else if (page.order_info.status === ENUMS.ORDER_STATUS.AWAITS_PAYMENT) {
                         page.$refs.pay_button.enable();
                     }
                     else {
-                        if (page.order_info.status !== "отклонен" && page.order_info.status !== "выполнен") {
+                        if (page.order_info.status !== ENUMS.ORDER_STATUS.CANCELED && page.order_info.status !== ENUMS.ORDER_STATUS.DONE) {
                             page.$refs.cancel_button.enable();
                         }
                     }
@@ -204,13 +211,15 @@ export default {
 
         getProductsInOrder() {
             let page = this;
+            let endpoint = BACKEND_API.MAIN_SERVICE.CLIENT.ORDER.GET_PRODUCTS;
 
             axios.request({
-                url: BACKEND_API.CLIENT.ORDER.GET_PRODUCTS.url,
-                method: BACKEND_API.CLIENT.ORDER.GET_PRODUCTS.method,
+                url: endpoint.url,
+                method: endpoint.method,
+                headers: {
+                    "Authorization": "Bearer " + ClientStorage.getAccessToken()
+                },
                 params: {
-                    client_id: ClientStorage.getId(),
-                    password: ClientStorage.getPassword(),
                     order_id: page.order_id
                 }
             })

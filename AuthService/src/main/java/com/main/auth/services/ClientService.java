@@ -44,8 +44,6 @@ public class ClientService implements UserDetailsService {
         Client client = clientRepository.findByLogin(login).orElseThrow(
                 () -> new AuthException("Client not found", HttpStatus.NOT_FOUND)
         );
-        client.setLogin(update.getLogin());
-        client.setPassword(passwordService.makeBCryptHash(update.getPassword()));
         client.setEmail(update.getEmail());
         client.setPhoneNumber(update.getPhoneNumber());
         try {
