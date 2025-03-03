@@ -19,5 +19,6 @@ public class OrderInfo {
     private String status;
     private Timestamp formedAt;
     private Timestamp doneAt;
+    private Double totalPrice;
 
 }

@@ -133,14 +133,22 @@ public class ClientService {
         );
         return orderRepository.findAllByClientId(client).stream().map(
                 o -> new OrderInfo(o.getId(), o.getClientId().getId(), o.getAdminId().getId(),
-                        o.getStatus().getValue(), o.getCreatedAt(), o.getCompletedAt())).toList();
+                        o.getStatus().getValue(), o.getCreatedAt(), o.getCompletedAt(),
+                        productInOrderRepository.findAllByOrderId(o).stream().map(
+                                p -> p.getCount() * p.getTypeId().getPrice()
+                        ).mapToDouble(Float::doubleValue).sum()
+                )).toList();
     }
 
     public OrderInfo getOrderInfo(Integer orderId) throws BaseAppException {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new BaseAppException("No order with id: " + orderId, HttpStatus.NOT_FOUND));
         return new OrderInfo(order.getId(), order.getClientId().getId(), order.getAdminId().getId(),
-                order.getStatus().getValue(), order.getCreatedAt(), order.getCompletedAt());
+                order.getStatus().getValue(), order.getCreatedAt(), order.getCompletedAt(),
+                productInOrderRepository.findAllByOrderId(order).stream().map(
+                        p -> p.getCount() * p.getTypeId().getPrice()
+                ).mapToDouble(Float::doubleValue).sum()
+        );
     }
 
     public OrderInfo getClientCurrentOrder(String login) throws BaseAppException {
@@ -155,7 +163,11 @@ public class ClientService {
             order = createNewEmptyOrder(client);
         }
         return new OrderInfo(order.getId(), order.getClientId().getId(), order.getAdminId().getId(),
-                order.getStatus().getValue(), order.getCreatedAt(), order.getCompletedAt());
+                order.getStatus().getValue(), order.getCreatedAt(), order.getCompletedAt(),
+                productInOrderRepository.findAllByOrderId(order).stream().map(
+                        p -> p.getCount() * p.getTypeId().getPrice()
+                ).mapToDouble(Float::doubleValue).sum()
+                );
     }
 
     public Order createNewEmptyOrder(Client client) throws BaseAppException {
