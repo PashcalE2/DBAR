@@ -3,6 +3,7 @@ package main.isbd.controllers;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import main.isbd.data.AppInfoResponse;
+import main.isbd.data.dto.order.OrderInfo;
 import main.isbd.data.dto.users.AdminRegResponse;
 import main.isbd.data.dto.users.AdminRegister;
 import main.isbd.data.dto.users.ClientContacts;
@@ -46,7 +47,7 @@ public class AdminController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/order/all-info")
-    public ResponseEntity<List<Order>> getAllOrdersInfo(@AuthenticationPrincipal UserDetails userDetails)
+    public ResponseEntity<List<OrderInfo>> getAllOrdersInfo(@AuthenticationPrincipal UserDetails userDetails)
             throws EntityNotFoundException {
         log.info("Запрос на получение информации о заказах консультанта ({})", userDetails.getUsername());
         return new ResponseEntity<>(adminService.getAllOrdersByAdmin(userDetails.getUsername()), HttpStatus.OK);
@@ -54,7 +55,7 @@ public class AdminController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/order")
-    public ResponseEntity<Order> getOrderInfo(@RequestParam(defaultValue = "0") Integer order_id) throws BaseAppException {
+    public ResponseEntity<OrderInfo> getOrderInfo(@RequestParam(defaultValue = "0") Integer order_id) throws BaseAppException {
         log.info("Запрос на получение информации о заказе ({})", order_id);
         return new ResponseEntity<>(adminService.getOrderByOrderId(order_id), HttpStatus.OK);
     }

@@ -2,6 +2,7 @@ package main.isbd.services;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import main.isbd.data.dto.order.OrderInfo;
 import main.isbd.data.dto.users.*;
 import main.isbd.data.model.*;
 import main.isbd.data.model.enums.OrderStatusEnum;
@@ -78,15 +79,26 @@ public class AdminService {
                 .orElseThrow(() -> new EntityNotFoundException("Консультант не найден"));
     }
 
-    public List<Order> getAllOrdersByAdmin(String login) throws EntityNotFoundException {
+    public List<OrderInfo> getAllOrdersByAdmin(String login) throws EntityNotFoundException {
         Admin admin = adminRepository.findByLogin(login)
                 .orElseThrow(() -> new EntityNotFoundException("Консультант не найден"));
-        return orderRepository.findAllByAdminId(admin);
+        return orderRepository.findAllByAdminId(admin).stream().map(
+                o -> new OrderInfo(o.getId(), o.getClientId().getId(), o.getAdminId().getId(),
+                        o.getStatus().getValue(), o.getCreatedAt(), o.getCompletedAt(),
+                        productInOrderRepository.findAllByOrderId(o).stream().map(
+                                p -> p.getCount() * p.getTypeId().getPrice()
+                        ).mapToDouble(Float::doubleValue).sum()
+                )).toList();
     }
 
-    public Order getOrderByOrderId(Integer orderId) throws BaseAppException {
-        return orderRepository.findById(orderId)
+    public OrderInfo getOrderByOrderId(Integer orderId) throws BaseAppException {
+        Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("Заказ не найден"));
+        return new OrderInfo(order.getId(), order.getClientId().getId(), order.getAdminId().getId(),
+                order.getStatus().getValue(), order.getCreatedAt(), order.getCompletedAt(),
+                productInOrderRepository.findAllByOrderId(order).stream().map(
+                        p -> p.getCount() * p.getTypeId().getPrice()
+                ).mapToDouble(Float::doubleValue).sum());
     }
 
     public List<ProductInOrder> getAllProductsInOrder(Integer orderId) throws BaseAppException {
