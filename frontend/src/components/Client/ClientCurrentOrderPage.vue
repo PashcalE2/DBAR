@@ -28,7 +28,7 @@
         />
 
         <div class="order_header">
-            Итого к оплате: <span class="sum">{{ order_info.sum }}</span>
+            Итого к оплате: <span class="sum">{{ order_info.totalPrice }}</span>
         </div>
 
         <div class="row" style="justify-content: space-between; padding: 8px">

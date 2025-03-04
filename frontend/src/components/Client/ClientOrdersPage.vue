@@ -8,7 +8,7 @@
                 v-bind:order_status="order.status"
                 v-bind:order_formed_date="reformatDate(order.formedAt)"
                 v-bind:order_done_date="reformatDate(order.doneAt)"
-                v-bind:order_sum="order.sum"
+                v-bind:order_sum="order.totalPrice"
                 v-bind:on_click="goToOrderHistory"
             />
         </div>

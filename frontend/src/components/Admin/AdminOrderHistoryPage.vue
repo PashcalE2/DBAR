@@ -39,7 +39,7 @@
         />
 
         <div class="order_header">
-            Сумма заказа: <span class="sum">{{ order_info.sum }}</span>
+            Сумма заказа: <span class="sum">{{ order_info.totalPrice }}</span>
         </div>
 
         <div class="row" style="justify-content: space-between; padding: 8px">
